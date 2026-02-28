@@ -28,6 +28,8 @@ Read `.pipeline/brief.md` to find the primary language. Check which LSP tools ar
 - Find imports with no usages in the file
 - Identify functions/methods with no callers (search for their name across codebase)
 
+**Note:** If running as part of `/qa --parallel`, `/qb` also checks unused imports for Go and TypeScript. Overlapping findings on that category are expected — both reports are correct.
+
 ### Step 3: Confirm before removing
 
 Present the dead code list to the user before making any changes:
@@ -55,3 +57,5 @@ After removal, confirm no tests are broken:
 ## Output
 
 Report: "Removed [N] dead code items across [M] files."
+
+If items were skipped (user chose "review each"), use `/quick` to address them individually. Re-run `/denoise` to confirm.
