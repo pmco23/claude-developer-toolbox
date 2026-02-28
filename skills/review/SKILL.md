@@ -1,5 +1,5 @@
 ---
-name: ar
+name: review
 description: Use after /design to adversarially review the design document. Dispatches Opus and Codex in parallel — Opus for strategic critique grounded in Context7, Codex for code-grounded critique via OpenAI MCP. Lead deduplicates, runs cost/benefit analysis, loops until no findings warrant mitigation. Writes .pipeline/design.approved on loop exit.
 ---
 
