@@ -8,6 +8,8 @@ A quality-gated development pipeline for Claude Code. Every transition between p
 
 ```
 idea
+ ├─ /quick [--deep]          # fast track — no pipeline, no artifacts
+ │
  └─ /arm        → .pipeline/brief.md
      └─ /design → .pipeline/design.md
          └─ /ar → .pipeline/design.approved
@@ -237,6 +239,36 @@ Individual skills are also available standalone (each requires `build.complete`)
 | `/qb` | Backend style audit (Go/Python/C#/TS) |
 | `/qd` | Documentation freshness — docs vs. implementation drift |
 | `/security-review` | OWASP Top 10 vulnerability scan |
+
+---
+
+### /quick — Fast Implementation
+
+**Gate:** None (always available — pipeline-aware, never blocked)
+**Writes:** nothing
+**Model:** Sonnet (default) | Opus with `--deep`
+
+Implements small features, bug fixes, typo corrections, config tweaks, or any well-understood change that does not require the full pipeline. Completely independent of the arm → design → ar → plan → build → qa flow.
+
+If a pipeline is active in the current project, a warning is shown before proceeding — you decide whether to continue.
+
+```
+/quick fix the null check in UserCard.tsx
+/quick --deep refactor the auth middleware   # escalates to Opus
+/quick                                        # prompts for task description
+```
+
+After implementing, offers an optional lightweight audit on touched files only: LSP diagnostics, security spot-check on changed code, and a reminder to run existing tests if they exist. No `.pipeline/` artifacts written.
+
+**Pipeline warnings:**
+
+| Active state | Warning shown |
+|---|---|
+| Build in progress | `⚠ Build in progress — /quick may conflict with active builders if touching the same files.` |
+| QA phase | `Pipeline at QA phase — /quick will not affect pipeline artifacts.` |
+| Planning/design phases | Informational note, no risk |
+
+---
 
 ## Language Support Matrix
 
