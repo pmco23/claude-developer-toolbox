@@ -40,8 +40,13 @@ For each documented endpoint or public function:
 
 ### Step 4: Check CHANGELOG
 
-- Is there an entry for the changes made in this build?
-- If no entry exists, flag it: "CHANGELOG has no entry for current build changes."
+Read `.pipeline/plan.md` if it exists to identify the feature name and scope of what was built in this session.
+
+Check `CHANGELOG.md`:
+- Is there an `## [Unreleased]` section?
+- Does it contain entries that correspond to the feature described in the plan (matching the plan's feature name or the types of changes made)?
+- If no matching entry: flag as `CHANGELOG MISSING — no entry for [feature name] build. Add entries under ## [Unreleased] following Keep a Changelog format (Added / Changed / Fixed / Removed).`
+- If `.pipeline/plan.md` does not exist (standalone run): check only that `## [Unreleased]` has any content; flag if it is empty.
 
 ### Step 5: Report findings
 
@@ -56,3 +61,5 @@ If no findings: "Documentation audit complete — all docs reflect current imple
 ## Output
 
 Report to user. No file written to `.pipeline/`.
+
+After reviewing findings, use `/quick` to update stale documentation or add CHANGELOG entries. Re-run `/qd` after fixing to confirm.
