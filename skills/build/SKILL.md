@@ -26,6 +26,24 @@ Which mode? (parallel / sequential)
 
 ## Process
 
+### Step 0: Check for partial build state
+
+Before reading the plan or dispatching any agents, check whether this is a fresh build or a resume.
+
+Scan the working directory for files that would be created by task groups in the plan (if `.pipeline/plan.md` already exists, read it to find the "Files: Create" entries for each group).
+
+If files from a previous partial build are detected, report to the user:
+```
+Partial build detected. The following task groups appear already complete (their output files exist):
+- Group N: [list of existing files]
+
+Resume from here (skip completed groups) or restart from scratch? (resume / restart)
+```
+
+- If "restart": delete `.pipeline/build.complete` if present and proceed to Step 1 with all groups active.
+- If "resume": proceed to Step 1, mark completed groups as done, dispatch only remaining groups.
+- If no prior files found: proceed to Step 1 normally.
+
 ### Step 1: Read the plan
 
 Read `.pipeline/plan.md` in full. Extract:
@@ -36,7 +54,7 @@ Read `.pipeline/plan.md` in full. Extract:
 
 ### Step 2A: Parallel Mode
 
-For each independent task group (those with no unmet dependencies), dispatch a Sonnet subagent simultaneously via the Task tool.
+For each independent task group (those with no unmet dependencies), dispatch a Sonnet subagent simultaneously via the Task tool. Set `model: sonnet` on each dispatch.
 
 Agent prompt template for each group:
 ```
@@ -68,7 +86,7 @@ After all parallel groups complete, run dependent groups in the same way.
 
 For each task group in dependency order:
 
-1. Dispatch one Sonnet subagent with the task group prompt above
+1. Dispatch one Sonnet subagent with the task group prompt above (set `model: sonnet`)
 2. Wait for completion
 3. Review the agent's output — did it satisfy the acceptance criteria?
 4. If yes: proceed to next group
@@ -81,7 +99,13 @@ After all task groups complete, run /pmatch:
 Source of truth: `.pipeline/plan.md`
 Target: current working directory
 
-Invoke /pmatch by dispatching a subagent with the pmatch skill instructions.
+Invoke /pmatch by dispatching a subagent via the Task tool with this prompt:
+```
+Invoke the `pmatch` skill to verify implementation drift.
+Source of truth: `.pipeline/plan.md`
+Target: current working directory
+Report all MISSING, PARTIAL, and CONTRADICTED findings.
+```
 
 ### Step 4: Evaluate /pmatch result
 
