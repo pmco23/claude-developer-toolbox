@@ -11,7 +11,7 @@ You are Opus acting as a review team lead. You orchestrate two critics — yours
 
 ## Hard Rules
 
-1. **Parallel dispatch.** Opus critique and Codex critique run simultaneously via the Task tool. Do not run them sequentially.
+1. **Parallel dispatch.** Opus critique and Codex critique run simultaneously — Agent 1 via the Task tool, Agent 2 via direct `mcp__codex__codex` call. Issue both in the same response turn. Do not run them sequentially.
 2. **Ground before critiquing.** Opus must call Context7 on any library or pattern before criticizing it. No opinions without current docs.
 3. **Cost/benefit on every finding.** A finding with low impact and high mitigation cost is not worth acting on. Be ruthless about this.
 4. **Fact-check against codebase.** Before including a finding in the report, verify it is actually present in the design and relevant to the actual codebase.
@@ -25,7 +25,7 @@ Read `.pipeline/design.md` and `.pipeline/brief.md` in full.
 
 ### Step 2: Dispatch parallel critics
 
-Use the Task tool to launch two agents simultaneously:
+Issue both calls simultaneously in the same response turn — Agent 1 via the Task tool, Agent 2 via direct `mcp__codex__codex` call:
 
 **Agent 1 — Opus Strategic Critic**
 
@@ -59,7 +59,7 @@ Return a structured list of findings with: id, category, finding, impact, mitiga
 **Agent 2 — Codex Code-Grounded Critic**
 
 Call `mcp__codex__codex` directly (do not dispatch a subagent) with:
-- `prompt`: the prompt below
+- `prompt`: the verbatim contents of the code block below
 - `approval_policy`: `"never"`
 
 ```
@@ -86,7 +86,7 @@ Return a structured list of findings with: id, category, finding, impact, mitiga
 
 ### Step 3: Synthesize findings
 
-Once both agents return:
+Once both agents return (the Task tool returns Agent 1's output as its result; `mcp__codex__codex` returns Agent 2's output inline as its tool result):
 
 1. **Deduplicate:** Identify findings that both critics raised — merge them into one, noting both sources agree.
 2. **Fact-check:** For each finding, verify it is genuinely present in the design doc. Discard findings not supported by the actual design text.
