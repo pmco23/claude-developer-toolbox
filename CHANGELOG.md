@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `/status` now shows file age for all 5 pipeline artifacts and a `repomix-pack` row with token stats and staleness indicator (⚠ when ≥ 1 hour old)
+- `plugin.json` declares `codex` and `repomix` as bundled MCP servers — registration is automatic on plugin install
+
+### Fixed
+
+- `pipeline_gate.sh` and `context-monitor.sh` portability: jq-first JSON parsing with python3 fallback and explicit stderr warning when neither is available
+- README Codex and Repomix MCP setup sections simplified — manual `claude mcp add` step removed
+
 ## [1.3.0] - 2026-03-01
 
 ### Added
