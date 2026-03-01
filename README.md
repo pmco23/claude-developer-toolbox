@@ -75,25 +75,25 @@ which codex
 
 ## Repomix MCP Setup
 
-Install Repomix and register it as an MCP server for token-efficient codebase packing.
+MCP registration is handled automatically by the plugin. You only need to install the binary.
 
-**1. Install Repomix**
+### Install Repomix
 
 ```bash
 npm install -g repomix
 ```
 
-**2. Register the MCP server (user scope — available across all projects)**
+### Troubleshooting — server not connecting
+
+If Repomix was installed via nvm, the `repomix` binary may not be on PATH in non-interactive shells. Fix by using the absolute path:
 
 ```bash
-claude mcp add --scope user repomix -- repomix --mcp
+# Find the path
+which repomix
+
+# Edit ~/.claude/settings.json — replace "command": "repomix" with the absolute path
+# under the mcpServers entry for your plugin installation path
 ```
-
-Restart Claude Code to pick up the new server.
-
-**3. Verify**
-
-Run `/pack` in any project directory. If Repomix MCP is connected, it packs the codebase and writes `.pipeline/repomix-pack.json`. If not connected, `/pack` will fail — `/qa`, `/plan`, and `/brief` fall back to native file tools automatically.
 
 ---
 
