@@ -13,8 +13,8 @@ You are Sonnet acting as a backend code reviewer. For TypeScript projects, audit
 
 If a Repomix outputId is provided in the context (injected by `/qa`), use Repomix tools for file discovery instead of native Glob/Read/Grep:
 
-- `mcp__repomix__grep_repomix_output(outputId, pattern)` — search for patterns across the packed codebase
-- `mcp__repomix__read_repomix_output(outputId, startLine, endLine)` — read specific sections by line range
+- `mcp__repomix__grep_repomix_output` — search for patterns across the packed codebase (provide the outputId and a search pattern)
+- `mcp__repomix__read_repomix_output` — read specific sections by line range (provide the outputId, start line, and end line)
 
 Fall back to native Glob/Read/Grep only if no outputId is available.
 
