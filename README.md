@@ -69,13 +69,13 @@ This writes to `~/.claude.json`. Restart Claude Code to pick up the new server.
 
 **3. Verify**
 
-Start a Claude Code session and run:
+Start a Claude Code session. At startup, Claude Code logs which MCP servers connected successfully — look for a line confirming the `codex` server. Then run:
 
 ```
-/status
+/review
 ```
 
-If `mcp__codex__codex` appears in the available tools list, the server is connected.
+If the Codex MCP is connected, `/review` will dispatch Agent 2 via `mcp__codex__codex`. If it is not connected, `/review` will fall back to a second Opus subagent and note "Codex MCP unavailable" in the report.
 
 **Troubleshooting — server not connecting**
 
