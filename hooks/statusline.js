@@ -75,20 +75,33 @@ process.stdin.on('end', () => {
       }
     }
 
-    // Pipeline phase from .pipeline/ artifacts in cwd
+    // Pipeline phase — walk up from dir to find .pipeline/ (mirrors pipeline_gate.sh)
     let phase = '';
-    const pipelineDir = path.join(dir, '.pipeline');
     try {
-      if (fs.existsSync(path.join(pipelineDir, 'build.complete'))) {
-        phase = 'qa ready';
-      } else if (fs.existsSync(path.join(pipelineDir, 'plan.md'))) {
-        phase = 'plan ready';
-      } else if (fs.existsSync(path.join(pipelineDir, 'design.approved'))) {
-        phase = 'design approved';
-      } else if (fs.existsSync(path.join(pipelineDir, 'design.md'))) {
-        phase = 'design';
-      } else if (fs.existsSync(path.join(pipelineDir, 'brief.md'))) {
-        phase = 'brief';
+      let searchDir = dir;
+      let pipelineDir = null;
+      while (true) {
+        const candidate = path.join(searchDir, '.pipeline');
+        if (fs.existsSync(candidate)) {
+          pipelineDir = candidate;
+          break;
+        }
+        const parent = path.dirname(searchDir);
+        if (parent === searchDir) break; // reached filesystem root
+        searchDir = parent;
+      }
+      if (pipelineDir) {
+        if (fs.existsSync(path.join(pipelineDir, 'build.complete'))) {
+          phase = 'qa ready';
+        } else if (fs.existsSync(path.join(pipelineDir, 'plan.md'))) {
+          phase = 'plan ready';
+        } else if (fs.existsSync(path.join(pipelineDir, 'design.approved'))) {
+          phase = 'design approved';
+        } else if (fs.existsSync(path.join(pipelineDir, 'design.md'))) {
+          phase = 'design';
+        } else if (fs.existsSync(path.join(pipelineDir, 'brief.md'))) {
+          phase = 'brief';
+        }
       }
     } catch (e) {
       // Silent fail
