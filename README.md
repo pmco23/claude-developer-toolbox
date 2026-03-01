@@ -36,7 +36,7 @@ Each arrow is a quality gate. You cannot run `/design` without a brief. You cann
 |------|---------|---------|
 | Claude Code | Runtime | [docs.claude.ai](https://docs.claude.ai) |
 | Context7 | Live library docs grounding | `/plugin install context7@claude-plugins-official` |
-| OpenAI MCP | Codex access for adversarial review and code validation | See [OpenAI MCP setup](#openai-mcp-setup) |
+| Codex CLI | Codex access for adversarial review and code validation | See [Codex MCP setup](#codex-mcp-setup) |
 
 ### Optional (enhances specific skills)
 
@@ -49,25 +49,44 @@ Each arrow is a quality gate. You cannot run `/design` without a brief. You cann
 
 LSP tools degrade gracefully — absent means reduced precision, not failure.
 
-## OpenAI MCP Setup
+## Codex MCP Setup
 
-Configure the OpenAI MCP server so Claude can call Codex. Add to your `~/.claude/settings.json` or project `.mcp.json`:
+Install the Codex CLI and register it as an MCP server so Claude can call it directly.
 
-```json
-{
-  "mcpServers": {
-    "openai": {
-      "command": "npx",
-      "args": ["-y", "@openai/mcp-server"],
-      "env": {
-        "OPENAI_API_KEY": "your-key-here"
-      }
-    }
-  }
-}
+**1. Install Codex CLI**
+
+```bash
+npm install -g @openai/codex
 ```
 
-Verify it's working: start Claude Code and confirm OpenAI tools appear in the available tools list.
+**2. Register the MCP server (user scope — available across all projects)**
+
+```bash
+claude mcp add --scope user codex -- codex mcp-server
+```
+
+This writes to `~/.claude.json`. Restart Claude Code to pick up the new server.
+
+**3. Verify**
+
+Start a Claude Code session and run:
+
+```
+/status
+```
+
+If `mcp__codex__codex` appears in the available tools list, the server is connected.
+
+**Troubleshooting — server not connecting**
+
+If Codex was installed via nvm, the `codex` binary may not be on PATH in non-interactive shells. Fix by using the absolute path:
+
+```bash
+# Find the path
+which codex
+
+# Edit ~/.claude.json — replace "command": "codex" with the absolute path
+```
 
 ## Installation
 
@@ -166,7 +185,7 @@ Reads the brief and performs first-principles analysis. Classifies every constra
 
 **Gate:** `.pipeline/design.md` must exist
 **Writes:** `.pipeline/design.approved` (on loop exit)
-**Models:** Opus (strategic critique) + Codex via OpenAI MCP (code-grounded critique)
+**Models:** Opus (strategic critique) + Codex via Codex MCP (code-grounded critique)
 **Tools used:** Context7, filesystem
 
 Dispatches Opus and Codex in parallel. Each critiques the design from a different angle. Lead Opus deduplicates findings, fact-checks each against the actual codebase, runs cost/benefit analysis, and outputs a structured report. Loop continues until no remaining findings warrant mitigation.
@@ -195,7 +214,7 @@ Transforms the approved design into an execution document precise enough that bu
 
 **Gate:** `.pipeline/plan.md` must exist
 **Writes:** nothing (report only)
-**Models:** Sonnet (agent 1) + Codex via OpenAI MCP (agent 2) + Opus (lead)
+**Models:** Sonnet (agent 1) + Codex via Codex MCP (agent 2) + Opus (lead)
 
 Two agents independently extract claims from a source-of-truth document and verify each against a target. Lead reconciles conflicts and mitigates drift.
 
@@ -457,11 +476,11 @@ You tried to run `/plan` without going through `/review`. Run `/review` and iter
 3. Check that `hooks/pipeline_gate.sh` is executable: `ls -la ~/claude-agents-custom/hooks/`
 4. Check `hooks/hooks.json` is valid: `python3 -m json.tool ~/claude-agents-custom/hooks/hooks.json`
 
-### OpenAI MCP tools not appearing
+### Codex MCP not connecting
 
-1. Verify your `OPENAI_API_KEY` is set correctly in the MCP server config.
+1. Run `which codex` — if not found, install with `npm install -g @openai/codex`.
 2. Run `claude` and check the startup output for MCP connection errors.
-3. Try: `npx -y @openai/mcp-server` directly to verify the package installs and starts.
+3. If installed via nvm, replace `"command": "codex"` with the absolute path in `~/.claude.json` (see [Codex MCP setup](#codex-mcp-setup)).
 
 ### Resetting pipeline state
 
