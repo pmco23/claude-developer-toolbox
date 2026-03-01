@@ -20,7 +20,7 @@ process.stdin.on('end', () => {
 
     // Context window display (scaled: 80% real usage = 100% displayed)
     let ctx = '';
-    if (remaining != null) {
+    if (remaining != null && !isNaN(remaining)) {
       const rem = Math.round(remaining);
       const rawUsed = Math.max(0, Math.min(100, 100 - rem));
       const used = Math.min(100, Math.round((rawUsed / 80) * 100));
