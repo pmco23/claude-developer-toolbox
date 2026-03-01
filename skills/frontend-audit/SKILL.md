@@ -23,6 +23,10 @@ Record the style rules you will audit against. Present them to the user: "Auditi
 
 ### Step 2: Audit with LSP if available
 
+**Announce quality tier before proceeding:**
+- If `typescript_lsp` is available: output `🟢 TypeScript LSP active — type errors and unused-variable diagnostics are authoritative.`
+- If not available: output `🟡 No TypeScript LSP detected — findings are heuristic. Install typescript-lsp for authoritative results (see README Language Support Matrix).`
+
 If `typescript_lsp` tool is available:
 - Get all type errors and warnings
 - Get all unused variable diagnostics

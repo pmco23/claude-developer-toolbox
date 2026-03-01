@@ -25,6 +25,14 @@ Present the rules you will audit against before starting.
 
 ### Step 2: Language-specific LSP audit
 
+**Announce quality tier before proceeding.** Check which LSP tools are available for the detected language:
+- Go + `go_lsp`: output `🟢 Go LSP active — unused import and diagnostic findings are authoritative.`
+- Python + `python_lsp`: output `🟢 Python LSP active — unused import findings are authoritative.`
+- TypeScript + `typescript_lsp`: output `🟢 TypeScript LSP active — type error findings are authoritative.`
+- C# + `csharp_lsp`: output `🟢 C# LSP active — nullable and unused-using findings are authoritative.`
+- No LSP for detected language: output `🟡 No LSP detected for [language] — findings are heuristic. Install the language LSP for authoritative results (see README Language Support Matrix).`
+
+
 **Go (if go_lsp available):**
 - Unused variables and imports
 - Error return values ignored (check for `_ = err`)

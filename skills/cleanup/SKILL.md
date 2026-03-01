@@ -17,6 +17,10 @@ Read `.pipeline/brief.md` to find the primary language. Check which LSP tools ar
 
 ### Step 2: Find dead code
 
+**Announce quality tier before proceeding:**
+- If LSP is available: output `🟢 LSP active — dead code findings are authoritative.`
+- If LSP is not available: output `🟡 No LSP detected — findings are heuristic (grep-pattern). Install the language LSP for authoritative results (see README Language Support Matrix).`
+
 **If LSP is available** for the project language, use it:
 - Request all unused symbol diagnostics
 - Request all unreachable code diagnostics
