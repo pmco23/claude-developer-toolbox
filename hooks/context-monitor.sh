@@ -11,6 +11,8 @@ _json_stdin_field() {
     jq -r ".${field} // empty" 2>/dev/null || true
   elif command -v python3 >/dev/null 2>&1; then
     python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('${field}',''))" 2>/dev/null || true
+  else
+    echo "context-monitor: jq and python3 unavailable, context monitoring disabled" >&2
   fi
 }
 
