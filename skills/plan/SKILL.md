@@ -34,7 +34,9 @@ Call `mcp__repomix__pack_codebase` with:
 - `compress`: `false`
 - `topFilesLength`: 20
 
-Use the returned file tree and top-files list to:
+If the call fails, fall back to listing the root directory and reading the primary language config file (`package.json`, `go.mod`, `requirements.txt`, `*.csproj`).
+
+Use the returned pack content (directory structure and top-files summary) to:
 - Confirm actual directory names and naming conventions (kebab-case vs snake_case, flat vs nested)
 - Correct any file paths in the design that don't match the real layout
 - Ensure new files are placed in existing directories where possible
