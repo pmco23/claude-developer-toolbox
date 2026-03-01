@@ -44,6 +44,8 @@ Return a structured list: claim_id, claim, status (EXISTS/MISSING/PARTIAL/CONTRA
 
 **Agent 2 — Codex Verifier (via Codex MCP)**
 
+**If `mcp__codex__codex` is unavailable** (Codex MCP not connected), dispatch Agent 2 as a Sonnet subagent via the Task tool using the same prompt. Note in the drift report header: "Codex MCP unavailable — Agent 2 ran as Sonnet subagent."
+
 Call `mcp__codex__codex` directly (do not dispatch a subagent) with:
 - `prompt`: the verbatim text inside the fenced code block under "Agent 1 — Sonnet Verifier" above, with `[source document path]` replaced by the source path and `[target path or current working directory]` replaced by the target identified in Step 1
 - `approval_policy`: `"never"`
