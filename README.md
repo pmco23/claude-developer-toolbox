@@ -88,6 +88,28 @@ which codex
 # Edit ~/.claude.json — replace "command": "codex" with the absolute path
 ```
 
+## Statusline Setup
+
+The statusline hook shows model, current task, pipeline phase, directory, and context usage in the Claude Code status bar.
+
+Add this to `~/.claude/settings.json` (one-time global setup):
+
+```json
+"statusline": {
+  "command": "node ~/claude-agents-custom/hooks/statusline.js"
+}
+```
+
+Restart Claude Code. The statusline will appear immediately.
+
+**Example output:**
+
+```
+claude-sonnet-4-6 │ Implementing auth │ plan ready │ my-project ████░░░░░░ 42%
+```
+
+The context bar turns yellow above 63%, orange above 81%, and red-blinking with 💀 above 95%. A PostToolUse hook also injects context warnings directly into Claude's context when thresholds are exceeded.
+
 ## Installation
 
 ### Step 1: Add the development marketplace
