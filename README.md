@@ -61,7 +61,7 @@ MCP registration is handled automatically by the plugin. You only need to instal
 npm install -g @openai/codex
 ```
 
-### Troubleshooting — server not connecting
+### Troubleshooting — Codex server not connecting
 
 If Codex was installed via nvm, the `codex` binary may not be on PATH in non-interactive shells. Fix by using the absolute path:
 
@@ -83,7 +83,7 @@ MCP registration is handled automatically by the plugin. You only need to instal
 npm install -g repomix
 ```
 
-### Troubleshooting — server not connecting
+### Troubleshooting — Repomix server not connecting
 
 If Repomix was installed via nvm, the `repomix` binary may not be on PATH in non-interactive shells. Fix by using the absolute path:
 
