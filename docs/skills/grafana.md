@@ -2,7 +2,7 @@
 
 **Gate:** None (always available — requires Grafana MCP)
 **Writes:** nothing
-**Model:** inherits from calling context
+**Model:** Sonnet (`claude-sonnet-4-6`)
 
 Accepts a free-text observability task and works through it using a ReAct loop (Reason → Act → Observe → Decide). Knows its full tool catalogue upfront: dashboards, Prometheus/Loki querying, alerting, Sift investigations, log search, deeplink generation, and panel rendering. Handles both single-step queries and multi-hop investigations.
 

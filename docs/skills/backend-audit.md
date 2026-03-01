@@ -2,7 +2,7 @@
 
 **Gate:** `.pipeline/build.complete` must exist
 **Writes:** nothing
-**Model:** inherits from calling context
+**Model:** Sonnet (`claude-sonnet-4-6`)
 
 Backend style audit covering Go, Python, C#, and TypeScript. Run standalone or as part of `/qa`.
 

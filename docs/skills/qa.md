@@ -1,6 +1,7 @@
 # /qa — Post-Build QA Pipeline
 
 **Gate:** `.pipeline/build.complete` must exist
+**Model:** Sonnet (`claude-sonnet-4-6`)
 **Flags:** `--parallel` | `--sequential`
 
 ## Usage

@@ -2,7 +2,7 @@
 
 **Gate:** None (always available)
 **Writes:** nothing
-**Model:** inherits from calling context
+**Model:** Sonnet (`claude-sonnet-4-6`)
 
 Enforces correct branching, commit message format, and safety checks before any significant git operation. Detects whether the project is code (trunk-based) or infrastructure (three-environment) and loads the appropriate workflow reference.
 

@@ -2,7 +2,7 @@
 
 **Gate:** `.pipeline/build.complete` must exist
 **Writes:** nothing
-**Model:** inherits from calling context
+**Model:** Sonnet (`claude-sonnet-4-6`)
 
 Frontend style audit covering TypeScript/JS/CSS. Run standalone or as part of `/qa`.
 

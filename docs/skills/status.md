@@ -2,7 +2,7 @@
 
 **Gate:** None (always available)
 **Writes:** nothing
-**Model:** inherits from calling context
+**Model:** Haiku (`claude-haiku-4-5`)
 
 Reports the current pipeline phase based on which `.pipeline/` artifacts exist, including file age for each artifact and Repomix pack stats. Run at any point to know where you are and what to run next.
 

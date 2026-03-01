@@ -2,7 +2,7 @@
 
 **Gate:** None (always available — requires Repomix MCP)
 **Writes:** `.pipeline/repomix-pack.json`
-**Model:** inherits from calling context
+**Model:** Haiku (`claude-haiku-4-5`)
 
 Packs the local codebase using Repomix MCP and stores the outputId in `.pipeline/repomix-pack.json`. Run before `/qa` to share one compressed pack across all five audit agents (significant token reduction via Tree-sitter compression — ratio reported after each pack). `/qa` automatically uses the stored pack if it is less than 1 hour old.
 
