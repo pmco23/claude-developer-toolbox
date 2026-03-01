@@ -7,15 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-03-01
+
 ### Added
 
+- `/grafana` skill — Grafana SRE toolbox with ReAct loop for dashboards, Prometheus/Loki queries, alerting, Sift, log search, and panel rendering
+- `mcp-grafana` bundled MCP server — registration automatic on plugin install; requires `uv`/`uvx` and `GRAFANA_URL`/`GRAFANA_SERVICE_ACCOUNT_TOKEN`
 - `/status` now shows file age for all 5 pipeline artifacts and a `repomix-pack` row with token stats and staleness indicator (⚠ when ≥ 1 hour old)
 - `plugin.json` declares `codex` and `repomix` as bundled MCP servers — registration is automatic on plugin install
+- `docs/guides/` — mcp-setup, installation, walkthrough, troubleshooting
+- `docs/skills/` — reference pages for all 19 skills
 
 ### Fixed
 
 - `pipeline_gate.sh` and `context-monitor.sh` portability: jq-first JSON parsing with python3 fallback and explicit stderr warning when neither is available
 - README Codex and Repomix MCP setup sections simplified — manual `claude mcp add` step removed
+
+### Changed
+
+- README slimmed from ~640 lines to ~100 lines — all detail moved to `docs/guides/` and `docs/skills/`
 
 ## [1.3.0] - 2026-03-01
 
