@@ -20,7 +20,7 @@ Find all documentation files:
 - `CHANGELOG.md` or `RELEASE-NOTES.md`
 - Any generated documentation configs
 
-### Step 2: Check README accuracy
+### Step 2: Check README accuracy *(model-judgment — findings are heuristic)*
 
 For each claim in the README:
 - Installation steps — do they still work with the current dependency list?
@@ -30,7 +30,7 @@ For each claim in the README:
 
 Flag anything that references a renamed, removed, or changed interface.
 
-### Step 3: Check API doc accuracy
+### Step 3: Check API doc accuracy *(model-judgment — findings are heuristic)*
 
 For each documented endpoint or public function:
 - Does it still exist?
@@ -38,15 +38,23 @@ For each documented endpoint or public function:
 - Do the return types/shapes match?
 - Are new public interfaces missing from docs entirely?
 
-### Step 4: Check CHANGELOG
+### Step 4: Check CHANGELOG *(deterministic)*
 
-Read `.pipeline/plan.md` if it exists to identify the feature name and scope of what was built in this session.
+Read `CHANGELOG.md`. Apply these checks in order:
 
-Check `CHANGELOG.md`:
-- Is there an `## [Unreleased]` section?
-- Does it contain entries that correspond to the feature described in the plan (matching the plan's feature name or the types of changes made)?
-- If no matching entry: flag as `CHANGELOG MISSING — no entry for [feature name] build. Add entries under ## [Unreleased] following Keep a Changelog format (Added / Changed / Fixed / Removed).`
-- If `.pipeline/plan.md` does not exist (standalone run): check only that `## [Unreleased]` has any content; flag if it is empty.
+**Check 4a — Format compliance:**
+- `## [Unreleased]` section must exist. If missing: flag `CHANGELOG [MISSING] — no ## [Unreleased] section. Required by Keep a Changelog format.`
+- Entries under `## [Unreleased]` must use Keep a Changelog subsections: `### Added`, `### Changed`, `### Fixed`, `### Removed`, `### Deprecated`, `### Security`. If free-form prose is used instead: flag `CHANGELOG [FORMAT] — entries must use Keep a Changelog subsections (Added/Changed/Fixed/Removed).`
+
+**Check 4b — Feature coverage (if plan exists):**
+Read `.pipeline/plan.md` if it exists to identify the feature name and scope of what was built.
+- Does `## [Unreleased]` contain at least one entry that corresponds to the feature described in the plan?
+- Match by: feature name, key file names, or type of change (e.g., if plan adds an endpoint, look for a `### Added` entry mentioning that endpoint).
+- If no matching entry: flag `CHANGELOG [MISSING] — no entry for "[feature name]" build. Add entries under ## [Unreleased] following the Added/Changed/Fixed/Removed format.`
+- If `.pipeline/plan.md` does not exist (standalone run): check only 4a.
+
+**Check 4c — Entry quality:**
+For each entry under `## [Unreleased]`, verify it is a complete sentence describing a user-visible change, not a commit message or file path. If entries are commit-message style (e.g., "fix: null check"): flag `CHANGELOG [STYLE] — entries should be user-facing descriptions, not commit messages (e.g., "Fixed null pointer crash in UserCard" not "fix: null check").`
 
 ### Step 5: Report findings
 
