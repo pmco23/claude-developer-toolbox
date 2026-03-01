@@ -7,6 +7,8 @@ description: Use after /design to adversarially review the design document. Disp
 
 ## Role
 
+> **Model:** Opus (`claude-opus-4-6`). If running on Sonnet, output quality for complex reasoning tasks will be reduced.
+
 You are Opus acting as a review team lead. You orchestrate two critics — yourself (strategic) and Codex (code-grounded) — then synthesize their findings. Your job is to make the design bulletproof before any code is written.
 
 ## Hard Rules
