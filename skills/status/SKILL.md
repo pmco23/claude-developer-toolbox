@@ -15,9 +15,9 @@ You are reporting the current pipeline phase to the user. Read the `.pipeline/` 
 
 Walk up from the current working directory looking for a `.pipeline/` directory. If none found, report "No pipeline active in this directory tree."
 
-### Step 2: Check artifacts
+### Step 2: Check artifacts and ages
 
-For each artifact, check whether it exists:
+For each of the 5 pipeline artifacts, check whether it exists and, if so, read its **file modification time** to compute age from now:
 
 | Artifact | Skill that writes it |
 |----------|---------------------|
@@ -26,6 +26,16 @@ For each artifact, check whether it exists:
 | `.pipeline/design.approved` | `/review` |
 | `.pipeline/plan.md` | `/plan` |
 | `.pipeline/build.complete` | `/build` |
+
+Also check `.pipeline/repomix-pack.json`. If it exists, read the `packedAt` field (ISO timestamp) to compute age from now.
+
+**Age format:**
+
+| Duration | Format | Example |
+|----------|--------|---------|
+| < 1 hour | `Nm old` | `23m old` |
+| < 1 day | `Nh Nm old` | `2h 14m old` |
+| ≥ 1 day | `Nd Hh old` | `3d 2h old` |
 
 ### Step 3: Determine current phase
 
@@ -43,14 +53,20 @@ For each artifact, check whether it exists:
 ```
 Pipeline status: [phase name]
 
-  brief.md         [✓ exists | ✗ missing]
-  design.md        [✓ exists | ✗ missing]
-  design.approved  [✓ exists | ✗ missing]
-  plan.md          [✓ exists | ✗ missing]
-  build.complete   [✓ exists | ✗ missing]
+  brief.md         [✓ <age> | ✗ missing]
+  design.md        [✓ <age> | ✗ missing]
+  design.approved  [✓ <age> | ✗ missing]
+  plan.md          [✓ <age> | ✗ missing]
+  build.complete   [✓ <age> | ✗ missing]
+  repomix-pack     [see rules below]
 
 Next: [next step]
 ```
+
+**repomix-pack row rules:**
+- Age < 1 hour: `✓ <age> — <fileCount> files, <tokensAfter> tokens`
+- Age ≥ 1 hour: `⚠ <age> — <fileCount> files, <tokensAfter> tokens (stale — run /pack to refresh)`
+- File absent: `✗ missing`
 
 ## Output
 
