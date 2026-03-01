@@ -51,7 +51,7 @@ Read `.pipeline/plan.md` if it exists to identify the feature name and scope of 
 - Does `## [Unreleased]` contain at least one entry that corresponds to the feature described in the plan?
 - Match by: feature name, key file names, or type of change (e.g., if plan adds an endpoint, look for a `### Added` entry mentioning that endpoint).
 - If no matching entry: flag `CHANGELOG [MISSING] — no entry for "[feature name]" build. Add entries under ## [Unreleased] following the Added/Changed/Fixed/Removed format.`
-- If `.pipeline/plan.md` does not exist (standalone run): check only 4a.
+- If `.pipeline/plan.md` does not exist (standalone run): skip this check (4b only). Check 4a still applies.
 
 **Check 4c — Entry quality:**
 For each entry under `## [Unreleased]`, verify it is a complete sentence describing a user-visible change, not a commit message or file path. If entries are commit-message style (e.g., "fix: null check"): flag `CHANGELOG [STYLE] — entries should be user-facing descriptions, not commit messages (e.g., "Fixed null pointer crash in UserCard" not "fix: null check").`
@@ -62,6 +62,8 @@ Format:
 ```
 [file:section] STALE — [what's wrong]
 [file] MISSING — [what's not documented]
+[file] FORMAT — [what structural rule was violated]
+[file] STYLE — [what style convention was violated]
 ```
 
 If no findings: "Documentation audit complete — all docs reflect current implementation."
