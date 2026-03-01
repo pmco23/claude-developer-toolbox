@@ -55,13 +55,13 @@ LSP tools degrade gracefully — absent means reduced precision, not failure.
 
 MCP registration is handled automatically by the plugin. You only need to install the binary.
 
-**Install Codex CLI**
+### Install Codex CLI
 
 ```bash
 npm install -g @openai/codex
 ```
 
-**Troubleshooting — server not connecting**
+### Troubleshooting — server not connecting
 
 If Codex was installed via nvm, the `codex` binary may not be on PATH in non-interactive shells. Fix by using the absolute path:
 
