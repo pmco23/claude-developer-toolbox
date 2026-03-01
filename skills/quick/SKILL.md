@@ -68,7 +68,7 @@ Run lightweight checks on touched files only — not the full QA pipeline:
 
 **LSP diagnostics (if available):**
 - Request diagnostics for each modified file
-- Report any errors or warnings introduced by the change (not pre-existing ones)
+- Report all errors and warnings found — note that pre-existing issues unrelated to this change may also appear
 
 **Security spot-check (changed code only):**
 - Hardcoded secrets, API keys, or credentials introduced
