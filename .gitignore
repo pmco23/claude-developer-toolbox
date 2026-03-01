@@ -1,0 +1,10 @@
+# Pipeline artifacts — not committed by default (see README)
+.pipeline/
+
+# Node.js
+node_modules/
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
