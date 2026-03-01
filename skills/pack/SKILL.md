@@ -7,7 +7,7 @@ description: Pack the local codebase using Repomix MCP and store the outputId in
 
 ## Role
 
-Pack the current project into a compressed Repomix snapshot. The outputId is stored in `.pipeline/repomix-pack.json` and shared with `/qa` agents so all five audits read from one pack instead of independently discovering files (~70% token reduction via Tree-sitter compression).
+Pack the current project into a compressed Repomix snapshot. The outputId is stored in `.pipeline/repomix-pack.json` and shared with `/qa` agents so all five audits read from one pack instead of independently discovering files (significant token reduction via Tree-sitter compression — actual ratio reported in Step 4).
 
 ## Process
 

@@ -97,7 +97,7 @@ After presenting the consolidated report, append an Overall QA Verdict:
 
 ### Sequential Mode
 
-Run in order, presenting each result before proceeding. When invoking each skill, share the Repomix outputId acquired in the preamble as context so each skill can use Repomix for file discovery:
+Run in order, presenting each result before proceeding. When invoking each skill, prepend this to the invocation: "Repomix outputId: <outputId> — use mcp__repomix__grep_repomix_output for file discovery and mcp__repomix__read_repomix_output for file contents." If no outputId was acquired in the preamble, omit this instruction:
 
 1. Invoke the `cleanup` skill — present findings — ask "Continue to /frontend-audit? (yes / fix first)"
 2. Invoke the `frontend-audit` skill — present findings — ask "Continue to /backend-audit? (yes / fix first)"

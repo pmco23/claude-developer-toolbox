@@ -18,6 +18,8 @@ If a Repomix outputId is provided in the context (injected by `/qa`), use Repomi
 
 Fall back to native Glob/Read/Grep only if no outputId is available.
 
+Note: Use Repomix tools for discovery and reading content only. File modifications (Step 4) must use native Edit/Write tools on the live files.
+
 ## Process
 
 ### Step 1: Identify project language
