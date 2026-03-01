@@ -446,7 +446,7 @@ Next: Run /build
 **Writes:** `.pipeline/repomix-pack.json`
 **Model:** inherits from calling context
 
-Packs the local codebase using Repomix MCP and stores the outputId in `.pipeline/repomix-pack.json`. Run before `/qa` to share one compressed pack across all five audit agents (~70% token reduction via Tree-sitter compression). `/qa` automatically uses the stored pack if it is less than 1 hour old.
+Packs the local codebase using Repomix MCP and stores the outputId in `.pipeline/repomix-pack.json`. Run before `/qa` to share one compressed pack across all five audit agents (significant token reduction via Tree-sitter compression — ratio reported after each pack). `/qa` automatically uses the stored pack if it is less than 1 hour old.
 
 ```
 /pack              # pack current working directory
@@ -581,7 +581,7 @@ Run `hooks/test_gate.sh` to confirm all pipeline gate rules are working correctl
 bash ~/claude-agents-custom/hooks/test_gate.sh
 ```
 
-Expected: `Results: 49 passed, 0 failed`
+Expected: `Results: 44 passed, 0 failed`
 
 ---
 
