@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `docs/guides/workflows.md` — Fast Track vs Pipeline decision guide; explains named workflow paths, always-available skills (including `/drift-check`), and how agents work (internal, not user-invocable)
+- `agents/strategic-critic.md` — named Opus agent for `/review` Agent 1; `model: opus` is now enforced at runtime, not advisory
+- `agents/drift-verifier.md` — named Sonnet agent for `/drift-check` Agent 1; `model: sonnet` enforced at runtime
+- `agents/task-builder.md` — named Sonnet agent for `/build` task group execution; tools restricted to implementation tools only (no Agent)
+
+### Changed
+
+- `/brief` Step 1: `pack_codebase` call changed from `compress: false` to `compress: true` — brief only needs file-tree orientation and top-file names, not full uncompressed content; reduces token cost on large codebases
+- `/cleanup` Step 1: added four-stage language detection with fallback — reads `.pipeline/brief.md` first; if absent, checks root-level config files (`package.json`, `go.mod`, `pyproject.toml`, etc.); then LSP tool availability as a hint; announces "language unknown" as a last resort so the skill remains usable standalone
+- `/git-workflow` Step 1: replaced single-tier "any file anywhere" detection with two-tier detection — Tier 1 checks root-level language config files (`package.json`, `go.mod`, etc.) and root-level infra config (`*.tf`, `Chart.yaml`, etc.) for a definitive answer before falling back to repo-wide heuristic scan; eliminates false-positive "ambiguous" prompts on monorepos that have an IaC subdirectory alongside application code
+- `/quick` Step 5: removed dead "invoke git-workflow" instruction (nested skill invocation doesn't work and git-workflow is not required for routine commits); replaced with a user-facing reminder in the Step 6 report scoped to when git-workflow actually applies (branch creation, first push, PR)
+- `/build` Step 4: updated stale "Re-dispatch that task group's Sonnet agent" to "Re-invoke the `task-builder` agent"
+- `/review` Agent 1 dispatch: replaced inline Task tool prompt with `strategic-critic` agent invocation
+- `/drift-check` Agent 1 dispatch: replaced inline Task tool prompt with `drift-verifier` agent invocation; Codex (Agent 2) call now inlines its prompt directly instead of referencing Agent 1 block
+- `/build` parallel and sequential modes: replaced Task tool builder dispatch with `task-builder` agent invocations
+- `/status` cold-start output: when no pipeline is active, now shows named workflow paths (Fast Track / Pipeline), always-available skills, and a link to `workflows.md` — replaces bare "No pipeline active in this directory tree" message
+- `/status` frontmatter description updated to reflect the new cold-start guidance behavior
+- `docs/skills/status.md`: description updated; two example blocks added (cold-start and mid-task)
+- `README.md`: Workflows guide added as first entry in the Guides table
+
+### Fixed
+
+- `session_start_check.sh` episodic search query changed from generic `"recent work"` to `"$(basename "$PWD")"` — project-scoped query returns relevant results instead of noise across all projects
+- `session_start_check.sh` episodic output filtering replaced negative grep (fragile, breaks on new CLI progress lines) with positive grep matching only result headers and snippet lines — resilient to episodic-memory CLI output format changes; sed extended to handle decimal match percentages
+- `/review` Codex unavailability fallback: removed stale "Agent 2 prompt below" reference (prompt lives in the Step 2 Codex block); fallback now dispatches a Task tool agent using the same code-grounded Codex prompt with an independent subagent context; note updated from "both critics are Opus instances" (wrong) to "Agent 2 ran as Sonnet subagent (code-grounded critique)"
+- `/drift-check` Codex unavailability fallback: replaced "invoke drift-verifier again" (identical second run adds tokens without independent perspective) with a structural path/symbol verification agent — complement to drift-verifier's semantic claim analysis
+- `/init` now generates `.gitignore` with `.pipeline/` entry (or appends to existing); prevents users from accidentally committing pipeline artifacts to version control
+- `/design` Step 1: added `pack_codebase` call (`compress: true`, `topFilesLength: 20`) for existing codebases — architect now has the same codebase grounding as the requirements analyst (`/brief`) and planner (`/plan`)
+- `approval_policy` → `approval-policy` in `/review` and `/drift-check` Codex MCP calls — incorrect parameter name caused the approval policy to be silently ignored
+- Shell injection in `session_start_check.sh` — `$NEW_BLOCK` content (from episodic search results) was interpolated directly into a `python3 -c` string; replaced with tmpfile + heredoc approach
+- `session_start_check.sh` episodic memory sync now runs with `timeout 5s` to prevent blocking session start on slow or large histories
+- README stale `/grafana` skill reference removed (skill was moved to `claude-sre-custom` in v1.6.0)
+- README MCP Setup guide description updated from "Codex, Repomix, and Grafana MCP configuration" to "Codex and Repomix MCP configuration"
+- `docs/guides/mcp-setup.md` stale Grafana MCP section removed; opening line updated from "all three servers" to "both servers"
+- `docs/skills/git-workflow.md` stale "referenced in /build and /quick" note replaced — neither skill invokes /git-workflow automatically any more; note now accurately describes the manual invocation trigger points
+- `docs/skills/init.md` updated — `.gitignore` added to Writes list and Generated files table
+- `docs/skills/design.md` Tools used updated — Repomix added (pack_codebase call added in this release)
+- `docs/guides/agents-vs-skills.md` skill count updated from 16 to 18; `/pack` and `/plugin-architecture` rows added to the evaluation table
+
 ## [1.6.0] - 2026-03-02
 
 ### Removed
