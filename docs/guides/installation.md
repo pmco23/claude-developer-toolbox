@@ -4,7 +4,7 @@
 
 ```bash
 claude
-/plugin marketplace add ~/claude-agents-custom
+/plugin marketplace add ~/claude-developer-toolbox
 ```
 
 ## Step 2: Install the plugin
@@ -34,11 +34,11 @@ Add this to `~/.claude/settings.json` (one-time global setup):
 
 ```json
 "statusline": {
-  "command": "node ~/claude-agents-custom/hooks/statusline.js"
+  "command": "node ~/claude-developer-toolbox/hooks/statusline.js"
 }
 ```
 
-> **Note:** Replace `~/claude-agents-custom` with your actual install path. Run `/plugin list` in a Claude Code session to see the installed path.
+> **Note:** Replace `~/claude-developer-toolbox` with your actual install path. Run `/plugin list` in a Claude Code session to see the installed path.
 
 Restart Claude Code. The statusline will appear immediately.
 

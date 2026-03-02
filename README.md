@@ -55,7 +55,7 @@ LSP tools degrade gracefully — absent means reduced precision, not failure.
 
 ```bash
 claude
-/plugin marketplace add ~/claude-agents-custom
+/plugin marketplace add ~/claude-developer-toolbox
 /plugin install claude-developer-toolbox@local-dev
 ```
 

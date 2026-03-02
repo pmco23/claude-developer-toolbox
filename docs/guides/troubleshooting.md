@@ -12,8 +12,8 @@ You tried to run `/plan` without going through `/review`. Run `/review` and iter
 
 1. Verify the plugin is installed: in Claude Code, run `/plugin list` and confirm `claude-developer-toolbox@local-dev` appears.
 2. Restart Claude Code — hooks are loaded at startup.
-3. Check that `hooks/pipeline_gate.sh` is executable: `ls -la ~/claude-agents-custom/hooks/`
-4. Check `hooks/hooks.json` is valid: `python3 -m json.tool ~/claude-agents-custom/hooks/hooks.json`
+3. Check that `hooks/pipeline_gate.sh` is executable: `ls -la ~/claude-developer-toolbox/hooks/`
+4. Check `hooks/hooks.json` is valid: `python3 -m json.tool ~/claude-developer-toolbox/hooks/hooks.json`
 
 ## Codex MCP not connecting
 
@@ -35,7 +35,7 @@ rm -rf .pipeline/
 Run `hooks/test_gate.sh` to confirm all pipeline gate rules are working correctly:
 
 ```bash
-bash ~/claude-agents-custom/hooks/test_gate.sh
+bash ~/claude-developer-toolbox/hooks/test_gate.sh
 ```
 
 Expected: `Results: 49 passed, 0 failed`
