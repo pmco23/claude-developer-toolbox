@@ -33,7 +33,7 @@ Choose a workflow:
 Always available (no pipeline required):
   /init          scaffold README, CHANGELOG, CONTRIBUTING, .gitignore
   /git-workflow  before branch creation, first push, PR, destructive ops
-  /pack          Repomix snapshot — run before /qa for token efficiency
+  /pack          Repomix snapshot — run before /qa or /quick --deep
   /status        this report
 
 See docs/guides/workflows.md for the full decision guide.
