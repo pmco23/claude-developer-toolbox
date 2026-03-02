@@ -32,7 +32,7 @@ Two workflow paths are available. Everything else in the plugin supports one of 
 - Invoke the full QA pipeline
 - Refactor surrounding code unless asked
 
-**When to NOT use Fast Track:**
+**When NOT to use Fast Track:**
 - The change requires a design decision with non-obvious trade-offs
 - Multiple systems are affected
 - The change is large enough that a plan would prevent rework
@@ -61,7 +61,7 @@ A quality-gated sequence. Each phase writes an artifact. The gate hook blocks fo
 | `/review` | `design.approved` | Adversarial findings addressed; design hardened before any code |
 | `/plan` | `plan.md` | Exact file paths, code patterns, test cases, acceptance criteria per task group |
 | `/build` | `build.complete` | Implementation complete and drift-verified against the plan |
-| `/qa` | (none) | Dead code, frontend/backend/doc/security audits |
+| `/qa` | (none) | Dead code, frontend/backend/doc/security audits — run after `/build` completes; use `--parallel` for speed or `--sequential` for interactive mode |
 
 ### Resetting to a prior phase
 
@@ -95,6 +95,7 @@ These run independently of any pipeline state — no gate, no artifacts required
 | `/git-workflow` | Before branch creation, first push, PR open/merge, or destructive git op (force-push, reset --hard) |
 | `/pack` | Before `/qa` or `/quick --deep` to snapshot the codebase |
 | `/plugin-architecture` | When deciding whether to use a skill vs agent in a plugin you're building |
+| `/drift-check` | After `/build` — verify implementation matches the approved design; also run standalone at any time |
 | `/quick` | Fast-track implementation (see above) |
 
 ---
