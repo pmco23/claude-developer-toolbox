@@ -1,4 +1,4 @@
-# claude-agents-custom
+# claude-developer-toolbox
 
 A quality-gated development pipeline for Claude Code. Every transition between phases is enforced by a hook that blocks forward progress until the required artifact exists.
 
@@ -56,7 +56,7 @@ LSP tools degrade gracefully — absent means reduced precision, not failure.
 ```bash
 claude
 /plugin marketplace add ~/claude-agents-custom
-/plugin install claude-agents-custom@local-dev
+/plugin install claude-developer-toolbox@local-dev
 ```
 
 Restart Claude Code. Run `/brief` to verify. See the [full installation guide](docs/guides/installation.md) for statusline setup and verification steps.

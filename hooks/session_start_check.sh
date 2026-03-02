@@ -13,7 +13,7 @@ EPISODIC_CHECK=$(ls "$HOME/.claude/plugins/cache/superpowers-marketplace/episodi
 [ -n "$EPISODIC_CHECK" ] && [ -f "$EPISODIC_CHECK" ] || MISSING+=("episodic-memory plugin — required for session context injection (install via superpowers marketplace)")
 
 if [ ${#MISSING[@]} -gt 0 ]; then
-  echo "⚠ claude-agents-custom: missing tools detected:" >&2
+  echo "⚠ claude-developer-toolbox: missing tools detected:" >&2
   for item in "${MISSING[@]}"; do
     echo "    • $item" >&2
   done
@@ -26,7 +26,7 @@ fi
 EPISODIC_BIN=$(ls "$HOME/.claude/plugins/cache/superpowers-marketplace/episodic-memory/"*/cli/episodic-memory.js 2>/dev/null | sort -V | tail -1)
 
 if [ -z "$EPISODIC_BIN" ] || [ ! -f "$EPISODIC_BIN" ]; then
-  echo "⚠ claude-agents-custom: episodic-memory not found — skipping session context injection" >&2
+  echo "⚠ claude-developer-toolbox: episodic-memory not found — skipping session context injection" >&2
 else
   # Sync last session into index (silent)
   node "$EPISODIC_BIN" sync >/dev/null 2>&1

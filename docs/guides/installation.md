@@ -10,7 +10,7 @@ claude
 ## Step 2: Install the plugin
 
 ```
-/plugin install claude-agents-custom@local-dev
+/plugin install claude-developer-toolbox@local-dev
 ```
 
 ## Step 3: Restart Claude Code
@@ -53,7 +53,7 @@ The context bar turns yellow above 63%, orange above 81%, and red-blinking with 
 ## Reinstalling after changes
 
 ```bash
-/plugin uninstall claude-agents-custom@local-dev
-/plugin install claude-agents-custom@local-dev
+/plugin uninstall claude-developer-toolbox@local-dev
+/plugin install claude-developer-toolbox@local-dev
 # Restart Claude Code
 ```

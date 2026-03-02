@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Claude Code Statusline — claude-agents-custom edition
+// Claude Code Statusline — claude-developer-toolbox edition
 // Shows: model | current task | pipeline phase | directory | context usage
 // Adapted from https://github.com/gsd-build/get-shit-done/blob/main/hooks/gsd-statusline.js
 

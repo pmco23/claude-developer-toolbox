@@ -2,7 +2,7 @@
   "name": "local-dev",
   "plugins": [
     {
-      "name": "claude-agents-custom",
+      "name": "claude-developer-toolbox",
       "source": "./"
     }
   ]
