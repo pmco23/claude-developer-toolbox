@@ -9,7 +9,7 @@ A quality-gated development pipeline for Claude Code. Every transition between p
 ```
 idea
  ├─ /quick [--deep]          # fast track — no pipeline, no artifacts
- ├─ /git-workflow             # git discipline — always available, standalone or via /build and /quick
+ ├─ /git-workflow             # git discipline — always available, standalone
  ├─ /init                    # project boilerplate — README, CHANGELOG, CONTRIBUTING, PR template
  ├─ /status                  # inspect current pipeline phase — always available
  ├─ /pack [path]             # Repomix snapshot — run before /qa for token efficiency
