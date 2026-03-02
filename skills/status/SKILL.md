@@ -15,7 +15,7 @@ You are reporting the current pipeline phase to the user. Read the `.pipeline/` 
 
 ### Step 1: Find the pipeline directory
 
-Walk up from the current working directory looking for a `.pipeline/` directory. If none found, OR if found but contains no recognized artifacts (`brief.md`, `design.md`, `design.approved`, `plan.md`, `build.complete`), output the **cold-start report** (see Step 4) and stop — do not proceed to Steps 2–3.
+Walk up from the current working directory looking for a `.pipeline/` directory. If no `.pipeline/` directory is found, or if `.pipeline/` exists but none of the five pipeline artifacts (`brief.md`, `design.md`, `design.approved`, `plan.md`, `build.complete`) are present, output the **cold-start report** (see Step 4) and stop — do not proceed to Steps 2–3.
 
 ### Step 2: Check artifacts and ages
 
@@ -51,7 +51,7 @@ Also check `.pipeline/repomix-pack.json`. If it exists, read the `packedAt` fiel
 
 ### Step 4: Report
 
-### Cold-start report (no pipeline active)
+#### Cold-start report (no pipeline active)
 
 Output exactly:
 
@@ -74,13 +74,13 @@ Choose a workflow:
 Always available (no pipeline required):
   /init          scaffold README, CHANGELOG, CONTRIBUTING, .gitignore
   /git-workflow  before branch creation, first push, PR, destructive ops
-  /pack          Repomix snapshot — run before /qa for token efficiency
+  /pack          Repomix snapshot — run before /qa or /quick --deep
   /status        this report
 
 See docs/guides/workflows.md for the full decision guide.
 ```
 
-### Pipeline report (artifacts exist)
+#### Pipeline report (artifacts exist)
 
 ```
 Pipeline status: [phase name]
