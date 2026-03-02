@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `agents/drift-verifier.md` — named Sonnet agent for `/drift-check` Agent 1; `model: sonnet` enforced at runtime
 - `agents/task-builder.md` — named Sonnet agent for `/build` task group execution; tools restricted to implementation tools only (no Agent)
 
+### Removed
+
+- `docs/plans/` directory — all plans were completed historical artifacts; implemented state is recorded in CHANGELOG
+- `docs/skills/` directory — skill reference docs removed; skills are self-documenting via their SKILL.md files
+- `docs/guides/walkthrough.md` — content merged into `docs/guides/workflows.md`
+
 ### Changed
 
 - `/brief` Step 1: `pack_codebase` call changed from `compress: false` to `compress: true` — brief only needs file-tree orientation and top-file names, not full uncompressed content; reduces token cost on large codebases
@@ -28,6 +34,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/status` frontmatter description updated to reflect the new cold-start guidance behavior
 - `docs/skills/status.md`: description updated; two example blocks added (cold-start and mid-task)
 - `README.md`: Workflows guide added as first entry in the Guides table
+- `docs/guides/workflows.md` expanded to include all walkthrough content: `.pipeline/` directory reference, mode flags (`--parallel`/`--sequential`), language support matrix, and end-to-end example
+- `README.md` skills table: links to `docs/skills/` removed; skill names now plain text
+- `README.md` guides table: Walkthrough entry removed; Workflows description updated to reflect merged content
+- `README.md` pipeline diagram: `/git-workflow` comment corrected — no longer claims it is invoked by `/build` or `/quick`
+- `docs/guides/troubleshooting.md`: stale `walkthrough.md` reference updated to `workflows.md#resetting-to-a-prior-phase`
 
 ### Fixed
 
