@@ -4,7 +4,7 @@
 **Writes:** nothing
 **Model:** Haiku (`claude-haiku-4-5`)
 
-Reports the current pipeline phase based on which `.pipeline/` artifacts exist, including file age for each artifact and Repomix pack stats. Run at any point to know where you are and what to run next.
+Reports pipeline phase, artifact ages, and Repomix pack stats. When no pipeline is active, shows available workflow paths and always-available skills. Run at any point to know where you are and what to run next.
 
 ## Usage
 
@@ -12,7 +12,34 @@ Reports the current pipeline phase based on which `.pipeline/` artifacts exist, 
 /status
 ```
 
-## Example output
+## Cold-start output (no pipeline active)
+
+```
+No pipeline active.
+
+Choose a workflow:
+
+  Fast Track — small features, bug fixes, well-understood changes
+    /quick [--deep]         implement directly, no artifacts
+
+  Pipeline — new features, design-sensitive or complex changes
+    /brief                  crystallize requirements  →  .pipeline/brief.md
+      /design               first-principles design   →  .pipeline/design.md
+        /review             adversarial review        →  .pipeline/design.approved
+          /plan             atomic execution plan     →  .pipeline/plan.md
+            /build          coordinated build         →  .pipeline/build.complete
+              /qa           post-build audits
+
+Always available (no pipeline required):
+  /init          scaffold README, CHANGELOG, CONTRIBUTING, .gitignore
+  /git-workflow  before branch creation, first push, PR, destructive ops
+  /pack          Repomix snapshot — run before /qa for token efficiency
+  /status        this report
+
+See docs/guides/workflows.md for the full decision guide.
+```
+
+## Mid-task output (pipeline active)
 
 ```
 Pipeline status: Plan ready / build in progress
