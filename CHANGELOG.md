@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.1] - 2026-03-02
+
 ### Fixed
 
 - `episodic-memory` plugin requirement was undocumented — added to README Optional prerequisites table, added setup section to `docs/guides/mcp-setup.md`, and added graceful fallback note to `/brief` Step 0 and `/init` Step 0
