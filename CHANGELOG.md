@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SessionStart hook now syncs episodic memory and injects a "Recent Activity" block into `MEMORY.md` at the start of every session
+- `/brief` Step 0: searches past conversations for the stated feature/topic and displays results before Q&A
+- `/init` Step 0: searches past conversations for the project name and displays results before scaffolding
+
 ## [1.5.0] - 2026-03-01
 
 ### Added
