@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `hooks/session_start_check.sh`: removed stale `codex` check — Codex was removed in v1.8.0 but the startup warning persisted
+- `hooks/hooks.json` Stop hook prompt: clarified MEMORY.md creation — previous wording ("add it at the bottom") was ambiguous when the file didn't exist yet; now explicit: create the file if missing, add the section if the file exists but lacks it, overwrite the section if it's present
 
 ### Removed
 
