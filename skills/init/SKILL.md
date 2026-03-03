@@ -18,6 +18,7 @@ You are Sonnet acting as a project scaffolder. Extract as much context as possib
 3. **Placeholders are explicit.** Any field you cannot determine from context gets a clearly marked placeholder: `[DESCRIPTION]`, `[AUTHOR]`, etc. Never invent values.
 4. **Keep a Changelog format is non-negotiable** for CHANGELOG.md.
 5. **Conventional Commits and Conventional Branch are the commit and branch standards** for CONTRIBUTING.md.
+6. **Empty projects get asked, not assumed.** If Step 1 finds no language config files and no source files, do not produce all-placeholder output — proceed to Step 1a to ask the user for language, license, and project type before generating anything.
 
 ## Process
 
@@ -60,7 +61,9 @@ author:         [extracted or [AUTHOR]]
 today:          [YYYY-MM-DD]
 ```
 
-Announce what was detected before generating anything:
+**Empty project detection:** If `language` could not be determined (no config files found at root and no source files detected), the project is empty — skip the announcement below and proceed to **Step 1a** instead.
+
+Otherwise, announce what was detected before generating anything:
 ```
 Detected:
   Project: [name]
@@ -70,6 +73,77 @@ Detected:
   Repo: [url]
   Placeholders needed: [list any [PLACEHOLDER] fields]
 ```
+
+Then proceed to Step 2.
+
+### Step 1a: Gather context from user (empty project)
+
+Ask three questions in sequence — one per turn via AskUserQuestion.
+
+**Question 1 — Primary language:**
+
+Use AskUserQuestion with:
+  question: "What is the primary language for this project?"
+  header: "Language"
+  options:
+    - label: "TypeScript / Node.js"
+      description: "npm install, tsconfig.json, .js/.ts source files"
+    - label: "Go"
+      description: "go mod init, .go source files"
+    - label: "Python"
+      description: "pip / poetry / uv, .py source files"
+    - label: "Other"
+      description: "Rust, C#, Ruby, Java, or any other — specify in the text field"
+
+**Question 2 — License:**
+
+Use AskUserQuestion with:
+  question: "Which license for this project?"
+  header: "License"
+  options:
+    - label: "MIT"
+      description: "Permissive — use freely, attribution required"
+    - label: "Apache 2.0"
+      description: "Permissive — includes patent grant"
+    - label: "GPL-3.0"
+      description: "Copyleft — derivatives must also be open source"
+    - label: "Other / proprietary"
+      description: "Specify another SPDX identifier, or 'All rights reserved'"
+
+**Question 3 — Project type:**
+
+Use AskUserQuestion with:
+  question: "What kind of project is this?"
+  header: "Project type"
+  options:
+    - label: "CLI tool"
+      description: "Command-line application"
+    - label: "Web API / service"
+      description: "HTTP server, REST or GraphQL API"
+    - label: "Library / package"
+      description: "Reusable module to be published to a registry"
+    - label: "Other / custom"
+      description: "Describe it yourself in the text field"
+
+After all three answers, update the context object:
+- `language` → from Q1 answer (or user's free-form text if "Other")
+- `license` → from Q2 answer (or user's free-form text if "Other")
+- `description` → derived template: `"A [language] [project-type] for [DESCRIPTION]"` — if user selected "Other / custom", use their text verbatim or `[DESCRIPTION]` if blank
+- `project_name` → directory name (already set)
+- `author` → from `git config user.name` if available, otherwise `[AUTHOR]`
+
+Announce the gathered context before proceeding:
+```
+Context gathered:
+  Project:  [directory name]
+  Language: [from Q1]
+  License:  [from Q2]
+  Type:     [from Q3]
+  Author:   [from git config or [AUTHOR]]
+  Placeholders remaining: [description — fill in after generation]
+```
+
+Then proceed to Step 2.
 
 ### Step 2: Check existing files
 

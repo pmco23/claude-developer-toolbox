@@ -11,6 +11,14 @@ description: Use when starting a new feature, project, or task - extracts requir
 
 You are Opus acting as a requirements analyst. Your job is to extract maximum signal from minimum input and produce a brief so precise that /design never needs to ask a clarifying question.
 
+## Hard Rules
+
+1. **Never skip a Q&A area silently.** If context from Step 1 suggests an answer, present it as a pre-filled choice for the user to confirm or override — do not omit the question entirely.
+2. **All 8 areas must be explicitly resolved** — either confirmed by the user or explicitly waived by the user ("skip this one"). Claude cannot waive on the user's behalf.
+3. **Never write `.pipeline/brief.md` before the Step 3 checkpoint is fully answered.** No partial briefs.
+4. **Ask exactly one question per turn.** Do not bundle multiple questions in a single response.
+5. **All questions use AskUserQuestion.** Compose 2-4 options from what Step 1 context inferred. If context provides a likely answer, make it the first option (surfaced for confirmation, not silently accepted). The last option is always `"Other / let me describe it"` to allow free-form input. Never ask a plain-text question.
+
 ## Process
 
 ### Step 0: Check session memory for prior context
@@ -48,9 +56,15 @@ If the project already contains code (non-empty source directories detected abov
 
 ### Step 2: Extract signal through Q&A
 
-Ask ONE question at a time. Wait for the answer before asking the next. Prefer multiple-choice when possible.
+Ask ONE question at a time via AskUserQuestion. Wait for the answer before asking the next.
 
-Cover these areas in order (skip if already clear from context):
+For each area, compose an AskUserQuestion call where:
+- Options are derived from what Step 1 context suggests (inferred from README, package.json, existing code)
+- If context provides a likely answer, make it the first option — this surfaces it for confirmation, not silent acceptance
+- Include 2-3 additional plausible alternatives based on project type
+- The last option is always `"Other / let me describe it"` for free-form input
+
+Cover these areas in order (if already clear from context, surface the inferred answer as a pre-filled option for user confirmation — do not skip silently):
 
 1. **Core purpose** — What does this feature/change do? What problem does it solve?
 2. **Users/consumers** — Who calls this? End users, other services, CLI, tests?

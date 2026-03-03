@@ -11,6 +11,13 @@ description: Use before branch creation, first push to remote, opening or mergin
 
 You are enforcing git discipline before a significant git operation. Detect the project type, load the right workflow reference, verify all safety checks pass, then proceed. If any check fails, block or escalate — never silently skip a gate.
 
+## Hard Rules
+
+1. **One question per turn.** If both project type and operation parameters are ambiguous, resolve project type first. Never ask multiple clarifying questions in a single response.
+2. **All questions use AskUserQuestion.** Provide options covering the plausible choices; include `"Other / let me explain"` when the option space can't be fully enumerated. Never ask a plain-text question.
+3. **Never execute a git operation until all safety gate checks pass.** If any check fails, block and explain — do not proceed silently.
+4. **Destructive operations require explicit confirmation.** Force-push, `reset --hard`, and `branch -D` are never performed without an explicit user "proceed" response in the current turn. A previous approval in a different context does not carry over.
+
 ## Process
 
 ### Step 1: Detect project type
@@ -46,8 +53,17 @@ If only infra signals found → infra project.
 If only code signals found → code project.
 
 **If still ambiguous** (both tiers match both types, or neither tier found anything):
-- Ask the user: "Is this a code project (trunk-based: main only) or an infrastructure project (three-environment: development → preproduction → main)?"
-- Do not proceed until confirmed.
+
+Use AskUserQuestion with:
+  question: "Is this a code project or an infrastructure project?"
+  header: "Project type"
+  options:
+    - label: "Code project"
+      description: "Trunk-based: feature/fix branches, squash-merge to main"
+    - label: "Infrastructure project"
+      description: "Three-environment: development → preproduction → main promotion"
+
+Do not proceed until confirmed.
 
 ### Step 1.5: Identify the operation and gather parameters
 
@@ -64,7 +80,18 @@ Determine which operation the user is requesting from their invocation args or c
 | Destructive op (force-push, reset --hard, branch -D) | Specific target ref |
 
 If the operation is clear from the invocation: extract parameters silently and proceed.
-If the operation is ambiguous: ask one focused question before continuing.
+If the operation is ambiguous, use AskUserQuestion with:
+  question: "Which git operation are you performing?"
+  header: "Git operation"
+  options:
+    - label: "Branch creation"
+      description: "Create a new branch from current HEAD"
+    - label: "First push to remote"
+      description: "Push a local branch to the remote for the first time"
+    - label: "Open or merge a PR"
+      description: "Open a new PR or merge an existing one"
+    - label: "Destructive operation"
+      description: "Force-push, reset --hard, branch -D, or rebase on published commits"
 
 Record the operation type and parameters — Steps 3–4 apply the safety gate to this specific operation.
 

@@ -74,17 +74,24 @@ You should see the brief skill start a Q&A session. If the gate hook is active, 
 
 ## Statusline Setup
 
-The statusline hook shows model, current task, pipeline phase, directory, and context usage in the Claude Code status bar.
+The statusline shows model, current task, pipeline phase, directory, and context usage in the Claude Code status bar.
 
 Add this to `~/.claude/settings.json` (one-time global setup):
 
 ```json
-"statusline": {
-  "command": "node ~/claude-developer-toolbox/hooks/statusline.js"
+"statusLine": {
+  "type": "command",
+  "command": "node ~/.claude/statusline.js"
 }
 ```
 
-> **Note:** Replace `~/claude-developer-toolbox` with your actual install path. Run `/plugin list` in a Claude Code session to see the installed path.
+The `SessionStart` hook automatically creates and maintains a symlink at `~/.claude/statusline.js` pointing to the plugin's script. The symlink is updated on every session start, so it self-heals if the plugin is ever moved or reinstalled.
+
+To create the symlink immediately without waiting for the first session start, run once:
+
+```bash
+ln -sf /path/to/plugin/hooks/statusline.js ~/.claude/statusline.js
+```
 
 Restart Claude Code. The statusline will appear immediately.
 

@@ -29,7 +29,7 @@ Proceeding with /quick anyway.
 
 ### Step 2: Clarify if needed (max one question)
 
-If the task description is ambiguous about what to change or where, ask one focused question. If it is clear enough to start, skip this step entirely. Do not ask multiple questions.
+If the task description is ambiguous about what to change or where, use AskUserQuestion with options you derive from the task description — 2-4 options covering the plausible interpretations, plus `"Other / let me describe it"` as the last option. If it is clear enough to start, skip this step entirely. Do not ask multiple questions.
 
 ### Step 3: Read relevant context only
 
@@ -89,10 +89,10 @@ Run lightweight checks on touched files only — not the full QA pipeline:
 - If yes: "Test file exists at [path] — run it to confirm no regressions."
 - If no: no comment.
 
-## Rules
+## Hard Rules
 
 - No `.pipeline/` artifacts written — ever
 - No full QA skills invoked (`/frontend-audit`, `/backend-audit`, `/doc-audit`, `/security-review`)
 - Touch only the files required for the task
-- One clarifying question maximum — if still unclear after one answer, make a reasonable assumption and note it
+- One clarifying question maximum, always via AskUserQuestion with options derived from the task description — if still unclear after one answer, make a reasonable assumption and note it
 - Self-review is not optional — always do Step 5

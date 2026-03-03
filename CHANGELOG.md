@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `hooks/session_end_pack.sh` — new SessionEnd hook; runs `repomix --compress` at session end to keep `.pipeline/repomix-output.xml` fresh for the next session; updates `packedAt` in `repomix-pack.json`; skips silently if repomix is absent or `.pipeline/` does not exist
+
+### Changed
+
+- `hooks/hooks.json`: added `session_end_pack.sh` command hook as first entry in the `SessionEnd` hooks array (runs before the MEMORY.md prompt hook)
+- `hooks/session_start_check.sh`: added `ln -sf` to maintain `~/.claude/statusline.js` symlink pointing to `${CLAUDE_PLUGIN_ROOT}/hooks/statusline.js`; symlink self-heals if plugin is moved or reinstalled
+- `docs/guides/installation.md`: updated Statusline Setup section — path changed to stable `~/.claude/statusline.js` symlink; bootstrap command documented; symlink auto-maintenance behaviour explained
+- `skills/design/SKILL.md`: added Hard Rule 5 (AskUserQuestion mandatory, one question per turn); updated Step 6 to use full `AskUserQuestion` block for design alignment check
+- `skills/git-workflow/SKILL.md`: added `## Hard Rules` section (4 rules); updated Steps 1 and 1.5 ambiguity-resolution paths to use explicit `AskUserQuestion` blocks
+- `skills/init/SKILL.md`: added Hard Rule 6 ("Empty projects get asked, not assumed"); added Step 1a — 3-question AskUserQuestion flow (language, license, project type) for empty-project initialization
+- `skills/quick/SKILL.md`: renamed `## Rules` → `## Hard Rules`; updated Step 2 to mandate `AskUserQuestion` with derived options
+
+### Fixed
+
+- `skills/brief/SKILL.md`: added `## Hard Rules` section (5 rules); replaced silent-skip clause with option-surfacing instruction; Step 2 now mandates AskUserQuestion for all 8 Q&A areas — fixes interview early-termination where Claude silently inferred answers from project context without asking the user
+
 ## [2.0.1] - 2026-03-03
 
 ### Fixed

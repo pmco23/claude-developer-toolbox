@@ -9,6 +9,11 @@ command -v jq      >/dev/null 2>&1 || MISSING+=("jq      — JSON parsing in hoo
 command -v python3 >/dev/null 2>&1 || MISSING+=("python3 — JSON parsing fallback in hooks")
 command -v repomix >/dev/null 2>&1 || MISSING+=("repomix — required for /pack and /qa codebase snapshots")
 
+# Keep statusline symlink current — settings.json always points to ~/.claude/statusline.js
+# and this symlink ensures it resolves to the plugin's actual location regardless of where
+# the plugin is installed.
+ln -sf "${CLAUDE_PLUGIN_ROOT}/hooks/statusline.js" "${HOME}/.claude/statusline.js" 2>/dev/null || true
+
 if [ ${#MISSING[@]} -gt 0 ]; then
   echo "⚠ claude-developer-toolbox: missing tools detected:" >&2
   for item in "${MISSING[@]}"; do
