@@ -32,6 +32,8 @@ INPUT=$(cat)
 SESSION_ID=$(echo "$INPUT" | _json_stdin_field "session_id")
 
 [[ -z "$SESSION_ID" ]] && exit 0
+# Validate UUID format (hex + dashes) before using in file path
+[[ ! "$SESSION_ID" =~ ^[0-9a-f-]+$ ]] && exit 0
 
 BRIDGE_FILE="/tmp/claude-ctx-${SESSION_ID}.json"
 [[ ! -f "$BRIDGE_FILE" ]] && exit 0
