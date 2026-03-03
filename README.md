@@ -55,7 +55,7 @@ Diagnostics degrade gracefully across three tiers: VS Code IDE integration → L
 
 ```bash
 # 1. Clone the plugin
-git clone <repo-url> ~/claude-developer-toolbox
+git clone https://github.com/pmco23/claude-developer-toolbox.git ~/claude-developer-toolbox
 
 # 2. Install Context7 (required — live library docs for /design and /review)
 # Run inside a Claude Code session:
