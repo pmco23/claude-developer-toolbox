@@ -31,7 +31,22 @@ Detection rules for commands:
 
 If the project has additional conventions visible in existing config files (e.g., `.eslintrc`, `tsconfig.json`, `rustfmt.toml`), add a brief note: `Style config: [filename]`.
 
-### Section 2: Plugin Configuration
+### Section 2: Git Conventions
+
+Always include this section:
+
+```markdown
+# Git Conventions
+
+Branching: Conventional Branch — `<type>/<short-description>` (feat, fix, hotfix, chore, release)
+Commits: Conventional Commits — `<type>[scope][!]: <description>` (feat, fix, docs, refactor, test, chore, ci, build, perf)
+Merge strategy: squash-merge to main
+Protected branches: never push directly to main or master — use a PR
+```
+
+Specs: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/), [Conventional Branch](https://conventional-branch.github.io/)
+
+### Section 3: Plugin Configuration
 
 Always include this section with flags commented out:
 
@@ -44,7 +59,7 @@ Always include this section with flags commented out:
 
 ### Merge behavior
 
-If CLAUDE.md already exists and user chose "Merge": append only the **Plugin Configuration** section if not already present. Do not modify existing content.
+If CLAUDE.md already exists and user chose "Merge": append the **Git Conventions** and **Plugin Configuration** sections if not already present. Do not modify existing content.
 
 ---
 
@@ -86,7 +101,7 @@ After all files are written, output:
 
 ```
 Boilerplate generated:
-  ✓ CLAUDE.md   (project conventions + plugin config flags)
+  ✓ CLAUDE.md   (project conventions + git conventions + plugin config flags)
   ✓ README.md
   ✓ CHANGELOG.md
   ✓ CONTRIBUTING.md
@@ -96,7 +111,7 @@ Boilerplate generated:
 
 Placeholders to fill in: [list any [PLACEHOLDER] fields remaining]
 
-Run /git-workflow before committing these files.
+Git conventions (Conventional Commits, Conventional Branch) are now in CLAUDE.md and will be followed automatically.
 
 To start developing a new feature on this project, run /brief to crystallize requirements into a pipeline brief.
 ```

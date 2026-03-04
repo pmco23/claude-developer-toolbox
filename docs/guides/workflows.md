@@ -192,8 +192,8 @@ These run independently of any pipeline state — no gate, no artifacts required
 | Skill | When to use |
 |-------|-------------|
 | `/status` | Any time — shows pipeline state and next step; with no active pipeline, shows available workflow choices |
-| `/init` | New project or missing boilerplate — generates README, CHANGELOG, CONTRIBUTING, .gitignore |
-| `/git-workflow` | Before branch creation, first push, PR open/merge, or destructive git op (force-push, reset --hard) |
+| `/init` | New project or missing boilerplate — generates CLAUDE.md (with git conventions), README, CHANGELOG, CONTRIBUTING, .gitignore |
+| `/git-workflow` | Before any destructive git operation (force-push, reset --hard, branch -D) — routine commits and branches are governed by CLAUDE.md |
 | `/pack` | Before `/qa` or `/quick --deep` to snapshot the codebase |
 | `/drift-check` | After `/build` — verify implementation matches the approved design; also run standalone at any time (standalone shows a structured source/target selection prompt) |
 | `/quick` | Fast-track implementation (see above) |

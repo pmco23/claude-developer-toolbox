@@ -1,126 +1,65 @@
 ---
 name: git-workflow
-description: Use before branch creation, first push to remote, opening or merging a PR, and any destructive git operation (force-push, reset --hard, branch -D). Not required for routine commits on an already-established branch.
+description: Use before any destructive git operation (force-push, reset --hard, branch -D, rebase on published commits). Verifies the target, explains the consequences, and requires explicit confirmation. Not needed for routine commits, branch creation, or PRs — those are governed by CLAUDE.md git conventions.
 ---
 
-# GIT-WORKFLOW
+# GIT-WORKFLOW — Destructive Operation Safety Gate
 
 ## Role
 
 > **Model:** Sonnet (`claude-sonnet-4-6`).
 
-You are enforcing git discipline before a significant git operation. Detect the project type, load the right workflow reference, verify all safety checks pass, then proceed. If any check fails, block or escalate — never silently skip a gate.
+You are enforcing safety before a destructive git operation. Verify the target, explain what will happen, and require explicit confirmation. Never proceed silently.
 
 ## Hard Rules
 
-1. **One question per turn.** If both project type and operation parameters are ambiguous, resolve project type first. Never ask multiple clarifying questions in a single response.
-2. **All questions use AskUserQuestion.** Provide options covering the plausible choices; include `"Other / let me explain"` when the option space can't be fully enumerated. Never ask a plain-text question.
-3. **Never execute a git operation until all safety gate checks pass.** If any check fails, block and explain — do not proceed silently.
-4. **Destructive operations require explicit confirmation.** Force-push, `reset --hard`, and `branch -D` are never performed without an explicit user "proceed" response in the current turn. A previous approval in a different context does not carry over.
+1. **Never execute a destructive operation without explicit confirmation in the current turn.** A previous approval in a different context does not carry over.
+2. **All questions use AskUserQuestion.** Never ask a plain-text question.
+3. **Force-push to main/master is always escalated.** Even if the user confirms, warn again that this affects all collaborators.
 
 ## Process
 
-### Step 1: Detect project type
+### Step 1: Identify the operation and target
 
-Use a two-tier check. Stop as soon as a tier yields a conclusive answer.
+Run `git status` and `git branch --show-current` to read current state.
 
-**Tier 1 — root-level config files (check first, most reliable)**
+Determine which destructive operation the user is requesting:
 
-Look only at the repo root directory (not subdirectories).
+| Operation | Risk |
+|-----------|------|
+| `git push --force` / `--force-with-lease` | Overwrites remote history — affects all collaborators on the branch |
+| `git reset --hard` | Discards uncommitted changes permanently |
+| `git branch -D` | Deletes a branch even if not fully merged |
+| `git rebase` on published commits | Rewrites history others may have pulled |
 
-Root-level **code config** (any match → code project):
-- `package.json`, `go.mod`, `requirements.txt`, `pyproject.toml`, `setup.py`, `Cargo.toml`, `*.csproj`, `*.sln`, `pom.xml`, `build.gradle`
+### Step 2: Explain consequences
 
-Root-level **infra config** (any match, and no code config found → infra project):
-- `*.tf` or `*.tfvars` — Terraform root module
-- `Chart.yaml` — Helm chart root
-- `kustomization.yaml` or `kustomization.yml` — Kustomize root
+Present the specific consequences for the identified operation:
+- What will be lost or overwritten
+- Who else is affected (if remote branch)
+- Whether the action is reversible (reflog window)
 
-If both code config and infra config exist at root (genuine mixed-root monorepo), skip to the disambiguation question below.
-
-**Tier 2 — repo-wide heuristic (only if Tier 1 found neither)**
-
-Scan the full repo for signals:
-
-Infra signals:
-- Directories named `helm`, `terraform`, `kustomize`, `manifests`
-- Files matching `*.tf`, `*.tfvars` anywhere in the repo
-
-Code signals:
-- Files matching `*.ts`, `*.tsx`, `*.js`, `*.py`, `*.go`, `*.rs`, `*.java`, `*.cs`
-
-If only infra signals found → infra project.
-If only code signals found → code project.
-
-**If still ambiguous** (both tiers match both types, or neither tier found anything):
+### Step 3: Confirm
 
 Use AskUserQuestion with:
-  question: "Is this a code project or an infrastructure project?"
-  header: "Project type"
+  question: "This will [specific consequence]. Proceed?"
+  header: "Destructive op"
   options:
-    - label: "Code project"
-      description: "Trunk-based: feature/fix branches, squash-merge to main"
-    - label: "Infrastructure project"
-      description: "Three-environment: development → preproduction → main promotion"
+    - label: "Proceed"
+      description: "[one-line summary of what will happen]"
+    - label: "Cancel"
+      description: "Abort — no changes made"
 
-Do not proceed until confirmed.
+If the target is a protected branch (main, master, development, preproduction):
+  Add a third option before Cancel:
+    - label: "I understand the risk"
+      description: "This is a protected branch — confirm you've coordinated with collaborators"
 
-### Step 1.5: Identify the operation and gather parameters
+### Step 4: Execute or abort
 
-Run `git status` and `git branch --show-current` to read the current state.
-
-Determine which operation the user is requesting from their invocation args or context:
-
-| Operation | Parameters needed |
-|-----------|-----------------|
-| Branch creation | Intended branch name |
-| First push to remote | Remote name, branch name |
-| PR open | PR title, target branch |
-| PR merge | PR number or title |
-| Destructive op (force-push, reset --hard, branch -D) | Specific target ref |
-
-If the operation is clear from the invocation: extract parameters silently and proceed.
-If the operation is ambiguous, use AskUserQuestion with:
-  question: "Which git operation are you performing?"
-  header: "Git operation"
-  options:
-    - label: "Branch creation"
-      description: "Create a new branch from current HEAD"
-    - label: "First push to remote"
-      description: "Push a local branch to the remote for the first time"
-    - label: "Open or merge a PR"
-      description: "Open a new PR or merge an existing one"
-    - label: "Destructive operation"
-      description: "Force-push, reset --hard, branch -D, or rebase on published commits"
-
-Record the operation type and parameters — Steps 3–4 apply the safety gate to this specific operation.
-
-### Step 2: Load the workflow reference
-
-Read the appropriate path rules from this skill's base directory:
-`references/code-path.md` (code) or `references/infra-path.md` (infra). Apply those rules when executing the operation.
-
-### Step 3: Safety gate
-
-Verify all of the following before proceeding:
-
-- [ ] **Branch name** matches the selected path convention (spec: https://conventional-branch.github.io/)
-- [ ] **Commit message** matches the selected path convention (spec: https://www.conventionalcommits.org/en/v1.0.0/)
-  - If not: rewrite the message to conform before proceeding. Do not commit with a non-conforming message.
-  - When explaining why a branch name or commit message fails validation, cite the relevant spec URL so the user knows the source of the rule.
-- [ ] **Operation is not destructive** (force-push, reset --hard, branch -D, rebase on published commits)
-  - If destructive: stop and ask the user for explicit confirmation before proceeding.
-  - If the user requests force-push to a protected branch repeatedly: escalate — do not comply silently.
-- [ ] **Target branch is not protected** (main, master, development, preproduction) for direct push
-  - If protected: block and warn — use a PR instead.
-  - If the promotion path is unclear in a three-environment project: escalate rather than guess.
-
-### Step 4: Proceed
-
-Once all gate checks pass, perform the git operation.
+- If "Proceed" or "I understand the risk": execute the operation.
+- If "Cancel": abort and confirm no changes were made.
 
 ## Output
 
-- Detected project type (code / infra / confirmed by user)
-- Workflow reference applied (Code Path or Infra Path)
-- Gate check results (pass / block / confirmed)
+Report what was done (or that the operation was cancelled).

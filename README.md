@@ -9,7 +9,7 @@ A quality-gated development pipeline for Claude Code. Every transition between p
 ```
 idea
  ├─ /quick [--deep]          # fast track — no pipeline, no artifacts
- ├─ /git-workflow             # git discipline — always available, standalone
+ ├─ /git-workflow             # destructive git op safety gate — always available, standalone
  ├─ /init                    # project boilerplate — CLAUDE.md, README, CHANGELOG, CONTRIBUTING, PR template
  ├─ /status                  # inspect current pipeline phase — always available
  ├─ /reset                   # reset pipeline to a specific phase — always available
@@ -115,7 +115,7 @@ Restart Claude Code. Run `/brief` to verify. See the [full installation guide](d
 | `/security-review` | OWASP vulnerability scan |
 | `/quick` | Fast-track implementation |
 | `/init` | Project boilerplate scaffolding (CLAUDE.md, README, CHANGELOG, CONTRIBUTING, PR template, .gitignore) |
-| `/git-workflow` | Git discipline |
+| `/git-workflow` | Destructive git operation safety gate (force-push, reset --hard, branch -D) |
 | `/status` | Pipeline state check |
 | `/pack` | Repomix codebase snapshot |
 | `/test` | Run the project test suite |
