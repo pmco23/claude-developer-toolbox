@@ -29,6 +29,17 @@ idea
 
 Each arrow is a quality gate. You cannot run `/design` without a brief. You cannot run `/plan` without an approved design. The hook enforces this mechanically.
 
+## Platform Support
+
+| Platform | Status |
+|----------|--------|
+| macOS | Fully supported |
+| Linux | Fully supported |
+| Windows (WSL) | Fully supported (hooks run inside WSL bash) |
+| Windows (native) | Not supported — hooks require bash |
+
+All hooks are bash scripts. On Windows, use [WSL](https://learn.microsoft.com/en-us/windows/wsl/) to run Claude Code with this plugin.
+
 ## Prerequisites
 
 ### Required

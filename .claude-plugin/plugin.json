@@ -8,10 +8,5 @@
   "keywords": ["pipeline", "quality-gates", "tdd", "adversarial-review"],
   "homepage": "https://github.com/pmco23/claude-developer-toolbox",
   "repository": "https://github.com/pmco23/claude-developer-toolbox.git",
-  "mcpServers": {
-    "repomix": {
-      "command": "repomix",
-      "args": ["--mcp"]
-    }
-  }
+  "license": "MIT"
 }

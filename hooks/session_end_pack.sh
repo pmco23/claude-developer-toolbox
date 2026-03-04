@@ -10,18 +10,35 @@
 #   - no .pipeline/ directory exists (no active pipeline project)
 
 command -v repomix >/dev/null 2>&1 || exit 0
-[ -d ".pipeline" ] || exit 0
 
-repomix --compress --output ".pipeline/repomix-output.xml" . 2>/dev/null || exit 0
+# Walk up from cwd to find .pipeline/ directory (consistent with pipeline_gate.sh)
+find_project_root() {
+  local dir="$PWD"
+  while [ "$dir" != "/" ]; do
+    if [ -d "$dir/.pipeline" ]; then
+      echo "$dir"
+      return 0
+    fi
+    dir=$(dirname "$dir")
+  done
+  return 1
+}
+
+PROJECT_ROOT=$(find_project_root) || exit 0
+PIPELINE_DIR="$PROJECT_ROOT/.pipeline"
+
+repomix --compress --output "$PIPELINE_DIR/repomix-output.xml" "$PROJECT_ROOT" 2>/dev/null || exit 0
 
 NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 if command -v python3 >/dev/null 2>&1; then
-  python3 - <<'PYEOF'
+  python3 - "$PIPELINE_DIR" "$PROJECT_ROOT" <<'PYEOF'
 import json, os, datetime, sys
 
-pack_file = ".pipeline/repomix-pack.json"
-output_file = ".pipeline/repomix-output.xml"
+pipeline_dir = sys.argv[1]
+project_root = sys.argv[2]
+pack_file = os.path.join(pipeline_dir, "repomix-pack.json")
+output_file = os.path.join(pipeline_dir, "repomix-output.xml")
 
 data = {}
 try:
@@ -32,7 +49,7 @@ except Exception:
 
 # Refresh timestamp and record file path; leave outputId untouched
 data["packedAt"] = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-data["source"]   = os.getcwd()
+data["source"]   = project_root
 data["filePath"] = output_file
 
 try:
@@ -47,11 +64,11 @@ PYEOF
 elif command -v jq >/dev/null 2>&1; then
   # Merge packedAt + filePath into existing JSON, or create minimal file
   existing="{}"
-  [ -f ".pipeline/repomix-pack.json" ] && existing=$(cat ".pipeline/repomix-pack.json")
+  [ -f "$PIPELINE_DIR/repomix-pack.json" ] && existing=$(cat "$PIPELINE_DIR/repomix-pack.json")
   echo "$existing" \
-    | jq --arg t "$NOW" --arg src "$(pwd)" --arg fp ".pipeline/repomix-output.xml" \
+    | jq --arg t "$NOW" --arg src "$PROJECT_ROOT" --arg fp "$PIPELINE_DIR/repomix-output.xml" \
       '. + {"packedAt": $t, "source": $src, "filePath": $fp}' \
-    > ".pipeline/repomix-pack.json" 2>/dev/null || true
+    > "$PIPELINE_DIR/repomix-pack.json" 2>/dev/null || true
 fi
 
 exit 0
