@@ -7,7 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.3] - 2026-03-04
+
+### Added
+
+- `LICENSE` — MIT license file
+- `README.md`: added Platform Support section documenting bash requirement (macOS, Linux, WSL supported; native Windows unsupported)
+
 ### Changed
+
+- `hooks/compact-prep.sh`: replaced hardcoded `".pipeline"` with walk-up directory resolution consistent with `pipeline_gate.sh` and `statusline.js` — fixes hook failing silently from subdirectories
+- `hooks/session_end_pack.sh`: replaced hardcoded `".pipeline"` with walk-up directory resolution; repomix and python3/jq paths now use absolute `$PROJECT_ROOT` and `$PIPELINE_DIR` instead of relative paths
+- `hooks/session_start_check.sh`: statusline symlink now only creates/updates if no `~/.claude/statusline.js` exists or if the existing symlink already points to this plugin — no longer overwrites custom or third-party statuslines
+- `.claude-plugin/plugin.json`: removed `mcpServers.repomix` declaration (repomix is optional; hooks and skills already handle its absence gracefully); added `"license": "MIT"` field
+
+### Fixed
 
 - `skills/brief/SKILL.md`: updated Hard Rule 5 and Step 2 Q&A area list to use `multiSelect: true` for Q2–Q8 (users/consumers, hard constraints, soft constraints, non-goals, success criteria, style preferences, key concepts) — these areas naturally yield multiple valid answers; Q1 (core purpose) remains single-select
 
