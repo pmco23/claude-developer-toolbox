@@ -25,35 +25,9 @@ Look for frontend style guidance in this order:
 
 Record the style rules you will audit against. Present them to the user: "Auditing against these rules: [list]" before proceeding.
 
-### Step 2: Audit with LSP if available
+### Steps 2–3: Audit
 
-**IDE Diagnostics (try first):** Call `mcp__ide__getDiagnostics` (no URI) — if results, use as authoritative source.
-
-**Announce quality tier before proceeding:**
-- If `mcp__ide__getDiagnostics` returned results: output `🟢 IDE diagnostics active — errors and warnings are authoritative (VS Code integration).`
-- Else if `typescript_lsp` is available: output `🟢 TypeScript LSP active — type errors and unused-variable diagnostics are authoritative.`
-- Else: output `🟡 No IDE or TypeScript LSP detected — findings are heuristic. Install typescript-lsp for authoritative results (see README Language Support Matrix).`
-
-If `typescript_lsp` tool is available:
-- Get all type errors and warnings
-- Get all unused variable diagnostics
-- Use type information to flag patterns that defeat the type system (any casts, @ts-ignore without justification)
-
-### Step 3: Audit without LSP (or in addition)
-
-Check:
-- Naming conventions (components PascalCase, hooks usePrefix, etc.)
-- Import organization (external before internal, grouped)
-- Component size (flag components over 200 lines as candidates for extraction)
-- Props patterns (no inline object literals in JSX if project avoids them)
-- CSS/styling conventions (CSS modules vs. Tailwind vs. styled-components — match what's already used)
-- **Accessibility (basic):**
-  - Interactive elements (buttons, inputs, links) have accessible labels (`aria-label`, `alt` text, `<label for>`)
-  - Images have non-empty `alt` attributes (or `aria-hidden="true"` for decorative ones)
-  - Heading hierarchy is sequential (h1 → h2 → h3 — no skipped levels)
-  - Focus is not permanently trapped or removed (`tabIndex="-1"` without focus management is a signal)
-- Console.log statements left in production code
-- TODO/FIXME comments that reference completed work
+Read `references/audit-checklists.md` from this skill's base directory. Follow the diagnostics tier announcement, then apply TypeScript LSP checks (Step 2) and general frontend checks (Step 3).
 
 ### Step 4: Report findings
 
