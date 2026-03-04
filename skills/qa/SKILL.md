@@ -51,77 +51,21 @@ Use AskUserQuestion with:
 
 ### Parallel Mode
 
-Dispatch all five QA skills simultaneously via the Task tool. Each agent receives only the context for its specific audit.
+Read `references/agent-prompts.md` from this skill's base directory. Dispatch all five agents simultaneously via the Task tool, substituting `<outputId>` with the acquired Repomix outputId (or omitting the Repomix instruction if unavailable).
 
-Use the Task tool to launch 5 subagents at once. Prompt for each:
-
-**Agent 1 — Dead Code Removal**
-Prompt: `Follow the cleanup skill process: find dead code (unused symbols, unused imports, unreachable branches, commented-out code). .pipeline/build.complete exists. Repomix outputId: <outputId> — use mcp__repomix__grep_repomix_output for file discovery and mcp__repomix__read_repomix_output for file contents. Report all findings with file:line references.`
-
-**Agent 2 — Frontend Audit**
-Prompt: `Follow the frontend-audit skill process: audit frontend TypeScript/JavaScript/CSS/HTML against the project's own style guide (infer from existing code if no explicit guide). .pipeline/build.complete exists. Repomix outputId: <outputId> — use mcp__repomix__grep_repomix_output for file discovery and mcp__repomix__read_repomix_output for file contents. Report all findings with file:line references.`
-
-**Agent 3 — Backend Audit**
-Prompt: `Follow the backend-audit skill process: audit backend code (Go/Python/TypeScript/C#) against the project's own style guide. Check error handling, logging, naming, public API surface. .pipeline/build.complete exists. Repomix outputId: <outputId> — use mcp__repomix__grep_repomix_output for file discovery and mcp__repomix__read_repomix_output for file contents. Report all findings with file:line references.`
-
-**Agent 4 — Documentation Freshness**
-Prompt: `Follow the doc-audit skill process: check CHANGELOG.md for Keep a Changelog format compliance, presence of an [Unreleased] section, and coverage of the feature built in this pipeline. .pipeline/build.complete exists. Repomix outputId: <outputId> — use mcp__repomix__grep_repomix_output for file discovery and mcp__repomix__read_repomix_output for file contents. Report all findings.`
-
-**Agent 5 — Security Review**
-Prompt: `Follow the security-review skill process: scan for OWASP Top 10 vulnerabilities relevant to this application type. .pipeline/build.complete exists. Repomix outputId: <outputId> — use mcp__repomix__grep_repomix_output for file discovery and mcp__repomix__read_repomix_output for file contents. Report all findings with severity, location, and remediation.`
-
-Wait for all five to complete, then present a consolidated report:
-
-```markdown
-# QA Report
-
-## /cleanup
-[findings or "clean — no dead code found"]
-
-## /frontend-audit — Frontend
-[findings or "no violations found"]
-
-## /backend-audit — Backend
-[findings or "no violations found"]
-
-## /doc-audit — Documentation
-[findings or "all docs reflect current implementation"]
-
-## /security-review
-[findings or "no OWASP Top 10 vulnerabilities found"]
-```
-
-After presenting the consolidated report, append an Overall QA Verdict:
-
-```markdown
-## Overall QA Verdict
-
-| Audit | Result |
-|-------|--------|
-| /cleanup | [PASS — no dead code found / FAIL — N items found] |
-| /frontend-audit | [PASS / FAIL — N violations] |
-| /backend-audit | [PASS / FAIL — N violations] |
-| /doc-audit | [PASS / FAIL — N stale or missing entries] |
-| /security-review | [PASS / FAIL — N findings (X CRITICAL, Y HIGH)] |
-
-**Overall: PASS** *(all audits clean)*
-— or —
-**Overall: FAIL** *([N] audits have findings requiring action)*
-```
-
-Apply PASS Criteria (defined above).
+Wait for all five to complete, then present the consolidated report and Overall QA Verdict using the format in `references/report-template.md`. Apply PASS Criteria (defined above).
 
 ### Sequential Mode
 
-Run in order, presenting each result before proceeding. When invoking each skill, prepend this to the invocation: "Repomix outputId: <outputId> — use mcp__repomix__grep_repomix_output for file discovery and mcp__repomix__read_repomix_output for file contents." If no outputId was acquired in the preamble, omit this instruction:
+Run in order, presenting each result before proceeding. When invoking each skill, prepend the Repomix context: "Repomix outputId: <outputId> — use mcp__repomix__grep_repomix_output for file discovery and mcp__repomix__read_repomix_output for file contents." If no outputId was acquired, omit this.
 
-1. Follow the `cleanup` skill process — present findings — ask "Continue to /frontend-audit? (yes / fix first — then re-run /qa to verify before continuing)"
-2. Follow the `frontend-audit` skill process — present findings — ask "Continue to /backend-audit? (yes / fix first — then re-run /qa to verify before continuing)"
-3. Follow the `backend-audit` skill process — present findings — ask "Continue to /doc-audit? (yes / fix first — then re-run /qa to verify before continuing)"
-4. Follow the `doc-audit` skill process — present findings — ask "Continue to /security-review? (yes / fix first — then re-run /qa to verify before continuing)"
-5. Follow the `security-review` skill process — present final findings
+1. `cleanup` — present findings — ask "Continue to /frontend-audit? (yes / fix first — then re-run /qa to verify)"
+2. `frontend-audit` — present findings — ask "Continue to /backend-audit?"
+3. `backend-audit` — present findings — ask "Continue to /doc-audit?"
+4. `doc-audit` — present findings — ask "Continue to /security-review?"
+5. `security-review` — present final findings
 
-After /security-review completes, present the Overall QA Verdict table (same format as parallel mode above), summarising results from all five audits. Apply PASS Criteria (defined above).
+After all five complete, present the Overall QA Verdict using `references/report-template.md`. Apply PASS Criteria (defined above).
 
 ## Output
 

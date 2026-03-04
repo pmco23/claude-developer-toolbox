@@ -12,6 +12,7 @@ idea
  ├─ /git-workflow             # git discipline — always available, standalone
  ├─ /init                    # project boilerplate — README, CHANGELOG, CONTRIBUTING, PR template
  ├─ /status                  # inspect current pipeline phase — always available
+ ├─ /reset                   # reset pipeline to a specific phase — always available
  ├─ /pack [path]             # Repomix snapshot — run before /qa for token efficiency
  │
  └─ /brief      → .pipeline/brief.md
@@ -122,3 +123,11 @@ Restart Claude Code. Run `/brief` to verify. See the [full installation guide](d
 | `/tdd` | Test-driven development — Iron Law, Red-Green-Refactor cycle, valid exceptions |
 | `/release` | Cut a new release (version bump, CHANGELOG, tag) |
 | `/rollback` | Undo a completed build |
+| `/reset` | Reset pipeline to a specific phase |
+
+### Configuration (CLAUDE.md flags)
+
+| Flag | Effect |
+|------|--------|
+| `tdd: disabled` | Switches `/plan` to implementation-first task ordering (skip Red-Green-Refactor) |
+| `session-end-pack: disabled` | Skips automatic Repomix packing on session end |

@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.4] - 2026-03-04
+
+### Added
+
+- `/reset` skill — reset pipeline to any phase with confirmation; ungated, always available
+- Stale artifact detection in `pipeline_gate.sh` — warns (never blocks) when source files are newer than the gating artifact
+- `session-end-pack: disabled` opt-out flag in CLAUDE.md — skips automatic Repomix packing on session end
+- `README.md`: added Configuration section documenting CLAUDE.md flags (`tdd: disabled`, `session-end-pack: disabled`)
+- New reference files for progressive disclosure:
+  - `skills/brief/references/brief-template.md`
+  - `skills/init/references/file-specs.md`
+  - `skills/qa/references/agent-prompts.md`
+  - `skills/qa/references/report-template.md`
+  - `skills/review/references/review-report-template.md`
+  - `skills/security-review/references/owasp-checklist.md`
+  - `skills/status/references/report-formats.md`
+
+### Changed
+
+- Reduced SKILL.md token footprint across 7 skills by extracting inline templates to reference files:
+  - `init`: 6.7KB → 4.5KB (33% reduction)
+  - `qa`: 6.8KB → 3.4KB (50% reduction)
+  - `status`: 5.4KB → 2.8KB (49% reduction)
+  - `security-review`: 4.1KB → 1.9KB (54% reduction)
+  - `review`: 5.5KB → 4.8KB (12% reduction)
+  - `brief`: 5.9KB → 5.3KB (10% reduction)
+  - `build`: 6.5KB → 6.1KB (6% reduction)
+- `hooks/test_gate.sh`: added 2 tests for `/reset` (54 total, all passing)
+
 ## [2.0.3] - 2026-03-04
 
 ### Added

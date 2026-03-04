@@ -45,40 +45,9 @@ Once both agents return their results:
 1. **Deduplicate:** Identify findings that both critics raised — merge them into one, noting both sources agree.
 2. **Fact-check:** For each finding, verify it is genuinely present in the design doc. Discard findings not supported by the actual design text. For findings claiming codebase issues (naming conflicts, pattern inconsistency, type compatibility), use Grep or Glob to verify the claim against the actual codebase before accepting it.
 3. **Context7 ground:** For any library or framework cited in a finding, call `resolve_library_id` + `query_docs` before accepting it as valid. Discard or downgrade findings contradicted by current docs.
-4. **Cost/benefit filter:**
-   - HIGH impact + LOW cost → MUST FIX
-   - HIGH impact + HIGH cost → SHOULD FIX (flag for human judgment)
-   - MEDIUM impact + LOW cost → CONSIDER fixing
-   - LOW impact + any cost → SKIP
-   - MEDIUM/LOW impact + HIGH cost → SKIP
+4. **Cost/benefit filter:** Read `references/review-report-template.md` from this skill's base directory. Apply the classification matrix to every finding.
 
-5. **Structure the report:**
-
-```markdown
-# Adversarial Review Report
-
-**Round:** [N]
-**Design:** .pipeline/design.md
-
-## Findings Requiring Action
-
-| ID | Source | Category | Finding | Impact | Cost | Mitigation |
-|----|--------|---------|---------|--------|------|-----------|
-
-## Findings for Human Judgment
-
-| ID | Source | Category | Finding | Impact | Cost | Note |
-|----|--------|---------|---------|--------|------|------|
-
-## Findings Skipped (cost/benefit)
-
-| ID | Source | Finding | Reason skipped |
-|----|--------|---------|---------------|
-
-## Loop Decision
-
-[All required-action findings resolved / N findings remain]
-```
+5. **Structure the report:** Use the report template from the same reference file.
 
 ### Step 4: Human review
 

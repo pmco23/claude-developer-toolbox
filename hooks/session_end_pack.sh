@@ -8,8 +8,23 @@
 # Skips silently if:
 #   - repomix is not installed
 #   - no .pipeline/ directory exists (no active pipeline project)
+#   - CLAUDE.md contains "session-end-pack: disabled"
 
 command -v repomix >/dev/null 2>&1 || exit 0
+
+# Check for opt-out in CLAUDE.md (walk up to find it)
+check_opt_out() {
+  local dir="$PWD"
+  while [ "$dir" != "/" ]; do
+    if [ -f "$dir/CLAUDE.md" ]; then
+      grep -qiE '^session-end-pack:\s*disabled' "$dir/CLAUDE.md" 2>/dev/null && return 0
+      return 1
+    fi
+    dir=$(dirname "$dir")
+  done
+  return 1
+}
+check_opt_out && exit 0
 
 # Walk up from cwd to find .pipeline/ directory (consistent with pipeline_gate.sh)
 find_project_root() {

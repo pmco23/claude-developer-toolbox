@@ -85,28 +85,21 @@ Invocation for each group:
 Implement Task Group [N] — [Name]
 ```
 
-Monitor agent outputs. When an agent reports a blocker:
-- Investigate the blocker
-- Provide specific guidance to unblock
-- Do not implement code yourself — describe what needs to change
-- Call TaskUpdate to record the blocker in the task description
+Monitor agent outputs. When blocked: investigate, provide textual guidance (never code), record in TaskUpdate. After success + acceptance criteria verified: TaskUpdate → "completed".
 
-After each agent reports success and acceptance criteria are verified, call TaskUpdate with status: "completed".
-
-Apply 3-failure escalation rule (Hard Rule #4) if needed. After all parallel groups complete, run dependent groups in the same way.
+Apply 3-failure escalation (Hard Rule #4) if needed. After all parallel groups complete, dispatch dependent groups the same way.
 
 ### Step 2B: Sequential Mode
 
 For each task group in dependency order:
 
-1. Call TaskUpdate with status: "in_progress" for the task group
-2. Invoke the `task-builder` agent with the task group assignment (e.g., "Implement Task Group [N] — [Name]")
-3. Wait for completion
-4. Review the agent's output — did it satisfy the acceptance criteria?
-5. If yes: call TaskUpdate with status: "completed" and proceed to next group
-6. If no: call TaskUpdate to record the blocker in the task description, provide specific correction guidance, and re-invoke the `task-builder` agent
+1. TaskUpdate → "in_progress"
+2. Invoke `task-builder` agent: "Implement Task Group [N] — [Name]"
+3. Review output against acceptance criteria
+4. Pass → TaskUpdate "completed", next group
+5. Fail → record blocker in TaskUpdate, provide correction guidance, re-invoke
 
-Apply 3-failure escalation rule (Hard Rule #4) if needed.
+Apply 3-failure escalation (Hard Rule #4) if needed.
 
 ### Step 3: Post-build verification
 

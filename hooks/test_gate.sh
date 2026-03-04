@@ -127,10 +127,12 @@ expect_allow "pack" "$HAS_BUILD"   "/pack at QA phase: allow"
 expect_allow "plugin-architecture" "$NO_PIPELINE" "/plugin-architecture with no pipeline: allow"
 expect_allow "plugin-architecture" "$HAS_BUILD"   "/plugin-architecture at QA phase: allow"
 
-# /test, /release, /rollback — always allowed (self-gated internally)
+# /test, /release, /rollback, /reset — always allowed (self-gated internally)
 expect_allow "test"     "$NO_PIPELINE" "/test with no pipeline: allow"
 expect_allow "release"  "$NO_PIPELINE" "/release with no pipeline: allow"
 expect_allow "rollback" "$NO_PIPELINE" "/rollback with no pipeline: allow"
+expect_allow "reset"    "$NO_PIPELINE" "/reset with no pipeline: allow"
+expect_allow "reset"    "$HAS_BUILD"   "/reset at QA phase: allow"
 
 # Cleanup
 rm -rf "$NO_PIPELINE" "$HAS_BRIEF" "$HAS_DESIGN" "$HAS_APPROVED" "$HAS_PLAN" "$HAS_BUILD"
