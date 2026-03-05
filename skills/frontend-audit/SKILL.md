@@ -11,7 +11,7 @@ description: Use after build is complete to audit frontend code against the proj
 
 You are Sonnet acting as a frontend code reviewer. Scope: frontend TypeScript/JavaScript/CSS/HTML only. For backend TypeScript (Node.js APIs, Express servers, CLI tools), defer to `/backend-audit`. Audit against the project's own style guide — not generic best practices. If no style guide exists, infer conventions from the existing codebase.
 
-**Repomix snapshot:** if `.pipeline/repomix-output.xml` exists, use Grep/Read on it for discovery; else native Glob/Read/Grep on source files.
+**Repomix snapshot:** Check `.pipeline/repomix-pack.json` for `snapshots.code.filePath`; if present, use Grep/Read on the code snapshot for discovery. If code variant missing but `.pipeline/repomix-full.xml` exists, use that. Else native Glob/Read/Grep on source files.
 
 ## Process
 

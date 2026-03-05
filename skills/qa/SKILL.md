@@ -13,15 +13,23 @@ You are Sonnet acting as a QA pipeline orchestrator. Acquire a Repomix snapshot,
 
 ## Repomix Preamble
 
-Before dispatching any agents, ensure a Repomix snapshot is available:
+Before dispatching any agents, ensure Repomix snapshots are available:
 
 1. Check if `.pipeline/repomix-pack.json` exists
-2. If it exists, read `packedAt` — if less than 1 hour old, use the stored `filePath`
-3. If missing or stale, invoke the `/pack` skill — it packs the codebase via CLI and writes `.pipeline/repomix-output.xml`
-4. After `/pack` completes, read `filePath` from `.pipeline/repomix-pack.json`
-5. If `/pack` fails or Repomix is unavailable, proceed without a snapshot — agents fall back to native Glob/Read/Grep
+2. If it exists, read `packedAt` — if less than 1 hour old, read the `snapshots` map
+3. If missing or stale, invoke the `/pack` skill — it generates three snapshots (code, docs, full) and writes `.pipeline/repomix-pack.json`
+4. After `/pack` completes, read the `snapshots` map from `.pipeline/repomix-pack.json`
+5. If `/pack` fails or Repomix is unavailable, proceed without snapshots — agents fall back to native Glob/Read/Grep
 
-Hold the snapshot file path in context for use in the agent prompts below.
+Hold the snapshot map in context. Each agent gets its mapped variant:
+
+| Agent | Snapshot variant |
+|-------|-----------------|
+| Dead Code Removal (`/cleanup`) | `snapshots.code.filePath` |
+| Frontend Audit | `snapshots.code.filePath` |
+| Backend Audit | `snapshots.code.filePath` |
+| Security Review | `snapshots.code.filePath` |
+| Documentation Freshness (`/doc-audit`) | `snapshots.docs.filePath` |
 
 ## PASS Criteria
 
@@ -51,13 +59,13 @@ Use AskUserQuestion with:
 
 ### Parallel Mode
 
-Read `references/agent-prompts.md` from this skill's base directory. Dispatch all five agents simultaneously via the Task tool, substituting `<snapshot-path>` with the Repomix snapshot file path (or omitting the Repomix instruction if unavailable).
+Read `references/agent-prompts.md` from this skill's base directory. Dispatch all five agents simultaneously via the Task tool, substituting `<code-snapshot-path>` and `<docs-snapshot-path>` with the appropriate paths from the snapshot map (or omitting the Repomix instruction if unavailable).
 
 Wait for all five to complete, then present the consolidated report and Overall QA Verdict using the format in `references/report-template.md`. Apply PASS Criteria (defined above).
 
 ### Sequential Mode
 
-Run in order, presenting each result before proceeding. When invoking each skill, prepend the Repomix context: "Repomix snapshot available at .pipeline/repomix-output.xml — use Grep/Read on it for file discovery." If no snapshot was acquired, omit this.
+Run in order, presenting each result before proceeding. When invoking each skill, prepend the Repomix context with the agent's mapped snapshot variant path (code or docs). Example: "Repomix code snapshot available at .pipeline/repomix-code.xml — use Grep/Read on it for file discovery." For /doc-audit, use the docs snapshot path instead. If no snapshot was acquired, omit this.
 
 1. `cleanup` — present findings — ask "Continue to /frontend-audit? (yes / fix first — then re-run /qa to verify)"
 2. `frontend-audit` — present findings — ask "Continue to /backend-audit?"

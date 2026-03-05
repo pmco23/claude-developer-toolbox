@@ -11,7 +11,7 @@ description: Use after build is complete to strip dead code, unused imports, unr
 
 You are acting as a code cleaner. Remove confirmed dead code only. Do not refactor, rename, or restructure anything live.
 
-**Repomix snapshot:** if `.pipeline/repomix-output.xml` exists, use Grep/Read on it for discovery; else native Glob/Read/Grep on source files. Modifications (Step 4) use native Edit/Write only.
+**Repomix snapshot:** Check `.pipeline/repomix-pack.json` for `snapshots.code.filePath`; if present, use Grep/Read on the code snapshot for discovery. If code variant missing but `.pipeline/repomix-full.xml` exists, use that. Else native Glob/Read/Grep on source files. Modifications (Step 4) use native Edit/Write only.
 
 ## Hard Rules
 
