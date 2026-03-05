@@ -198,8 +198,18 @@ These run independently of any pipeline state — no gate, no artifacts required
 | `/drift-check` | After `/build` — verify implementation matches the approved design; also run standalone at any time (standalone shows a structured source/target selection prompt) |
 | `/quick` | Fast-track implementation (see above) |
 | `/test` | Any time — run the project test suite; supports file/pattern scoping; auto-detects jest, vitest, go test, pytest, dotnet test, cargo test; also invoked by `/cleanup` after dead-code removal |
-| `/release` | After `/qa` passes — bump version in config files, rename `[Unreleased]` in CHANGELOG, create commit and tag locally; never pushes |
 | `/rollback` | After a completed build — delete created files, restore modified files, reset `build.complete`; requires `build.complete` |
+
+### Git Commands
+
+| Command | When to use |
+|---------|-------------|
+| `/commit` | After making changes — stages files and creates a conventional commit |
+| `/push` | After committing — pushes current branch to remote |
+| `/commit-push-pr` | When ready for review — commit + push + open PR in one shot |
+| `/sync` | Before starting work or when behind upstream — fetch + rebase |
+| `/clean-branches` | Maintenance — remove stale local branches after PRs are merged |
+| `/release patch\|minor\|major` | After `/qa` passes — full end-to-end release (version bump, changelog, commit, tag, push, GitHub release) |
 
 ---
 

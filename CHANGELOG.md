@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- 6 git command files in `commands/` directory: `/commit`, `/push`, `/commit-push-pr`, `/sync`, `/clean-branches`, `/release`
+- Commands use lightweight markdown format with `allowed-tools` frontmatter and injected live context
+- `/commit` enforces Conventional Commits by reading CLAUDE.md conventions
+- `/commit-push-pr` handles branch creation, commit, push, and PR via `gh` in one shot
+- `/release` replaces the former skill with a full end-to-end command: version bump, changelog, commit, tag, push, GitHub release
+
+### Changed
+
+- `/release` converted from skill to command — faster, args-driven (`/release patch|minor|major`), includes push and GitHub release creation
+
+### Removed
+
+- `skills/release/` — replaced by `commands/release.md`
+
 ## [2.1.0] - 2026-03-04
 
 ### Added

@@ -123,9 +123,8 @@ expect_allow "pack" "$NO_PIPELINE" "/pack with no pipeline: allow"
 expect_allow "pack" "$HAS_BRIEF"   "/pack at brief phase: allow"
 expect_allow "pack" "$HAS_BUILD"   "/pack at QA phase: allow"
 
-# /test, /release, /rollback, /reset — always allowed (self-gated internally)
+# /test, /rollback, /reset — always allowed (self-gated internally)
 expect_allow "test"     "$NO_PIPELINE" "/test with no pipeline: allow"
-expect_allow "release"  "$NO_PIPELINE" "/release with no pipeline: allow"
 expect_allow "rollback" "$NO_PIPELINE" "/rollback with no pipeline: allow"
 expect_allow "reset"    "$NO_PIPELINE" "/reset with no pipeline: allow"
 expect_allow "reset"    "$HAS_BUILD"   "/reset at QA phase: allow"

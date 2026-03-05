@@ -120,9 +120,21 @@ Restart Claude Code. Run `/brief` to verify. See the [full installation guide](d
 | `/pack` | Repomix codebase snapshot |
 | `/test` | Run the project test suite |
 | `/tdd` | Test-driven development — Iron Law, Red-Green-Refactor cycle, valid exceptions |
-| `/release` | Cut a new release (version bump, CHANGELOG, tag) |
 | `/rollback` | Undo a completed build |
 | `/reset` | Reset pipeline to a specific phase |
+
+### Commands
+
+Lightweight git operations — no pipeline artifacts, no multi-step process.
+
+| Command | Description |
+|---------|-------------|
+| `/commit` | Stage changes and create a conventional commit |
+| `/push` | Push current branch to remote (with `-u` if first push) |
+| `/commit-push-pr` | Commit, push, and open a pull request in one shot |
+| `/sync` | Fetch and rebase current branch onto upstream |
+| `/clean-branches` | Remove local branches deleted from remote |
+| `/release patch\|minor\|major` | Full release: version bump, changelog, commit, tag, push, GitHub release |
 
 ### Configuration (CLAUDE.md flags)
 
