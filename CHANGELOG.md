@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-03-05
+
+### Breaking Changes
+
+- **Marketplace renamed** from `local-dev` to `pmco23-tools` — existing users must reinstall: `/plugin uninstall claude-developer-toolbox@local-dev` then `/plugin install claude-developer-toolbox@pmco23-tools`
+- **Repomix MCP server removed** — replaced entirely by CLI-based approach (`repomix` must be on PATH)
+- **`.pipeline/repomix-pack.json` format changed** — flat `filePath` field replaced with `snapshots` map containing per-variant `filePath` and `fileSize`. Existing pack files will be regenerated on next `/pack` run.
+
 ### Added
 
 - 6 git command files in `commands/` directory: `/commit`, `/push`, `/commit-push-pr`, `/sync`, `/clean-branches`, `/release`
@@ -14,14 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/commit` enforces Conventional Commits by reading CLAUDE.md conventions
 - `/commit-push-pr` handles branch creation, commit, push, and PR via `gh` in one shot
 - `/release` replaces the former skill with a full end-to-end command: version bump, changelog, commit, tag, push, GitHub release
+- Comprehensive Repomix Guide (`docs/guides/mcp-setup.md`) covering snapshot architecture, manual CLI usage, and troubleshooting
 
 ### Changed
 
 - `/release` converted from skill to command — faster, args-driven (`/release patch|minor|major`), includes push and GitHub release creation
-- Replaced Repomix MCP server dependency with CLI-based approach — `/pack` now runs `repomix --compress` via Bash and stores the file path; `/qa` agents use `Read`/`Grep` on the snapshot file instead of MCP tools
-- All 5 audit skills (`/cleanup`, `/frontend-audit`, `/backend-audit`, `/doc-audit`, `/security-review`) updated to read Repomix snapshot via file system instead of MCP
-- `docs/guides/mcp-setup.md` rewritten as Repomix CLI installation guide (no MCP server required)
-- `hooks/compact-prep.sh` simplified — checks for snapshot file directly instead of parsing MCP outputId
+- Replaced Repomix MCP server dependency with CLI-based approach — `/pack` now runs `repomix` via Bash; `/qa` agents use `Read`/`Grep` on snapshot files instead of MCP tools
 - `/pack` now generates three targeted Repomix snapshots: `repomix-code.xml` (source code, `--compress --include-diffs`), `repomix-docs.xml` (documentation only), `repomix-full.xml` (full codebase) — each audit agent receives only the files it needs
 - All snapshots use `--remove-empty-lines` for additional token savings; code and docs variants use `--no-file-summary` to reduce overhead
 - `/qa` maps each audit agent to its optimal snapshot variant: code for cleanup/frontend/backend/security, docs for doc-audit
@@ -29,20 +35,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `session_end_pack.sh` generates all three snapshot variants on session end
 - `compact-prep.sh` reports snapshot variant sizes
 - `/status` report shows per-variant sizes (code/docs/full KB)
-- `.pipeline/repomix-pack.json` format expanded with `snapshots` map containing per-variant `filePath` and `fileSize`
+- README Quick Install now uses GitHub source (`/plugin marketplace add pmco23/claude-developer-toolbox`) instead of local path
+- `metadata.description` added to marketplace manifest
 
 ### Removed
 
 - `skills/release/` — replaced by `commands/release.md`
 - Repomix MCP server dependency — CLI provides the same Tree-sitter compression without server setup overhead
-
-### Distribution
-
-- Marketplace renamed from `local-dev` to `pmco23-tools` — install via `/plugin install claude-developer-toolbox@pmco23-tools`
-- README Quick Install now uses GitHub source (`/plugin marketplace add pmco23/claude-developer-toolbox`) instead of local path
-- Removed duplicate `version` field from `marketplace.json` — `plugin.json` is the single source of truth
-- Added `metadata.description` to marketplace manifest
-- Updated all docs (installation, troubleshooting, contributing) to use new marketplace name
 
 ## [2.1.0] - 2026-03-04
 
