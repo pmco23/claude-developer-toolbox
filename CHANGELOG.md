@@ -18,10 +18,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `/release` converted from skill to command — faster, args-driven (`/release patch|minor|major`), includes push and GitHub release creation
+- Replaced Repomix MCP server dependency with CLI-based approach — `/pack` now runs `repomix --compress` via Bash and stores the file path; `/qa` agents use `Read`/`Grep` on the snapshot file instead of MCP tools
+- All 5 audit skills (`/cleanup`, `/frontend-audit`, `/backend-audit`, `/doc-audit`, `/security-review`) updated to read Repomix snapshot via file system instead of MCP
+- `docs/guides/mcp-setup.md` rewritten as Repomix CLI installation guide (no MCP server required)
+- `hooks/compact-prep.sh` simplified — checks for snapshot file directly instead of parsing MCP outputId
 
 ### Removed
 
 - `skills/release/` — replaced by `commands/release.md`
+- Repomix MCP server dependency — CLI provides the same Tree-sitter compression without server setup overhead
 
 ## [2.1.0] - 2026-03-04
 
