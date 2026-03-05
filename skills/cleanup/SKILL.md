@@ -11,7 +11,7 @@ description: Use after build is complete to strip dead code, unused imports, unr
 
 You are acting as a code cleaner. Remove confirmed dead code only. Do not refactor, rename, or restructure anything live.
 
-**Repomix:** if `outputId` in context, use `mcp__repomix__grep_repomix_output(outputId, pattern)` and `mcp__repomix__read_repomix_output(outputId, startLine, endLine)` for discovery; else native Glob/Read/Grep. Modifications (Step 4) use native Edit/Write only — never Repomix.
+**Repomix snapshot:** if `.pipeline/repomix-output.xml` exists, use Grep/Read on it for discovery; else native Glob/Read/Grep on source files. Modifications (Step 4) use native Edit/Write only.
 
 ## Hard Rules
 

@@ -59,7 +59,7 @@ All hooks are bash scripts. On Windows, use [WSL](https://learn.microsoft.com/en
 | Go LSP | Symbol resolution for Go projects (secondary tier) | `/plugin install gopls-lsp@claude-plugins-official` |
 | Python LSP | Type inference for Python projects (secondary tier) | `/plugin install python-lsp@claude-plugins-official` |
 | C# LSP | Symbol resolution for .NET projects (secondary tier) | `/plugin install csharp-lsp@claude-plugins-official` |
-| Repomix MCP | Token-efficient codebase packing for `/pack` and `/qa` shared snapshot | [MCP setup →](docs/guides/mcp-setup.md#repomix-mcp) |
+| Repomix CLI | Token-efficient codebase packing for `/pack` and `/qa` shared snapshot | `npm install -g repomix` |
 
 Diagnostics degrade gracefully across three tiers: VS Code IDE integration → LSP tool plugin → heuristic grep. Each absent tier reduces precision, not availability.
 
@@ -73,7 +73,7 @@ git clone https://github.com/pmco23/claude-developer-toolbox.git ~/claude-develo
 # Run inside a Claude Code session:
 /plugin install context7@claude-plugins-official
 
-# 3. Install repomix (recommended — required for /pack and /qa)
+# 3. Install repomix (recommended — token-efficient codebase packing for /pack and /qa)
 npm install -g repomix
 
 # 4. Register the plugin
@@ -93,7 +93,7 @@ Restart Claude Code. Run `/brief` to verify. See the [full installation guide](d
 | [Workflows](docs/guides/workflows.md) | Decision guide, pipeline reference, mode flags, language support, end-to-end example |
 | [Installation](docs/guides/installation.md) | Full install steps, statusline setup, verification |
 | [Hooks](docs/guides/hooks.md) | What each hook does, when it fires, and how it behaves |
-| [MCP Setup](docs/guides/mcp-setup.md) | Repomix MCP configuration |
+| [Repomix Setup](docs/guides/mcp-setup.md) | Repomix CLI installation and troubleshooting |
 | [Troubleshooting](docs/guides/troubleshooting.md) | Common issues and fixes |
 | [Changelog](CHANGELOG.md) | Release history and version notes |
 

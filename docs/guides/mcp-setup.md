@@ -1,23 +1,30 @@
-# MCP Setup
+# Repomix Setup
 
-MCP registration for Repomix is handled automatically by the plugin. You only need to install the binary.
+Repomix is used by `/pack` and `/qa` for token-efficient codebase snapshots. It runs as a CLI tool — no MCP server required.
 
-## Repomix MCP
-
-### Install Repomix
+## Install
 
 ```bash
 npm install -g repomix
 ```
 
-### Troubleshooting — Repomix server not connecting
+## Verify
 
-If Repomix was installed via nvm, the `repomix` binary may not be on PATH in non-interactive shells. Fix by using the absolute path:
+```bash
+repomix --version
+```
+
+## Troubleshooting — repomix not found
+
+If Repomix was installed via nvm, the `repomix` binary may not be on PATH in non-interactive shells. Fix by linking it globally:
 
 ```bash
 # Find the path
 which repomix
 
-# Edit ~/.claude/settings.json — replace "command": "repomix" with the absolute path
-# under the mcpServers entry for your plugin installation path
+# Option 1: Add nvm's bin to your PATH in ~/.zshrc or ~/.bashrc
+# Option 2: Create a symlink
+sudo ln -s $(which repomix) /usr/local/bin/repomix
 ```
+
+The plugin checks for `repomix` on PATH at session start and warns if missing. `/pack` will block with an explicit error if repomix is not installed.

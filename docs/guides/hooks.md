@@ -87,7 +87,7 @@ phase is active and which artifacts exist.
 === Pipeline State ===
 Artifacts present: brief.md design.md design.approved plan.md
 Stage: build-ready
-Repomix outputId: abc123 (verify age before reuse)
+Repomix snapshot: /path/to/.pipeline/repomix-output.xml (verify age before reuse)
 ```
 
 If no `.pipeline/` directory exists, or the directory is empty, the hook exits silently.

@@ -38,18 +38,9 @@ elif [ -f "$PIPELINE_DIR/design.md" ];       then echo "Stage: review"
 elif [ -f "$PIPELINE_DIR/brief.md" ];        then echo "Stage: design-ready"
 fi
 
-# Repomix pack (may expire — note for Claude)
-if [ -f "$PIPELINE_DIR/repomix-pack.json" ]; then
-  outputId=$(python3 - "$PIPELINE_DIR/repomix-pack.json" <<'PYEOF' 2>/dev/null
-import json, sys
-try:
-    d = json.load(open(sys.argv[1]))
-    print(d.get("outputId", ""))
-except Exception:
-    pass
-PYEOF
-)
-  [ -n "$outputId" ] && echo "Repomix outputId: $outputId (verify age before reuse)"
+# Repomix snapshot
+if [ -f "$PIPELINE_DIR/repomix-output.xml" ]; then
+  echo "Repomix snapshot: $PIPELINE_DIR/repomix-output.xml (verify age before reuse)"
 fi
 
 exit 0

@@ -38,18 +38,17 @@ Pipeline status: [phase name]
   design.approved  [✓ <age> | ✗ missing]
   plan.md          [✓ <age> | ✗ missing]
   build.complete   [✓ <age> | ✗ missing]
-  repomix-pack     [✓ <age> — <N> files, <N> tokens | ⚠ <age> — <N> files, <N> tokens (stale) | ✗ missing]
+  repomix-pack     [✓ <age> | ⚠ <age> (stale) | ✗ missing]
 
 Next: [next step]
 ```
 
 ### repomix-pack Row Rules
 
-- Age < 1 hour: `✓ <age> — <fileCount> files, <tokensAfter> tokens`
-- Age ≥ 1 hour: `⚠ <age> — <fileCount> files, <tokensAfter> tokens (stale — run /pack to refresh)`
+- Age < 1 hour: `✓ <age>`
+- Age ≥ 1 hour: `⚠ <age> (stale — run /pack to refresh)`
 - File absent: `✗ missing`
 - If `packedAt` is absent or not a valid ISO timestamp: treat as stale and display `⚠ age unknown — run /pack to refresh`
-- If `fileCount` or `tokensAfter` are absent from the JSON: omit that field from the row (e.g. `✓ 23m old — 142 files` if only `tokensAfter` is missing)
 
 ## Next Step Prompt
 

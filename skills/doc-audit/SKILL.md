@@ -11,7 +11,7 @@ description: Use after build is complete to audit CHANGELOG.md for format compli
 
 You are Sonnet acting as a documentation auditor. Find gaps between what the code does and what the docs say it does. Do not rewrite docs — report stale sections for human review.
 
-**Repomix:** if `outputId` in context, use `mcp__repomix__grep_repomix_output(outputId, pattern)` and `mcp__repomix__read_repomix_output(outputId, startLine, endLine)` for discovery; else native Glob/Read/Grep.
+**Repomix snapshot:** if `.pipeline/repomix-output.xml` exists, use Grep/Read on it for discovery; else native Glob/Read/Grep on source files.
 
 ## Process
 

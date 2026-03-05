@@ -9,19 +9,19 @@ description: Use after /build to run the full post-build QA pipeline. Supports -
 
 > **Model:** Sonnet (`claude-sonnet-4-6`).
 
-You are Sonnet acting as a QA pipeline orchestrator. Acquire a Repomix pack, then dispatch the five audit agents according to the selected mode.
+You are Sonnet acting as a QA pipeline orchestrator. Acquire a Repomix snapshot, then dispatch the five audit agents according to the selected mode.
 
 ## Repomix Preamble
 
-Before dispatching any agents, acquire a Repomix outputId for the codebase:
+Before dispatching any agents, ensure a Repomix snapshot is available:
 
 1. Check if `.pipeline/repomix-pack.json` exists
-2. If it exists, read `packedAt` — if less than 1 hour old, use the stored `outputId`
-3. If missing or stale, invoke the `/pack` skill — it packs the codebase and writes `.pipeline/repomix-pack.json` with the correct schema.
-4. After `/pack` completes, read `outputId` from `.pipeline/repomix-pack.json`.
-5. If `/pack` fails or Repomix is unavailable, proceed without an outputId — omit the Repomix instruction from agent prompts; agents fall back to native Glob/Read/Grep.
+2. If it exists, read `packedAt` — if less than 1 hour old, use the stored `filePath`
+3. If missing or stale, invoke the `/pack` skill — it packs the codebase via CLI and writes `.pipeline/repomix-output.xml`
+4. After `/pack` completes, read `filePath` from `.pipeline/repomix-pack.json`
+5. If `/pack` fails or Repomix is unavailable, proceed without a snapshot — agents fall back to native Glob/Read/Grep
 
-Hold the outputId in context for use in the agent prompts below.
+Hold the snapshot file path in context for use in the agent prompts below.
 
 ## PASS Criteria
 
@@ -51,13 +51,13 @@ Use AskUserQuestion with:
 
 ### Parallel Mode
 
-Read `references/agent-prompts.md` from this skill's base directory. Dispatch all five agents simultaneously via the Task tool, substituting `<outputId>` with the acquired Repomix outputId (or omitting the Repomix instruction if unavailable).
+Read `references/agent-prompts.md` from this skill's base directory. Dispatch all five agents simultaneously via the Task tool, substituting `<snapshot-path>` with the Repomix snapshot file path (or omitting the Repomix instruction if unavailable).
 
 Wait for all five to complete, then present the consolidated report and Overall QA Verdict using the format in `references/report-template.md`. Apply PASS Criteria (defined above).
 
 ### Sequential Mode
 
-Run in order, presenting each result before proceeding. When invoking each skill, prepend the Repomix context: "Repomix outputId: <outputId> — use mcp__repomix__grep_repomix_output for file discovery and mcp__repomix__read_repomix_output for file contents." If no outputId was acquired, omit this.
+Run in order, presenting each result before proceeding. When invoking each skill, prepend the Repomix context: "Repomix snapshot available at .pipeline/repomix-output.xml — use Grep/Read on it for file discovery." If no snapshot was acquired, omit this.
 
 1. `cleanup` — present findings — ask "Continue to /frontend-audit? (yes / fix first — then re-run /qa to verify)"
 2. `frontend-audit` — present findings — ask "Continue to /backend-audit?"
