@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# session_end_pack.sh
+# session-end-pack.sh
 # SessionEnd hook: packs the codebase into three targeted Repomix snapshots
 # (code, docs, full) so the next session's /qa has fresh snapshots with a
 # refreshed packedAt timestamp.
@@ -25,7 +25,7 @@ check_opt_out() {
 }
 check_opt_out && exit 0
 
-# Walk up from cwd to find .pipeline/ directory (consistent with pipeline_gate.sh)
+# Walk up from cwd to find .pipeline/ directory (consistent with pipeline-gate.sh)
 find_project_root() {
   local dir="$PWD"
   while [ "$dir" != "/" ]; do

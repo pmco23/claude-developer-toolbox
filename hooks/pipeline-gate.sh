@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# pipeline_gate.sh
+# pipeline-gate.sh
 # Enforces quality gates for the development pipeline.
 # Reads PreToolUse JSON from stdin; blocks if required .pipeline/ artifact is missing.
 
@@ -22,7 +22,7 @@ except Exception:
 " 2>/dev/null || echo "")
 else
   # Neither jq nor python3 available — fail open with warning
-  echo "pipeline_gate: jq and python3 unavailable, gate disabled" >&2
+  echo "pipeline-gate: jq and python3 unavailable, gate disabled" >&2
   exit 0
 fi
 

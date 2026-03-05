@@ -5,7 +5,7 @@ action. They run automatically as Claude Code fires lifecycle events.
 
 ---
 
-## SessionStart — `session_start_check.sh`
+## SessionStart — `session-start-check.sh`
 
 **When it fires:** Once, at the start of every Claude Code session.
 
@@ -17,7 +17,7 @@ starts regardless — hooks fail open.
 
 | Tool | Used by |
 |------|---------|
-| `jq` | JSON parsing in `pipeline_gate.sh` and `context-monitor.sh` (primary) |
+| `jq` | JSON parsing in `pipeline-gate.sh` and `context-monitor.sh` (primary) |
 | `python3` | JSON parsing fallback when `jq` is absent |
 | `repomix` | `/pack` and `/qa` codebase snapshots |
 
@@ -25,7 +25,7 @@ starts regardless — hooks fail open.
 
 ---
 
-## PreToolUse — `pipeline_gate.sh`
+## PreToolUse — `pipeline-gate.sh`
 
 **When it fires:** Before every `Skill` tool call.
 
@@ -121,8 +121,8 @@ directly using its file-editing tools.
 
 | Hook | Event | Type | Scope |
 |------|-------|------|-------|
-| `session_start_check.sh` | `SessionStart` | command | Warns on missing tools |
-| `pipeline_gate.sh` | `PreToolUse` (Skill) | command | Enforces pipeline phase order |
+| `session-start-check.sh` | `SessionStart` | command | Warns on missing tools |
+| `pipeline-gate.sh` | `PreToolUse` (Skill) | command | Enforces pipeline phase order |
 | `context-monitor.sh` | `PostToolUse` (Bash\|Agent\|Task) | command | Warns on high context usage |
 | `compact-prep.sh` | `PreCompact` | command | Preserves pipeline state across compaction |
 | *(prompt)* | `Stop` | prompt | Updates MEMORY.md Current Focus |

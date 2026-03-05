@@ -2,7 +2,7 @@
 # compact-prep.sh
 # PreCompact hook: outputs current pipeline state so it is preserved in the compact summary.
 
-# Walk up from cwd to find .pipeline/ directory (consistent with pipeline_gate.sh)
+# Walk up from cwd to find .pipeline/ directory (consistent with pipeline-gate.sh)
 find_pipeline_dir() {
   local dir="$PWD"
   while [ "$dir" != "/" ]; do
