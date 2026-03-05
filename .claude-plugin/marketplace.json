@@ -1,12 +1,14 @@
 {
-  "name": "local-dev",
+  "name": "pmco23-tools",
   "owner": {
     "name": "pemcoliveira"
+  },
+  "metadata": {
+    "description": "Claude Code plugins by pemcoliveira"
   },
   "plugins": [
     {
       "name": "claude-developer-toolbox",
-      "version": "2.1.0",
       "description": "Quality-gated development pipeline: brief → design → review → plan → build → qa",
       "source": "./"
     }

@@ -28,7 +28,7 @@ cd claude-developer-toolbox
 # Register as local plugin
 # In a Claude Code session:
 /plugin marketplace add ./
-/plugin install claude-developer-toolbox@local-dev
+/plugin install claude-developer-toolbox@pmco23-tools
 ```
 
 Restart Claude Code after install.
@@ -53,4 +53,4 @@ Expected: `Results: 52 passed, 0 failed`
 
 ## Releases
 
-Use the `/release` skill inside Claude Code to cut releases. It bumps `plugin.json`, updates CHANGELOG, commits, and tags. Never push tags manually.
+Use the `/release` command inside Claude Code to cut releases. It bumps `plugin.json`, updates CHANGELOG, commits, and tags. Never push tags manually.

@@ -10,7 +10,7 @@ You tried to run `/plan` without going through `/review`. Run `/review` and iter
 
 ## Gate is not firing (hook not active)
 
-1. Verify the plugin is installed: in Claude Code, run `/plugin list` and confirm `claude-developer-toolbox@local-dev` appears.
+1. Verify the plugin is installed: in Claude Code, run `/plugin list` and confirm `claude-developer-toolbox@pmco23-tools` appears.
 2. Restart Claude Code — hooks are loaded at startup.
 3. Check that `hooks/pipeline_gate.sh` is executable: `ls -la ~/claude-developer-toolbox/hooks/`
 4. Check `hooks/hooks.json` is valid: `python3 -m json.tool ~/claude-developer-toolbox/hooks/hooks.json`
@@ -37,7 +37,7 @@ Expected: `Results: 52 passed, 0 failed`
 ## Plugin not loading after changes
 
 ```bash
-/plugin uninstall claude-developer-toolbox@local-dev
-/plugin install claude-developer-toolbox@local-dev
+/plugin uninstall claude-developer-toolbox@pmco23-tools
+/plugin install claude-developer-toolbox@pmco23-tools
 # Restart Claude Code
 ```

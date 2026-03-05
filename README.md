@@ -66,20 +66,17 @@ Diagnostics degrade gracefully across three tiers: VS Code IDE integration → L
 ## Quick Install
 
 ```bash
-# 1. Clone the plugin
-git clone https://github.com/pmco23/claude-developer-toolbox.git ~/claude-developer-toolbox
-
-# 2. Install Context7 (required — live library docs for /design and /review)
+# 1. Install Context7 (required — live library docs for /design and /review)
 # Run inside a Claude Code session:
 /plugin install context7@claude-plugins-official
 
-# 3. Install repomix (recommended — token-efficient codebase packing for /pack and /qa)
+# 2. Install repomix (recommended — token-efficient codebase packing for /pack and /qa)
 npm install -g repomix
 
-# 4. Register the plugin
+# 3. Add the marketplace and install the plugin
 # Run inside a Claude Code session:
-/plugin marketplace add ~/claude-developer-toolbox
-/plugin install claude-developer-toolbox@local-dev
+/plugin marketplace add pmco23/claude-developer-toolbox
+/plugin install claude-developer-toolbox@pmco23-tools
 ```
 
 Restart Claude Code. Run `/brief` to verify. See the [full installation guide](docs/guides/installation.md) for statusline setup, optional LSP tools, and verification steps.

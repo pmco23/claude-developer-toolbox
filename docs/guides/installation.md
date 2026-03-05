@@ -34,29 +34,28 @@ apt install jq
 
 ---
 
-## Step 0: Get the plugin directory
+## Step 0: Add the marketplace
 
-Clone or copy the plugin to a local directory. The install commands below assume `~/claude-developer-toolbox`:
+Inside a Claude Code session:
 
-```bash
-git clone <repo-url> ~/claude-developer-toolbox
+```
+/plugin marketplace add pmco23/claude-developer-toolbox
 ```
 
-Replace `<repo-url>` with the actual repository URL. If you already have the directory somewhere else, substitute that path in the steps below.
-
----
-
-## Step 1: Add the development marketplace
+For local development, clone the repo first and add it by path instead:
 
 ```bash
-claude
+git clone https://github.com/pmco23/claude-developer-toolbox.git ~/claude-developer-toolbox
+```
+
+```
 /plugin marketplace add ~/claude-developer-toolbox
 ```
 
-## Step 2: Install the plugin
+## Step 1: Install the plugin
 
 ```
-/plugin install claude-developer-toolbox@local-dev
+/plugin install claude-developer-toolbox@pmco23-tools
 ```
 
 ## Step 3: Restart Claude Code
@@ -106,7 +105,7 @@ The context bar turns yellow above 63%, orange above 81%, and red-blinking with 
 ## Reinstalling after changes
 
 ```bash
-/plugin uninstall claude-developer-toolbox@local-dev
-/plugin install claude-developer-toolbox@local-dev
+/plugin uninstall claude-developer-toolbox@pmco23-tools
+/plugin install claude-developer-toolbox@pmco23-tools
 # Restart Claude Code
 ```

@@ -28,6 +28,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `skills/release/` — replaced by `commands/release.md`
 - Repomix MCP server dependency — CLI provides the same Tree-sitter compression without server setup overhead
 
+### Distribution
+
+- Marketplace renamed from `local-dev` to `pmco23-tools` — install via `/plugin install claude-developer-toolbox@pmco23-tools`
+- README Quick Install now uses GitHub source (`/plugin marketplace add pmco23/claude-developer-toolbox`) instead of local path
+- Removed duplicate `version` field from `marketplace.json` — `plugin.json` is the single source of truth
+- Added `metadata.description` to marketplace manifest
+- Updated all docs (installation, troubleshooting, contributing) to use new marketplace name
+
 ## [2.1.0] - 2026-03-04
 
 ### Added
