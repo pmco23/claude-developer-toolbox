@@ -22,6 +22,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All 5 audit skills (`/cleanup`, `/frontend-audit`, `/backend-audit`, `/doc-audit`, `/security-review`) updated to read Repomix snapshot via file system instead of MCP
 - `docs/guides/mcp-setup.md` rewritten as Repomix CLI installation guide (no MCP server required)
 - `hooks/compact-prep.sh` simplified — checks for snapshot file directly instead of parsing MCP outputId
+- `/pack` now generates three targeted Repomix snapshots: `repomix-code.xml` (source code, `--compress --include-diffs`), `repomix-docs.xml` (documentation only), `repomix-full.xml` (full codebase) — each audit agent receives only the files it needs
+- All snapshots use `--remove-empty-lines` for additional token savings; code and docs variants use `--no-file-summary` to reduce overhead
+- `/qa` maps each audit agent to its optimal snapshot variant: code for cleanup/frontend/backend/security, docs for doc-audit
+- 5 audit skills updated with three-step fallback chain: targeted variant → full snapshot → native Glob/Read/Grep
+- `session_end_pack.sh` generates all three snapshot variants on session end
+- `compact-prep.sh` reports snapshot variant sizes
+- `/status` report shows per-variant sizes (code/docs/full KB)
+- `.pipeline/repomix-pack.json` format expanded with `snapshots` map containing per-variant `filePath` and `fileSize`
 
 ### Removed
 

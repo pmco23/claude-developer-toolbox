@@ -38,16 +38,16 @@ Pipeline status: [phase name]
   design.approved  [✓ <age> | ✗ missing]
   plan.md          [✓ <age> | ✗ missing]
   build.complete   [✓ <age> | ✗ missing]
-  repomix-pack     [✓ <age> | ⚠ <age> (stale) | ✗ missing]
+  repomix-pack     [✓ <age> — code: <size>KB, docs: <size>KB, full: <size>KB | ⚠ <age> (stale) | ✗ missing]
 
 Next: [next step]
 ```
 
 ### repomix-pack Row Rules
 
-- Age < 1 hour: `✓ <age>`
+- Age < 1 hour: `✓ <age> — code: <size>KB, docs: <size>KB, full: <size>KB` (read sizes from `snapshots.<variant>.fileSize` in `repomix-pack.json`, convert to KB; omit any variant missing from the map)
 - Age ≥ 1 hour: `⚠ <age> (stale — run /pack to refresh)`
-- File absent: `✗ missing`
+- File absent (no `repomix-pack.json`): `✗ missing`
 - If `packedAt` is absent or not a valid ISO timestamp: treat as stale and display `⚠ age unknown — run /pack to refresh`
 
 ## Next Step Prompt
