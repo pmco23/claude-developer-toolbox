@@ -27,7 +27,7 @@ except Exception:
 _json_file_field() {
   local file="$1" field="$2" default="${3:-0}"
   if command -v jq >/dev/null 2>&1; then
-    jq -r ".${field} // ${default}" "$file" 2>/dev/null || echo "$default"
+    jq -r --arg d "$default" ".${field} // \$d" "$file" 2>/dev/null || echo "$default"
   elif command -v python3 >/dev/null 2>&1; then
     python3 - "$file" "$field" "$default" <<'PYEOF' 2>/dev/null || echo "$default"
 import json, sys
