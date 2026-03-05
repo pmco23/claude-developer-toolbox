@@ -45,7 +45,7 @@ missing, it exits with code `2` (block) and tells Claude what to run first.
 | `/cleanup`, `/frontend-audit`, `/backend-audit`, `/doc-audit`, `/security-review`, `/qa` | `.pipeline/build.complete` | Run `/build` then `/drift-check` first |
 | `/quick` | — | Never blocked; warns if a pipeline is active |
 
-Skills not in this table (e.g. `/status`, `/pack`, `/init`, `/git-workflow`) are always allowed.
+Skills not in this table (e.g. `/status`, `/pack`, `/init`, `/git-workflow`) are always allowed. Commands (`/commit`, `/push`, `/commit-push-pr`, `/sync`, `/clean-branches`, `/release`) bypass the gate entirely — they are not skills and do not trigger `PreToolUse` on `Skill`.
 
 **Walk-up search:** The gate searches from the current directory upward, so it works correctly
 from any subdirectory of a project.

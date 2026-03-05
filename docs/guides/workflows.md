@@ -300,8 +300,6 @@ claude
 # Offers to invoke /quick on failures
 
 # 9. Cut the release
-/release
-# Choose patch / minor / major
-# Shows full preview (version bump, CHANGELOG diff, commit, tag)
-# Confirm → applies locally; then: git push && git push --tags
+/release minor
+# Version bump, changelog, commit, tag, push, GitHub release — all in one shot
 ```

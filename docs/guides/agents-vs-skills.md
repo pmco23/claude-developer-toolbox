@@ -60,7 +60,7 @@ The following table applies the fitness criterion to every skill in this plugin.
 | `/build` | **Skill** | Interactive — writes code and shows progress in real time |
 | `/quick` | **Skill** | Interactive fix workflow — targets specific items the user selects |
 | `/init` | **Skill** | Conversational — asks overwrite/skip/merge for each existing file |
-| `/git-workflow` | **Skill** | Conversational — asks about PR title, branch naming, commit scope |
+| `/git-workflow` | **Skill** | Destructive-op safety gate — confirms before force-push, reset --hard, branch -D |
 | `/qa` | **Skill** | Orchestrator — coordinates five audits; interaction in sequential mode |
 | `/status` | **Skill** | Lightweight report from `.pipeline/` files; no verbose output |
 | `/pack` | **Skill** | Single-command Repomix wrapper; non-interactive, but output is used by the user immediately — no isolation benefit |
@@ -71,8 +71,9 @@ The following table applies the fitness criterion to every skill in this plugin.
 | `/doc-audit` | **Agent candidate** | Same pattern — reads docs and code, returns freshness report. |
 | `/security-review` | **Agent candidate** | Same pattern — reads code, returns OWASP findings. |
 | `/test` | **Skill** | Interactive — AskUserQuestion for runner selection when detection fails; offers `/quick` on test failures |
-| `/release` | **Skill** | Fully interactive — version source, release type, and confirmation prompts; multiple decision points |
 | `/rollback` | **Skill** | Requires per-group confirmation before any destructive file removal; interactive confirmation gate |
+
+**Note:** `/commit`, `/push`, `/commit-push-pr`, `/sync`, `/clean-branches`, and `/release` are **commands** (not skills or agents). Commands are lightweight one-shot markdown files with injected context — they don't need the skill/agent evaluation.
 
 ### Why the four agent candidates were kept as skills
 
