@@ -11,7 +11,8 @@ Style config: hooks follow POSIX-compatible bash (`set -euo pipefail`). Skills f
 
 - `skills/<name>/SKILL.md` — skill definitions (loaded by Claude Code on invocation)
 - `skills/<name>/references/` — progressive-disclosure content loaded by skills at specific steps
-- `hooks/` — PreToolUse/SessionStart/SessionEnd bash hooks
+- `hooks/` — PreToolUse/PostToolUse/SessionStart/SessionEnd bash hooks
+- `hooks/lib/` — sourceable shared libraries (no shebang, not executable)
 - `hooks/test-gate.sh` — gate test suite (run before every commit)
 - `.claude-plugin/plugin.json` — plugin manifest (version source of truth)
 - `.claude-plugin/marketplace.json` — local dev marketplace manifest

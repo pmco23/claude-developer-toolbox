@@ -1,6 +1,6 @@
 # Hooks Reference
 
-This plugin registers five event hooks. Each one is passive infrastructure — none require user
+This plugin registers six event hooks. Each one is passive infrastructure — none require user
 action. They run automatically as Claude Code fires lifecycle events.
 
 ---
@@ -52,9 +52,25 @@ from any subdirectory of a project.
 
 ---
 
+## PreToolUse — `convention-guard.sh`
+
+**When it fires:** Before every `Write` or `Edit` tool call.
+
+**What it does:** Enforces project conventions by inspecting the target file path:
+
+| Rule | Trigger | Action | Message |
+|------|---------|--------|---------|
+| `.claude-plugin/` guard | Write/Edit to `.claude-plugin/*` (non-manifest) | **deny** (exit 2) | Only manifests belong in .claude-plugin/ |
+| Hook chmod reminder | Write/Edit to `hooks/*.sh` | **allow** + context | Remember: chmod +x, correct shebang, run test-gate.sh |
+| Version sync reminder | Write/Edit to `.claude-plugin/plugin.json` | **allow** + context | Also bump version in marketplace.json |
+
+Outputs `hookSpecificOutput` JSON for Claude Code to display.
+
+---
+
 ## PostToolUse — `context-monitor.sh`
 
-**When it fires:** After every `Bash`, `Agent`, or `Task` tool call.
+**When it fires:** After every tool call.
 
 **What it does:** Reads a bridge file written by `statusline.js` at
 `/tmp/claude-ctx-<session_id>.json` and injects a context warning into Claude's output if the
@@ -94,7 +110,20 @@ If no `.pipeline/` directory exists, or the directory is empty, the hook exits s
 
 ---
 
-## Stop — prompt hook
+## SessionEnd — `session-end-pack.sh`
+
+**When it fires:** When a Claude Code session ends.
+
+**What it does:** Generates three targeted Repomix snapshots (code, docs, full) into the
+`.pipeline/` directory. Each `repomix` call is guarded by a 60-second timeout (fail-open if
+the `timeout` command is absent). Writes a `repomix-pack.json` manifest with timestamps and
+file sizes.
+
+**Opt-out:** Add `session-end-pack: disabled` to your project's CLAUDE.md.
+
+---
+
+## SessionEnd — prompt hook
 
 **When it fires:** When the main Claude agent considers stopping (end of a turn or session).
 
@@ -117,12 +146,41 @@ directly using its file-editing tools.
 
 ---
 
+## Shared Libraries — `hooks/lib/`
+
+Hooks share common logic via two sourceable library files in `hooks/lib/`. These files have no
+shebang and are not executable — they are loaded with `source`.
+
+### `hooks/lib/find-project.sh`
+
+| Function | Returns | Failure |
+|----------|---------|---------|
+| `find_pipeline_dir` | `.pipeline` dir | Falls back to `$PWD/.pipeline` |
+| `find_pipeline_dir_strict` | `.pipeline` dir | Returns 1 |
+| `find_project_root` | Parent of `.pipeline` | Returns 1 |
+| `find_file_up <name>` | File path | Returns 1 |
+
+All functions respect `PIPELINE_TEST_DIR` for test compatibility.
+
+### `hooks/lib/json-helpers.sh`
+
+| Function | Input | Purpose |
+|----------|-------|---------|
+| `_json_stdin_field <dotted.path>` | stdin | Extract field from JSON on stdin |
+| `_json_file_field <file> <field> [default]` | file | Extract field from JSON file |
+
+Prefers `jq`, falls back to `python3`. Supports nested fields via dot notation.
+
+---
+
 ## Summary
 
 | Hook | Event | Type | Scope |
 |------|-------|------|-------|
 | `session-start-check.sh` | `SessionStart` | command | Warns on missing tools |
 | `pipeline-gate.sh` | `PreToolUse` (Skill) | command | Enforces pipeline phase order |
-| `context-monitor.sh` | `PostToolUse` (Bash\|Agent\|Task) | command | Warns on high context usage |
+| `convention-guard.sh` | `PreToolUse` (Write\|Edit) | command | Enforces project conventions |
+| `context-monitor.sh` | `PostToolUse` | command | Warns on high context usage |
 | `compact-prep.sh` | `PreCompact` | command | Preserves pipeline state across compaction |
-| *(prompt)* | `Stop` | prompt | Updates MEMORY.md Current Focus |
+| `session-end-pack.sh` | `SessionEnd` | command | Generates Repomix snapshots |
+| *(prompt)* | `SessionEnd` | prompt | Updates MEMORY.md Current Focus |
