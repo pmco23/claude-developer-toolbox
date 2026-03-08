@@ -73,7 +73,7 @@ You should see the brief skill start a Q&A session. If the gate hook is active, 
 
 Core workflow and safety skills are explicit slash-command entrypoints. If you
 describe work in natural language and Claude does not auto-enter `/brief`,
-`/build`, or `/qa`, that is expected — run the slash command directly.
+`/build`, `/pr-qa`, or `/qa`, that is expected — run the slash command directly.
 
 If the current runtime does not expose structured picker prompts, interactive
 skills fall back to plain-text questions with the same choices.
@@ -157,4 +157,4 @@ node scripts/grade-runtime-fixtures.js
 ```
 
 - `hooks/test-gate.sh` validates the hook bundle, session memory, and shared Repomix packer
-- `scripts/grade-runtime-fixtures.js` grades curated runtime fixtures for `/build`, `/qa`, `/review`, `/rollback`, and `task-builder`
+- `scripts/grade-runtime-fixtures.js` grades curated runtime fixtures for `/build`, `/pr-qa`, `/qa`, `/review`, `/rollback`, and `task-builder`

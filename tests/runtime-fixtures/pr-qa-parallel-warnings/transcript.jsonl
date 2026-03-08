@@ -1,0 +1,6 @@
+{"event":"user","text":"/pr-qa --base origin/main"}
+{"event":"assistant","text":"Collected diff context against origin/main (4f2a1c9d2a10). Changed files: src/auth/login.ts, src/auth/login.test.ts, README.md. Dispatching the three PR QA tracks in parallel."}
+{"event":"tool_use","name":"Task","input":{"prompt":"PR QA track: general code review."}}
+{"event":"tool_use","name":"Task","input":{"prompt":"PR QA track: test quality review."}}
+{"event":"tool_use","name":"Task","input":{"prompt":"PR QA track: silent failure review."}}
+{"event":"assistant","text":"```json\n{\n  \"baseRef\": \"origin/main\",\n  \"baseCommit\": \"4f2a1c9d2a10\",\n  \"overallVerdict\": \"PASS WITH WARNINGS\",\n  \"tracks\": [\n    {\n      \"track\": \"pr-code-review\",\n      \"verdict\": \"pass\",\n      \"confidence\": \"medium\"\n    },\n    {\n      \"track\": \"pr-test-analyzer\",\n      \"verdict\": \"warn\",\n      \"confidence\": \"high\"\n    },\n    {\n      \"track\": \"silent-failure-review\",\n      \"verdict\": \"pass\",\n      \"confidence\": \"medium\"\n    }\n  ],\n  \"findings\": [\n    {\n      \"track\": \"pr-test-analyzer\",\n      \"severity\": \"MEDIUM\",\n      \"path\": \"src/auth/login.ts\",\n      \"summary\": \"No regression assertion covers the failed-login lockout branch.\"\n    }\n  ]\n}\n```\nPR QA complete. Overall verdict: PASS WITH WARNINGS."}

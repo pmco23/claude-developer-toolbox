@@ -9,6 +9,7 @@ A quality-gated development pipeline for Claude Code. Every transition between p
 ```
 idea
  ├─ /quick [--deep]          # fast track — no pipeline, no artifacts
+ │   └─ /pr-qa [--base <ref>] # optional diff-scoped review before commit or PR
  ├─ /git-workflow             # destructive git op safety gate — always available, standalone
  ├─ /init                    # project boilerplate — CLAUDE.md, README, CHANGELOG, CONTRIBUTING, PR template
  ├─ /status                  # inspect current pipeline phase — always available
@@ -20,6 +21,7 @@ idea
          └─ /review → .pipeline/design.approved
              └─ /plan   → .pipeline/plan.md
                  └─ /build  → .pipeline/build.complete
+                     ├─ /pr-qa [--base <ref>]       # optional diff-scoped review of changed files
                      └─ /qa [--parallel|--sequential]
                          ├─ /cleanup
                          ├─ /frontend-audit
@@ -33,7 +35,7 @@ Each arrow is a quality gate. You cannot run `/design` without a brief. You cann
 ## Invocation Model
 
 Core workflow and safety skills are explicit slash-command entrypoints:
-`/brief`, `/design`, `/review`, `/plan`, `/build`, `/qa`, `/init`,
+`/brief`, `/design`, `/review`, `/plan`, `/build`, `/qa`, `/pr-qa`, `/init`,
 `/git-workflow`, `/reset`, `/rollback`, and `/status`.
 
 These skills set `disable-model-invocation: true` so Claude does not auto-enter
@@ -131,7 +133,7 @@ node scripts/grade-runtime-fixtures.js
 ```
 
 - `hooks/test-gate.sh` covers hook contracts, session memory, and the deterministic Repomix packer
-- `scripts/grade-runtime-fixtures.js` grades curated runtime fixtures for `/build`, `/qa`, `/review`, `/rollback`, and `task-builder`
+- `scripts/grade-runtime-fixtures.js` grades curated runtime fixtures for `/build`, `/pr-qa`, `/qa`, `/review`, `/rollback`, and `task-builder`
 
 ### Skills
 
@@ -143,6 +145,7 @@ node scripts/grade-runtime-fixtures.js
 | `/plan` | Atomic execution planning |
 | `/drift-check` | Design-to-build drift detection |
 | `/build` | Parallel build |
+| `/pr-qa` | Diff-scoped pre-PR review |
 | `/qa` | Post-build QA pipeline |
 | `/cleanup` | Dead code removal |
 | `/frontend-audit` | Frontend style audit |

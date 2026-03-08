@@ -10,12 +10,16 @@ Two workflow paths are available. Everything else in the plugin supports one of 
 | New feature, design-sensitive change, anything that warrants a design doc | **Pipeline** (`/brief → /qa`) |
 | Not sure | Start with **Pipeline** — you can abandon it after `/brief` if it turns out to be simple |
 
+An optional diff-scoped review step exists after code has been written:
+`/pr-qa [--base <ref>]` reviews only changed files before `/commit`,
+`/commit-push-pr`, or a wider `/qa` run.
+
 ## Invocation Behavior
 
 Several stateful workflows are explicit slash-command entrypoints and do not
 auto-load from natural-language prompts. Run these directly when you want them:
 
-`/brief`, `/design`, `/review`, `/plan`, `/build`, `/qa`, `/init`,
+`/brief`, `/design`, `/review`, `/plan`, `/build`, `/qa`, `/pr-qa`, `/init`,
 `/git-workflow`, `/reset`, `/rollback`, `/status`
 
 These skills set `disable-model-invocation: true` to avoid accidental phase
@@ -33,6 +37,7 @@ with a plain-text question instead.
 /quick [task description]     Sonnet implements directly — no artifacts
 /quick --deep [task]          Escalate to Opus for trickier problems
 /quick                        Prompts you for task description
+/pr-qa [--base <ref>]         Optional diff-scoped review before commit or PR
 ```
 
 **What it does:**
@@ -46,6 +51,10 @@ with a plain-text question instead.
 - Write `.pipeline/` artifacts — ever
 - Invoke the full QA pipeline
 - Refactor surrounding code unless asked
+
+**Optional follow-up:**
+- Run `/pr-qa` when you want a stronger changed-files review before `/commit`
+  or `/commit-push-pr`
 
 **When NOT to use Fast Track:**
 - The change requires a design decision with non-obvious trade-offs
@@ -64,6 +73,7 @@ A quality-gated sequence. Each phase writes an artifact. The gate hook blocks fo
 /review   →  .pipeline/design.approved  adversarial review (strategic-critic + code-critic in parallel)
 /plan     →  .pipeline/plan.md          atomic execution plan (Opus)
 /build    →  .pipeline/build.complete   coordinated build (Opus lead + Sonnet builders)
+/pr-qa                                 optional diff-scoped review on changed files before commit/PR
 /qa                                     post-build audits (parallel or sequential)
 ```
 
@@ -98,6 +108,7 @@ Or commit it if you want a paper trail of your pipeline state.
 | `/review` | `design.approved` | Adversarial findings addressed; design hardened before any code |
 | `/plan` | `plan.md` | Exact file paths, code patterns, test cases, acceptance criteria per task group |
 | `/build` | `build.complete` | Implementation complete and drift-verified against the plan; task groups tracked in the task list — survives context compaction |
+| `/pr-qa` | (none) | Optional changed-files review before `/commit`, `/commit-push-pr`, or a broader `/qa` run |
 | `/qa` | (none) | Dead code, frontend/backend/doc/security audits — run after `/build` completes; use `--parallel` for speed or `--sequential` for interactive mode |
 
 ### Resetting to a prior phase
@@ -215,6 +226,7 @@ These run independently of any pipeline state — no gate, no artifacts required
 | `/init` | New project or missing boilerplate — generates CLAUDE.md (with git conventions), README, CHANGELOG, CONTRIBUTING, .gitignore |
 | `/git-workflow` | Before any destructive git operation (force-push, reset --hard, branch -D, or rebasing published commits) — routine commits and branches are governed by CLAUDE.md |
 | `/pack` | Before `/qa` or `/quick --deep` to snapshot the codebase |
+| `/pr-qa` | After `/quick`, before `/commit-push-pr`, or after `/build` when you want diff-scoped review instead of a full release gate |
 | `/drift-check` | After `/build` — verify implementation matches the approved design; also run standalone at any time (standalone prefers a structured source/target prompt and falls back to plain text if needed) |
 | `/quick` | Fast-track implementation (see above) |
 | `/test` | Any time — run the project test suite; supports file/pattern scoping; auto-detects jest, vitest, go test, pytest, dotnet test, cargo test; also invoked by `/cleanup` after dead-code removal |

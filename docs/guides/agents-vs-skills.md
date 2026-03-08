@@ -52,7 +52,7 @@ If a task fails any test, keep it as a skill.
 
 ---
 
-## Evaluating This Plugin's 21 Skills
+## Evaluating This Plugin's 22 Skills
 
 The following table applies the fitness criterion to every skill in this plugin. It documents the reasoning so future decisions can follow the same logic rather than re-litigating from scratch.
 
@@ -64,6 +64,7 @@ The following table applies the fitness criterion to every skill in this plugin.
 | `/plan` | **Skill** | Produces a plan with user guidance and revision cycles |
 | `/build` | **Skill** | Interactive — writes code and shows progress in real time |
 | `/quick` | **Skill** | Interactive fix workflow — targets specific items the user selects |
+| `/pr-qa` | **Skill** | Orchestrator — reviews changed files only, can ask for a base ref, and coordinates three diff-scoped review tracks |
 | `/init` | **Skill** | Conversational — asks overwrite/skip/merge for each existing file |
 | `/git-workflow` | **Skill** | Destructive-op safety gate — confirms before force-push, reset --hard, branch -D, or rebasing published commits |
 | `/qa` | **Skill** | Orchestrator — coordinates five audits; interaction in sequential mode |
@@ -76,7 +77,9 @@ The following table applies the fitness criterion to every skill in this plugin.
 | `/doc-audit` | **Agent candidate** | Same pattern — reads docs and code, returns freshness report. |
 | `/security-review` | **Agent candidate** | Same pattern — reads code, returns OWASP findings. |
 | `/test` | **Skill** | Interactive — prefers structured prompts for runner selection and failure handling, with plain-text fallback when unavailable; offers `/quick` on test failures |
+| `/tdd` | **Skill** | Lightweight guidance skill — no isolation benefit; its value is inline behavioural guardrails |
 | `/rollback` | **Skill** | Requires per-group confirmation, safety backups, and repo-root-safe path validation before destructive file removal |
+| `/reset` | **Skill** | Interactive phase-management workflow — asks where to reset and removes artifacts accordingly |
 
 **Note:** `/commit`, `/push`, `/commit-push-pr`, `/sync`, `/clean-branches`, and `/release` are **commands** (not skills or agents). Commands are lightweight one-shot markdown files with injected context — they don't need the skill/agent evaluation.
 

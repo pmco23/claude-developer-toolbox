@@ -3,6 +3,7 @@
 Curated transcript fixtures for the highest-risk workflow components:
 
 - `/build`
+- `/pr-qa`
 - `/qa`
 - `/review`
 - `/rollback`

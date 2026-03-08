@@ -1,0 +1,48 @@
+{
+  "name": "pr-qa-parallel-warnings",
+  "component": "/pr-qa",
+  "transcript": "transcript.jsonl",
+  "assertions": [
+    {
+      "id": "dispatches-general-review-track",
+      "type": "tool_use",
+      "name": "Task",
+      "inputContains": {
+        "prompt": "PR QA track: general code review."
+      }
+    },
+    {
+      "id": "dispatches-test-review-track",
+      "type": "tool_use",
+      "name": "Task",
+      "inputContains": {
+        "prompt": "PR QA track: test quality review."
+      }
+    },
+    {
+      "id": "dispatches-silent-failure-track",
+      "type": "tool_use",
+      "name": "Task",
+      "inputContains": {
+        "prompt": "PR QA track: silent failure review."
+      }
+    },
+    {
+      "id": "reports-pass-with-warnings",
+      "type": "json_field_equals",
+      "actor": "assistant",
+      "path": "overallVerdict",
+      "equals": "PASS WITH WARNINGS"
+    },
+    {
+      "id": "includes-test-gap-finding",
+      "type": "json_array_includes_object",
+      "actor": "assistant",
+      "path": "findings",
+      "contains": {
+        "track": "pr-test-analyzer",
+        "severity": "MEDIUM"
+      }
+    }
+  ]
+}

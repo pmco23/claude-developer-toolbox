@@ -15,8 +15,9 @@ Style config: hooks follow POSIX-compatible bash (`set -euo pipefail`). Skills f
 - `hooks/lib/` — sourceable shared libraries (no shebang, not executable)
 - `scripts/` — Node.js hook helpers for project-local session memory (`session-context.js`, `session-summary.js`)
 - `skills/pack/scripts/repomix-pack.js` — shared deterministic Repomix packer used by `/pack` and the SessionEnd pack hook
+- `skills/pr-qa/scripts/collect-diff-context.js` — diff collector used by `/pr-qa` to scope pre-PR review to changed files
 - `hooks/test-gate.sh` — gate test suite (run before every commit)
-- `tests/runtime-fixtures/` — curated transcript fixtures for `/build`, `/qa`, `/review`, `/rollback`, and `task-builder`
+- `tests/runtime-fixtures/` — curated transcript fixtures for `/build`, `/pr-qa`, `/qa`, `/review`, `/rollback`, and `task-builder`
 - `scripts/grade-runtime-fixtures.js` — fixture grader for the runtime transcripts
 - `.claude-plugin/plugin.json` — plugin manifest (version source of truth)
 - `.claude-plugin/marketplace.json` — local dev marketplace manifest
