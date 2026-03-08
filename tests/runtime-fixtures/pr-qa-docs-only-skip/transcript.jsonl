@@ -1,0 +1,2 @@
+{"event":"user","text":"/pr-qa --base origin/main"}
+{"event":"assistant","text":"PR QA skipped — only documentation files changed relative to origin/main. Use normal doc review if needed."}

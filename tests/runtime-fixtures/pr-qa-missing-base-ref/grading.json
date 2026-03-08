@@ -1,0 +1,26 @@
+{
+  "name": "pr-qa-missing-base-ref",
+  "component": "/pr-qa",
+  "transcript": "transcript.jsonl",
+  "assertions": [
+    {
+      "id": "asks-for-base-ref",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "What base ref should `/pr-qa` compare against?"
+    },
+    {
+      "id": "accepts-user-base-ref",
+      "type": "message_contains",
+      "actor": "user",
+      "pattern": "origin/main"
+    },
+    {
+      "id": "recovers-after-base-provided",
+      "type": "json_field_equals",
+      "actor": "assistant",
+      "path": "overallVerdict",
+      "equals": "PASS"
+    }
+  ]
+}

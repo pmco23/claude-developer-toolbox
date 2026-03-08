@@ -14,6 +14,13 @@ The `task-builder` fixtures include both:
 - a successful contract handoff
 - a blocked contract handoff with failing tests and non-empty blockers
 
+The `/pr-qa` fixtures include:
+
+- a parallel happy path with structured track results
+- a docs-only skip path
+- a missing-base-ref recovery path
+- a non-git blocked path
+
 Run the grader from the repository root:
 
 ```bash

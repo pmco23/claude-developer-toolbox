@@ -35,6 +35,16 @@
       "equals": "PASS WITH WARNINGS"
     },
     {
+      "id": "structured-track-result-present",
+      "type": "json_array_includes_object",
+      "actor": "assistant",
+      "path": "tracks",
+      "contains": {
+        "reviewer": "pr-test-analyzer",
+        "verdict": "warn"
+      }
+    },
+    {
       "id": "includes-test-gap-finding",
       "type": "json_array_includes_object",
       "actor": "assistant",

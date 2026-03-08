@@ -44,12 +44,19 @@ Run:
 node scripts/collect-diff-context.js [--base <ref>] --json
 ```
 
-If the script returns `PR QA BLOCKED` because no base ref can be determined, ask one question:
+The script returns JSON with:
+- `status`: `ok | empty | error`
+- `code`: stable error code on failures
+- `message`: human-readable explanation when `status` is `error`
+
+If the script returns `status: "error"` with `code: "base_ref_required"`, ask one question:
 
 - Prefer AskUserQuestion with a small set of likely refs (`origin/main`, `main`, `origin/master`) when structured prompts are available.
 - Otherwise ask one concise plain-text question: "What base ref should `/pr-qa` compare against? Example: origin/main"
 
 Then rerun the script with the user-provided base.
+
+If the script returns `status: "error"` with any other code, stop and surface the message. Do not guess or reconstruct the diff context manually.
 
 ### Step 2: Triage the scope
 
@@ -73,7 +80,7 @@ Track list:
 2. Test quality review
 3. Silent failure review
 
-If the Task tool is available, dispatch all three tracks in parallel in the same response turn.
+If the Task tool is available, dispatch all three tracks in parallel in the same response turn. Each track must return a fenced `json` block matching the schema in `references/agent-prompts.md`.
 
 If the Task tool is unavailable, announce: `Parallel PR QA unavailable — Task tool not present. Running the three review tracks sequentially.` Then run the same three tracks one at a time yourself using the same instructions.
 
@@ -81,7 +88,9 @@ If the Task tool is unavailable, announce: `Parallel PR QA unavailable — Task 
 
 Read `references/report-template.md` and use it as the output structure.
 
-Merge the three track results into one report.
+Parse the fenced `json` block from each track result. If a track omits valid JSON or returns malformed JSON, re-run that track once with a narrow instruction: `Re-send only the final JSON report, wrapped in a fenced json block.` If the retry still fails, stop and tell the user that the track report was invalid.
+
+Merge the three structured track results into one report.
 
 Overall verdict rules:
 - `FAIL` if any track returns `fail` or any `HIGH` severity finding remains
@@ -94,6 +103,8 @@ When reporting findings:
 - avoid duplicate findings across tracks
 - call out test gaps separately from correctness bugs
 
+Emit a fenced `json` summary block first, then the human-readable Markdown report from `references/report-template.md`.
+
 ### Step 5: Next-step guidance
 
 End with the lightest relevant follow-up:
@@ -103,4 +114,4 @@ End with the lightest relevant follow-up:
 
 ## Output
 
-One consolidated diff-scoped PR review report. No files written. No `.pipeline/` artifacts created.
+One consolidated diff-scoped PR review report with a leading machine-readable fenced `json` summary block. No files written. No `.pipeline/` artifacts created.

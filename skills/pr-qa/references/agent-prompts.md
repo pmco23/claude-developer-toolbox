@@ -37,16 +37,26 @@ Diff summary:
 <diff-summary-json>
 
 Return exactly:
-Reviewer: pr-code-review
-Verdict: pass|warn|fail
-Confidence: high|medium|low
-Findings:
-- [SEVERITY] path[:line] — issue and why it matters
-Notes:
-- optional short notes
+```json
+{
+  "reviewer": "pr-code-review",
+  "verdict": "pass | warn | fail",
+  "confidence": "high | medium | low",
+  "summary": "One short sentence.",
+  "findings": [
+    {
+      "severity": "HIGH | MEDIUM | LOW",
+      "path": "path[:line]",
+      "summary": "Issue and why it matters."
+    }
+  ]
+}
+```
 
-If there are no findings, write:
-Findings: none
+Rules:
+- Wrap the JSON in a fenced code block with info string `json`
+- Use `[]` when there are no findings
+- Keep findings scoped to changed files only
 ```
 
 ## Track 2 — Test Quality Review
@@ -64,16 +74,26 @@ Diff summary:
 <diff-summary-json>
 
 Return exactly:
-Reviewer: pr-test-analyzer
-Verdict: pass|warn|fail
-Confidence: high|medium|low
-Findings:
-- [SEVERITY] path[:line] — test gap and why it matters
-Notes:
-- optional short notes
+```json
+{
+  "reviewer": "pr-test-analyzer",
+  "verdict": "pass | warn | fail",
+  "confidence": "high | medium | low",
+  "summary": "One short sentence.",
+  "findings": [
+    {
+      "severity": "HIGH | MEDIUM | LOW",
+      "path": "path[:line]",
+      "summary": "Test gap and why it matters."
+    }
+  ]
+}
+```
 
-If there are no findings, write:
-Findings: none
+Rules:
+- Wrap the JSON in a fenced code block with info string `json`
+- Use `[]` when there are no findings
+- Keep findings scoped to changed files only
 ```
 
 ## Track 3 — Silent Failure Review
@@ -91,14 +111,24 @@ Diff summary:
 <diff-summary-json>
 
 Return exactly:
-Reviewer: silent-failure-review
-Verdict: pass|warn|fail
-Confidence: high|medium|low
-Findings:
-- [SEVERITY] path[:line] — failure mode and why it matters
-Notes:
-- optional short notes
+```json
+{
+  "reviewer": "silent-failure-review",
+  "verdict": "pass | warn | fail",
+  "confidence": "high | medium | low",
+  "summary": "One short sentence.",
+  "findings": [
+    {
+      "severity": "HIGH | MEDIUM | LOW",
+      "path": "path[:line]",
+      "summary": "Failure mode and why it matters."
+    }
+  ]
+}
+```
 
-If there are no findings, write:
-Findings: none
+Rules:
+- Wrap the JSON in a fenced code block with info string `json`
+- Use `[]` when there are no findings
+- Keep findings scoped to changed files only
 ```

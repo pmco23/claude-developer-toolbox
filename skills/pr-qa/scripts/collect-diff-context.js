@@ -6,8 +6,11 @@ const { spawnSync } = require("child_process");
 main();
 
 function main() {
+  const argv = process.argv.slice(2);
+  let options = { base: "", json: argv.includes("--json") };
+
   try {
-    const options = parseArgs(process.argv.slice(2));
+    options = parseArgs(argv);
     const repoRoot = runGit(["rev-parse", "--show-toplevel"], process.cwd()).stdout.trim();
     const branchName = currentBranch(repoRoot);
     const baseRef = options.base || detectBaseRef(repoRoot);
@@ -16,7 +19,8 @@ function main() {
       fail(
         "PR QA BLOCKED — could not determine a base ref. Re-run with `--base <ref>`.",
         2,
-        options
+        options,
+        "base_ref_required"
       );
       return;
     }
@@ -38,7 +42,9 @@ function main() {
 
     emit(payload, options);
   } catch (error) {
-    fail(`PR QA BLOCKED — ${error.message}`, 1, { json: false });
+    const exitCode = Number.isInteger(error.exitCode) ? error.exitCode : 1;
+    const errorCode = typeof error.code === "string" ? error.code : "unknown_error";
+    fail(`PR QA BLOCKED — ${error.message}`, exitCode, options, errorCode);
   }
 }
 
@@ -55,7 +61,7 @@ function parseArgs(argv) {
     } else if (arg === "--json") {
       options.json = true;
     } else {
-      throw new Error(`Unknown argument: ${arg}`);
+      throw createError("invalid_args", `Unknown argument: ${arg}`, 2);
     }
   }
 
@@ -102,7 +108,7 @@ function resolveBaseCommit(repoRoot, baseRef) {
     return direct.stdout.trim();
   }
 
-  throw new Error(`base ref not found: ${baseRef}`);
+  throw createError("base_ref_not_found", `base ref not found: ${baseRef}`, 3);
 }
 
 function verifyRef(repoRoot, ref) {
@@ -293,9 +299,11 @@ function emit(payload, options) {
   process.stdout.write(`${lines.join("\n")}\n`);
 }
 
-function fail(message, code, options) {
+function fail(message, code, options, errorCode = "unknown_error") {
   if (options && options.json) {
-    process.stdout.write(`${JSON.stringify({ status: "error", message }, null, 2)}\n`);
+    process.stdout.write(
+      `${JSON.stringify({ status: "error", code: errorCode, message }, null, 2)}\n`
+    );
   } else {
     process.stderr.write(`${message}\n`);
   }
@@ -324,9 +332,20 @@ function runGit(args, cwd, allowFailure = false) {
   }
 
   if (result.error && result.error.code === "ENOENT") {
-    throw new Error("git is not installed");
+    throw createError("git_not_installed", "git is not installed", 127);
   }
 
   const message = (result.stderr || result.stdout || `git exited ${result.status}`).trim();
-  throw new Error(message);
+  if (/not a git repository/i.test(message)) {
+    throw createError("not_git_repo", message, 4);
+  }
+
+  throw createError("git_failed", message, result.status || 1);
+}
+
+function createError(code, message, exitCode) {
+  const error = new Error(message);
+  error.code = code;
+  error.exitCode = exitCode;
+  return error;
 }

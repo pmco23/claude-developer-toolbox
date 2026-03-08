@@ -4,8 +4,8 @@ description: Use after /build to run the full post-build QA pipeline. Supports -
 argument-hint: [--parallel | --sequential]
 disable-model-invocation: true
 compatibility:
-  requires: ["Claude Code Task tool"]
-  optional: ["Repomix CLI", "Structured prompts"]
+  requires: []
+  optional: ["Claude Code Task tool", "Repomix CLI", "Structured prompts"]
 ---
 
 # QA — Post-Build QA Pipeline

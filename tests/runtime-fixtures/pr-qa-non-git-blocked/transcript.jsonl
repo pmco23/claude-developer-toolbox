@@ -1,0 +1,2 @@
+{"event":"user","text":"/pr-qa"}
+{"event":"assistant","text":"PR QA blocked — not a git repository. Run this inside a git working tree."}
