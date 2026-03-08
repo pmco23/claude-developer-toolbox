@@ -2,6 +2,7 @@
   "name": "build-parallel-success",
   "component": "/build",
   "transcript": "transcript.jsonl",
+  "provenance": "curated",
   "assertions": [
     {
       "id": "explicit-parallel-mode",

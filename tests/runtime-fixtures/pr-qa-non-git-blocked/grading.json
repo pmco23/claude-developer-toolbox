@@ -2,6 +2,7 @@
   "name": "pr-qa-non-git-blocked",
   "component": "/pr-qa",
   "transcript": "transcript.jsonl",
+  "provenance": "curated",
   "assertions": [
     {
       "id": "reports-blocked-state",

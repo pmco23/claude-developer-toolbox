@@ -2,6 +2,7 @@
   "name": "review-approval-gate",
   "component": "/review",
   "transcript": "transcript.jsonl",
+  "provenance": "curated",
   "assertions": [
     {
       "id": "dispatches-strategic-critic",

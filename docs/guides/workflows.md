@@ -14,6 +14,10 @@ An optional diff-scoped review step exists after code has been written:
 `/pr-qa [--base <ref>]` reviews only changed files before `/commit`,
 `/commit-push-pr`, or a wider `/qa` run.
 
+If the diff is documentation-only, `/pr-qa` skips and you should review the
+docs diff directly. Use `/doc-audit` only when a build-complete pipeline
+already exists and you want the broader documentation freshness audit.
+
 ## Invocation Behavior
 
 Several stateful workflows are explicit slash-command entrypoints and do not
@@ -55,6 +59,8 @@ with a plain-text question instead.
 **Optional follow-up:**
 - Run `/pr-qa` when you want a stronger changed-files review before `/commit`
   or `/commit-push-pr`
+- If the diff is docs-only, review the docs diff directly instead of expecting
+  `/pr-qa` to act like a standalone docs auditor
 
 **When NOT to use Fast Track:**
 - The change requires a design decision with non-obvious trade-offs

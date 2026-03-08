@@ -63,7 +63,7 @@ If the script returns `status: "error"` with any other code, stop and surface th
 Read the JSON report from the script.
 
 - If `status` is `empty`: stop with `PR QA complete — no changed files detected relative to <baseRef>.`
-- If `summary.docsOnly` is `true`: stop with `PR QA skipped — only documentation files changed. Use normal doc review if needed.`
+- If `summary.docsOnly` is `true`: stop with `PR QA skipped — only documentation files changed. Review the docs diff directly before /commit or /commit-push-pr. If this change is already part of a build-complete pipeline, /doc-audit can be used separately.`
 - Otherwise keep the diff report in context for the review tracks.
 
 ### Step 3: Dispatch the three review tracks

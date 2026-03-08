@@ -2,6 +2,7 @@
   "name": "pr-qa-missing-base-ref",
   "component": "/pr-qa",
   "transcript": "transcript.jsonl",
+  "provenance": "curated",
   "assertions": [
     {
       "id": "asks-for-base-ref",
@@ -14,6 +15,14 @@
       "type": "message_contains",
       "actor": "user",
       "pattern": "origin/main"
+    },
+    {
+      "id": "reruns-bundled-diff-collector",
+      "type": "tool_use",
+      "name": "Bash",
+      "inputContains": {
+        "command": "node skills/pr-qa/scripts/collect-diff-context.js --base origin/main --json"
+      }
     },
     {
       "id": "recovers-after-base-provided",

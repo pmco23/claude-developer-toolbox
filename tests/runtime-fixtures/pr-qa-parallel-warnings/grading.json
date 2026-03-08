@@ -2,7 +2,16 @@
   "name": "pr-qa-parallel-warnings",
   "component": "/pr-qa",
   "transcript": "transcript.jsonl",
+  "provenance": "curated",
   "assertions": [
+    {
+      "id": "uses-bundled-diff-collector",
+      "type": "tool_use",
+      "name": "Bash",
+      "inputContains": {
+        "command": "node skills/pr-qa/scripts/collect-diff-context.js --base origin/main --json"
+      }
+    },
     {
       "id": "dispatches-general-review-track",
       "type": "tool_use",

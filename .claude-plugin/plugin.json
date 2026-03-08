@@ -1,6 +1,6 @@
 {
   "name": "claude-developer-toolbox",
-  "version": "4.1.1",
+  "version": "4.2.0",
   "description": "Quality-gated development pipeline: brief → design → review → plan → build → qa",
   "author": {
     "name": "pemcoliveira"

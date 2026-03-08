@@ -2,6 +2,7 @@
   "name": "task-builder-json-contract",
   "component": "task-builder",
   "transcript": "transcript.jsonl",
+  "provenance": "curated",
   "assertions": [
     {
       "id": "status-is-complete",

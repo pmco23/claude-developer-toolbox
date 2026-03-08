@@ -2,6 +2,7 @@
   "name": "pr-qa-docs-only-skip",
   "component": "/pr-qa",
   "transcript": "transcript.jsonl",
+  "provenance": "curated",
   "assertions": [
     {
       "id": "announces-docs-only-skip",
@@ -10,10 +11,10 @@
       "pattern": "PR QA skipped — only documentation files changed"
     },
     {
-      "id": "mentions-normal-doc-review",
+      "id": "mentions-direct-doc-review",
       "type": "message_contains",
       "actor": "assistant",
-      "pattern": "Use normal doc review if needed."
+      "pattern": "Review the docs diff directly"
     }
   ]
 }

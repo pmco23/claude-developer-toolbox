@@ -135,6 +135,11 @@ node scripts/grade-runtime-fixtures.js
 - `hooks/test-gate.sh` covers hook contracts, session memory, and the deterministic Repomix packer
 - `scripts/grade-runtime-fixtures.js` grades curated runtime fixtures for `/build`, `/pr-qa`, `/qa`, `/review`, `/rollback`, and `task-builder`
 
+`/pr-qa` is intentionally code-focused. When a diff is documentation-only, it
+skips review and tells you to inspect the docs diff directly before `/commit`
+or `/commit-push-pr`. If the docs change is already part of a build-complete
+pipeline, you can run `/doc-audit` separately.
+
 ### Skills
 
 | Skill | Description |

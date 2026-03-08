@@ -38,4 +38,17 @@ Each fixture directory contains:
 - `transcript.jsonl` — a curated runtime-style transcript
 - `grading.json` — discriminating assertions for that transcript
 
+`grading.json` may also include:
+
+- `provenance` — `curated` or `captured`
+
+Fixture provenance:
+
+- `provenance: "curated"` means the transcript was hand-authored to model the
+  intended runtime contract
+- `provenance: "captured"` means the transcript came from a real Claude Code run
+
+The current `/pr-qa` fixtures are still curated. Add a real captured transcript
+when one is available rather than relabeling a synthetic transcript.
+
 These fixtures are designed to be easy to replace with real captured Claude Code transcripts later. The assertion model stays the same.
