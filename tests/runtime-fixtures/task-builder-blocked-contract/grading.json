@@ -2,6 +2,7 @@
   "name": "task-builder-blocked-contract",
   "component": "task-builder",
   "transcript": "transcript.jsonl",
+  "provenance": "curated",
   "assertions": [
     {
       "id": "status-is-blocked",

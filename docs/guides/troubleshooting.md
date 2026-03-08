@@ -17,6 +17,7 @@ you run the slash command explicitly.
 Examples:
 - `/brief`
 - `/build`
+- `/pr-qa`
 - `/qa`
 - `/git-workflow`
 - `/rollback`
@@ -28,6 +29,16 @@ Run the command directly to enter the workflow.
 The current runtime does not expose structured prompts. The skills are designed
 to fail soft: answer the question inline and the workflow will continue with the
 same logic.
+
+## "`/pr-qa` skipped because only docs changed"
+
+That is expected. `/pr-qa` is a diff-scoped code review lane, not a standalone
+documentation auditor.
+
+Recommended next step:
+- review the docs diff directly before `/commit` or `/commit-push-pr`
+- if the docs change is already part of a build-complete pipeline, run
+  `/doc-audit` separately
 
 ## Gate is not firing (hook not active)
 
@@ -58,7 +69,7 @@ node ~/claude-developer-toolbox/scripts/grade-runtime-fixtures.js
 Expected:
 
 - `hooks/test-gate.sh` => `Results: 88 passed, 0 failed`
-- `grade-runtime-fixtures.js` => `Results: 31 passed, 0 failed`
+- `grade-runtime-fixtures.js` => `Results: 47 passed, 0 failed`
 
 ## Statusline symlink did not update
 

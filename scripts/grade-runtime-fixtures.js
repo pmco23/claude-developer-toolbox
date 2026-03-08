@@ -5,6 +5,11 @@ const path = require("path");
 
 const FIXTURE_ROOT = path.resolve(__dirname, "..", "tests", "runtime-fixtures");
 
+function formatFixtureLabel(grading) {
+  const provenance = typeof grading.provenance === "string" ? grading.provenance : "unspecified";
+  return `${grading.name}|${provenance}`;
+}
+
 function main() {
   try {
     const requested = process.argv.slice(2);
@@ -16,6 +21,7 @@ function main() {
     for (const fixtureDir of fixtureDirs) {
       const gradingPath = path.join(fixtureDir, "grading.json");
       const grading = JSON.parse(fs.readFileSync(gradingPath, "utf8"));
+      const fixtureLabel = formatFixtureLabel(grading);
       const transcriptPath = path.join(fixtureDir, grading.transcript);
       const transcript = loadTranscript(transcriptPath);
 
@@ -23,10 +29,10 @@ function main() {
         const result = evaluateAssertion(transcript, assertion);
         if (result.pass) {
           passed += 1;
-          console.log(`PASS [${grading.name}] ${assertion.id}`);
+          console.log(`PASS [${fixtureLabel}] ${assertion.id}`);
         } else {
           failed += 1;
-          console.log(`FAIL [${grading.name}] ${assertion.id}: ${result.reason}`);
+          console.log(`FAIL [${fixtureLabel}] ${assertion.id}: ${result.reason}`);
         }
       }
     }

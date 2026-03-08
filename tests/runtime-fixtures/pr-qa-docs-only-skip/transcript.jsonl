@@ -1,0 +1,2 @@
+{"event":"user","text":"/pr-qa --base origin/main"}
+{"event":"assistant","text":"PR QA skipped — only documentation files changed relative to origin/main. Review the docs diff directly before `/commit` or `/commit-push-pr`. If this change is already part of a build-complete pipeline, `/doc-audit` can be used separately."}

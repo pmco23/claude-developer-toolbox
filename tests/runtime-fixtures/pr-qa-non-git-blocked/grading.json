@@ -1,0 +1,26 @@
+{
+  "name": "pr-qa-non-git-blocked",
+  "component": "/pr-qa",
+  "transcript": "transcript.jsonl",
+  "provenance": "curated",
+  "assertions": [
+    {
+      "id": "reports-blocked-state",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "PR QA blocked"
+    },
+    {
+      "id": "reports-non-git-reason",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "not a git repository"
+    },
+    {
+      "id": "suggests-running-inside-worktree",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Run this inside a git working tree."
+    }
+  ]
+}

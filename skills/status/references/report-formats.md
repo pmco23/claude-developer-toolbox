@@ -24,6 +24,7 @@ Always available (no pipeline required):
   /init          scaffold README, CHANGELOG, CONTRIBUTING, .gitignore
   /git-workflow  before destructive git operations
   /pack          Repomix snapshot — run before /qa or /quick --deep
+  /pr-qa         diff-scoped review before commit or PR
   /reset         reset pipeline to a specific phase
   /status        this report
 ```

@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.2.0] - 2026-03-08
+
+### Added
+
+- `/pr-qa` — a slash-only, diff-scoped pre-PR review lane that critiques changed files before `/commit`, `/commit-push-pr`, or a broader `/qa` run
+- `skills/pr-qa/scripts/collect-diff-context.js` — deterministic diff collector used by `/pr-qa` to scope review to changed files and emit stable JSON preflight output
+- `/pr-qa` runtime-fixture coverage for happy-path, docs-only skip, missing-base-ref recovery, and non-git blocking cases
+
+### Changed
+
+- Runtime fixtures now record explicit provenance metadata, and the fixture grader reports that provenance in assertion output
+- `/pr-qa` now documents the docs-only handoff clearly: review the docs diff directly, and use `/doc-audit` only when a build-complete pipeline already exists
+- `/pr-qa` fixtures now assert positive evidence that the bundled diff collector was invoked before review synthesis
+
+### Fixed
+
+- `collect-diff-context.js --json` now returns structured JSON errors on failure paths instead of mixing human-readable text into machine-readable mode
+- `/qa` compatibility metadata now treats the Claude Code Task tool as optional, matching the shipped sequential fallback path
+
 ## [4.1.1] - 2026-03-08
 
 ### Changed

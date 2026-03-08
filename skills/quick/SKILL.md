@@ -64,6 +64,7 @@ Done. Changed [N] file(s):
 - [file]: [one-line description of what changed]
 
 Before committing: if follow-up work will involve a destructive git operation (force-push, reset --hard, branch -D, or rebasing published commits), run /git-workflow first. Routine branch creation, first push, and PR flow use the normal git commands.
+For a broader diff-scoped review before committing or opening a PR, run /pr-qa.
 ```
 
 Prefer AskUserQuestion with:
