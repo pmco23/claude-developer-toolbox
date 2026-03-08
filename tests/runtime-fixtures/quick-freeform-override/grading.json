@@ -1,0 +1,40 @@
+{
+  "name": "quick-freeform-override",
+  "component": "/quick",
+  "transcript": "transcript.jsonl",
+  "provenance": "curated",
+  "assertions": [
+    {
+      "id": "asks-single-high-impact-question",
+      "type": "tool_use",
+      "name": "AskUserQuestion",
+      "inputContains": {
+        "header": "Quick scope"
+      }
+    },
+    {
+      "id": "accepts-freeform-answer",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "stop swallowing 429 responses"
+    },
+    {
+      "id": "emits-requirements-block",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "[Requirements]"
+    },
+    {
+      "id": "does-not-use-all-of-the-above",
+      "type": "message_not_contains",
+      "actor": "assistant",
+      "pattern": "all of the above"
+    },
+    {
+      "id": "reports-completed-change",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Done. Changed 2 file(s):"
+    }
+  ]
+}

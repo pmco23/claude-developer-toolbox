@@ -1,0 +1,38 @@
+{
+  "name": "brief-terse-adaptive-loop",
+  "component": "/brief",
+  "transcript": "transcript.jsonl",
+  "provenance": "curated",
+  "assertions": [
+    {
+      "id": "asks-high-impact-first-question",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Which problem should this solve first?"
+    },
+    {
+      "id": "asks-branched-follow-up",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "What does done look like for the first release?"
+    },
+    {
+      "id": "emits-requirements-block",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "[Requirements]"
+    },
+    {
+      "id": "records-assumptions",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Assumptions:"
+    },
+    {
+      "id": "writes-brief-artifact",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": ".pipeline/brief.md"
+    }
+  ]
+}

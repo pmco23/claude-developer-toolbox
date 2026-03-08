@@ -1,0 +1,6 @@
+{"event":"user","text":"/brief Add CSV import"}
+{"event":"assistant","text":"Which problem should this solve first? Admin backfill imports, self-serve customer uploads, or internal data migration?"}
+{"event":"user","text":"Admin backfill imports."}
+{"event":"assistant","text":"What does done look like for the first release? Create records only, create records plus a summary report, or full validation with row-by-row recovery?"}
+{"event":"user","text":"Create records plus a summary report."}
+{"event":"assistant","text":"[Requirements]\nGoal:           Add CSV import for admin backfill workflows.\nInputs:         Existing admin import area in the repo.\nConstraints:    First release should create records and return a summary report.\nAssumptions:    Reuse the current admin access path and keep scope away from customer self-serve uploads unless the codebase shows otherwise.\nOpen questions: None.\n\nBrief written to `.pipeline/brief.md`. Run `/design` when ready."}

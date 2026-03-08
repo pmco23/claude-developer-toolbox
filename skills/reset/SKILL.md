@@ -53,6 +53,8 @@ Prefer AskUserQuestion with:
 
 If structured prompts are unavailable in this runtime, ask the same question in plain text and continue with the user's answer.
 
+This reset-target choice is a micro-prompt from the shared interview system: keep it bounded and single-select, do not add a free-form option, do not use "all of the above", and do not emit a `[Requirements]` block.
+
 ### Step 3: Confirm
 
 Show the exact files that will be removed:
@@ -75,6 +77,8 @@ Prefer AskUserQuestion with:
       description: "Abort — make no changes"
 
 If structured prompts are unavailable in this runtime, ask the same confirmation question in plain text and continue with the user's answer.
+
+This confirmation is also a bounded micro-prompt: single-select only, no free-form option, no "all of the above", and no `[Requirements]` block.
 
 If "Cancel": "Reset cancelled." Stop.
 

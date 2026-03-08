@@ -46,6 +46,15 @@ Interactive skills prefer structured prompts when the runtime supports them, but
 all current workflows fall back to plain-text questions if picker-style prompts
 are unavailable.
 
+The shared interview system now distinguishes:
+- full interviews for requirement-gathering workflows
+- adaptive branches for approval/revision loops
+- micro-prompts for confirmations and mode selection
+
+Additive questions use `multiSelect: true` when structured prompts are available.
+If not, they fall back to plain-text comma-separated answers instead of an
+`all of the above` shortcut.
+
 ## Session Memory
 
 The plugin keeps a lightweight, project-local session memory file at
@@ -118,6 +127,7 @@ Claude to auto-load it from a natural-language request. See the [full installati
 |-------|--|
 | [Workflows](docs/guides/workflows.md) | Decision guide, explicit slash-command behavior, mode flags, language support, end-to-end example |
 | [Installation](docs/guides/installation.md) | Full install steps, statusline setup, slash-only behavior, verification |
+| [Interview System](docs/guides/interview-system.md) | Shared context-scan, adaptive questioning, and requirements handoff pattern for interactive skills |
 | [Hooks](docs/guides/hooks.md) | Hook lifecycle, JSON outputs, statusline maintenance, session memory, and Repomix session-end packing |
 | [Repomix Guide](docs/guides/mcp-setup.md) | Snapshot architecture, manual CLI usage, installation, troubleshooting |
 | [Troubleshooting](docs/guides/troubleshooting.md) | Common issues and fixes |
@@ -133,7 +143,7 @@ node scripts/grade-runtime-fixtures.js
 ```
 
 - `hooks/test-gate.sh` covers hook contracts, session memory, and the deterministic Repomix packer
-- `scripts/grade-runtime-fixtures.js` grades curated runtime fixtures for `/build`, `/pr-qa`, `/qa`, `/review`, `/rollback`, and `task-builder`
+- `scripts/grade-runtime-fixtures.js` grades curated runtime fixtures for `/brief`, `/build`, `/cleanup`, `/design`, `/drift-check`, `/init`, `/pr-qa`, `/qa`, `/quick`, `/review`, `/rollback`, `/test`, and `task-builder`
 
 `/pr-qa` is intentionally code-focused. When a diff is documentation-only, it
 skips review and tells you to inspect the docs diff directly before `/commit`

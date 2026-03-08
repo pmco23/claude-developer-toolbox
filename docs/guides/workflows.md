@@ -33,6 +33,28 @@ Interactive skills prefer structured prompts when the runtime supports them. If
 your runtime does not expose picker-style prompts, the same workflow continues
 with a plain-text question instead.
 
+Requirement-gathering skills use the shared adaptive interview system:
+- scan what the user already gave
+- ask only the highest-impact missing question
+- emit a `[Requirements]` handoff block before execution
+
+Current full-interview adopters:
+- `/brief`
+- `/design`
+- `/drift-check`
+- `/init`
+- `/pr-qa`
+- `/quick`
+- `/test`
+
+Adaptive-branch adopters:
+- `/review`
+- `/cleanup`
+
+Mode selectors and destructive confirmations use the same shared rules as
+micro-prompts: bounded single-select prompts, no `all of the above`, and no
+`[Requirements]` block.
+
 ---
 
 ## Fast Track

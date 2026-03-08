@@ -31,6 +31,10 @@ You are Sonnet acting as a focused pre-PR review lead. Review only the files cha
 
 ### Step 1: Resolve the review base
 
+Read:
+- `../../docs/guides/interview-system.md`
+- `references/interview-fields.md`
+
 If the invocation includes `--base <ref>`, pass it to the bundled script.
 
 Otherwise run the script without `--base` and let it auto-detect the best base from:
@@ -51,7 +55,7 @@ The script returns JSON with:
 
 If the script returns `status: "error"` with `code: "base_ref_required"`, ask one question:
 
-- Prefer AskUserQuestion with a small set of likely refs (`origin/main`, `main`, `origin/master`) when structured prompts are available.
+- Prefer AskUserQuestion with a small set of likely refs (`origin/main`, `main`, `origin/master`) when structured prompts are available, plus `"Other / let me explain"` as the free-form option.
 - Otherwise ask one concise plain-text question: "What base ref should `/pr-qa` compare against? Example: origin/main"
 
 Then rerun the script with the user-provided base.
@@ -61,6 +65,15 @@ If the script returns `status: "error"` with any other code, stop and surface th
 ### Step 2: Triage the scope
 
 Read the JSON report from the script.
+
+Emit a compact `[Requirements]` block immediately after diff collection resolves. Include:
+- Goal: diff-scoped pre-PR review
+- Inputs: base ref, base commit if known, changed files summary
+- Constraints: changed files only, no repo-wide audit, report-only
+- Assumptions: any defaults used by the collector
+- Open questions: `None` when the collector resolved cleanly, otherwise the blocked or deferred detail
+
+If the script returned `status: "error"`, include that blocked state in the block before stopping.
 
 - If `status` is `empty`: stop with `PR QA complete — no changed files detected relative to <baseRef>.`
 - If `summary.docsOnly` is `true`: stop with `PR QA skipped — only documentation files changed. Review the docs diff directly before /commit or /commit-push-pr. If this change is already part of a build-complete pipeline, /doc-audit can be used separately.`

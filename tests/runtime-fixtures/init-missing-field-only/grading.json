@@ -1,0 +1,37 @@
+{
+  "name": "init-missing-field-only",
+  "component": "/init",
+  "transcript": "transcript.jsonl",
+  "provenance": "curated",
+  "assertions": [
+    {
+      "id": "does-not-ask-when-key-fields-are-already-provided",
+      "type": "tool_use_absent",
+      "name": "AskUserQuestion"
+    },
+    {
+      "id": "records-language",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Language: Go"
+    },
+    {
+      "id": "records-license",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "License:  Apache 2.0"
+    },
+    {
+      "id": "records-project-type",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Type:     Web API / service"
+    },
+    {
+      "id": "does-not-reask-language",
+      "type": "message_not_contains",
+      "actor": "assistant",
+      "pattern": "What is the primary language for this project?"
+    }
+  ]
+}

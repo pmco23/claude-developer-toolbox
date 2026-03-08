@@ -17,11 +17,11 @@ You are Opus acting as a requirements analyst. Your job is to extract maximum si
 
 ## Hard Rules
 
-1. **Never skip a Q&A area silently.** If context from Step 1 suggests an answer, present it as a pre-filled choice for the user to confirm or override — do not omit the question entirely.
-2. **All 8 areas must be explicitly resolved** — either confirmed by the user or explicitly waived by the user ("skip this one"). Claude cannot waive on the user's behalf.
-3. **Never write `.pipeline/brief.md` before the Step 3 checkpoint is fully answered.** No partial briefs.
-4. **Ask exactly one question per turn.** Do not bundle multiple questions in a single response.
-5. **Prefer structured prompts, but fail soft.** Compose 2-4 options from what Step 1 context inferred. If context provides a likely answer, make it the first option (surfaced for confirmation, not silently accepted). The last option is always `"Other / let me describe it"` to allow free-form input. If structured prompts are unavailable in this runtime, ask the same question in plain text with the options listed inline. For areas where multiple answers are naturally valid (Q2–Q8), use `multiSelect: true` when available; otherwise tell the user they may answer with a comma-separated list.
+1. **Never re-ask facts the user already gave you clearly.** Scan the initial request, repo context, prior artifacts, and session memory before asking anything.
+2. **Resolve all 8 brief dimensions before writing.** A dimension can be resolved by explicit user input, confirmed repo context, or a clearly stated assumption the user accepted or deferred.
+3. **Ask exactly one question per turn.** Do not bundle multiple questions in a single response.
+4. **Prefer structured prompts, but fail soft.** Compose 2-4 options from what the context scan inferred. If a likely answer exists, make it the first option for confirmation, not silent acceptance. Keep a free-form option last. Use `multiSelect: true` for additive dimensions and never rely on "all of the above". If structured prompts are unavailable in this runtime, ask the same question in plain text with the options listed inline and accept comma-separated answers for additive fields.
+5. **Stop when execution confidence is high enough.** Do not drag the interview through a fixed script if only low-risk unknowns remain. Typical depth is 3-5 exchanges.
 
 ## Process
 
@@ -52,44 +52,49 @@ If the project already contains code (non-empty source directories detected abov
 - Identify dominant architectural patterns (MVC, layered, feature-based, etc.)
 - Inform what questions to ask in Step 2 (what already exists, what's missing, where new code would live)
 
-### Step 2: Extract signal through Q&A
+### Step 2: Run the adaptive interview
 
-Ask ONE question at a time. Prefer AskUserQuestion; if structured prompts are unavailable in this runtime, ask the same question in plain text and wait for the answer before asking the next.
+Read `../../docs/guides/interview-system.md` from the repository root and follow its Stage 1-3 pattern.
 
-For each area, compose an AskUserQuestion call where:
-- Options are derived from what Step 1 context suggests (inferred from README, package.json, existing code)
-- If context provides a likely answer, make it the first option — this surfaces it for confirmation, not silent acceptance
-- Include 2-3 additional plausible alternatives based on project type
-- The last option is always `"Other / let me describe it"` for free-form input
-
-If structured prompts are unavailable in this runtime, present the same options as a numbered plain-text list and accept either one option, a comma-separated list for multi-select questions, or a free-form override.
-
-Cover these areas in order (if already clear from context, surface the inferred answer as a pre-filled option for user confirmation — do not skip silently):
+Use these 8 dimensions as the brief coverage map:
 
 1. **Core purpose** — What does this feature/change do? What problem does it solve? *(single-select)*
-2. **Users/consumers** — Who calls this? End users, other services, CLI, tests? *(multiSelect: true)*
-3. **Hard constraints** — What MUST be true? (latency, compatibility, existing interfaces) *(multiSelect: true)*
-4. **Soft constraints** — What SHOULD be true but could flex? Flag these explicitly. *(multiSelect: true)*
-5. **Non-goals** — What are you explicitly NOT building? *(multiSelect: true)*
-6. **Success criteria** — How will you know it works? What does done look like? *(multiSelect: true)*
-7. **Style preferences** — Any naming conventions, patterns, or anti-patterns to follow? *(multiSelect: true)*
-8. **Key concepts/domain terms** — Any domain vocabulary that must be used consistently? *(multiSelect: true)*
+2. **Users/consumers** — Who calls this? End users, other services, CLI, tests? *(additive → `multiSelect: true`)*
+3. **Hard constraints** — What MUST be true? (latency, compatibility, existing interfaces) *(additive → `multiSelect: true`)*
+4. **Soft constraints** — What SHOULD be true but could flex? *(additive → `multiSelect: true`)*
+5. **Non-goals** — What is explicitly not being built? *(additive → `multiSelect: true`)*
+6. **Success criteria** — How will you know it works? *(additive → `multiSelect: true`)*
+7. **Style preferences** — Naming conventions, patterns, anti-patterns *(additive → `multiSelect: true`)*
+8. **Key concepts/domain terms** — Vocabulary that must stay consistent *(additive → `multiSelect: true`)*
 
-### Step 3: Force remaining decisions
+Do not ask these in a fixed order. Instead:
 
-After Q&A, present a single structured checkpoint with any remaining ambiguities as forced-choice questions. No open-ended questions in this checkpoint — every item must have options. If structured prompts are unavailable in this runtime, present the same checkpoint as a numbered plain-text list of forced choices and do not proceed until the user has answered every item.
+- Build a requirements state from the initial request plus Step 1 repo context.
+- Rank unresolved dimensions by impact.
+- Ask the single highest-impact unresolved question first.
+- After each answer, update the requirements state and re-rank what is still missing.
+- Branch follow-up questions from prior answers instead of falling back to a canned sequence.
+- If the user says "just proceed", "not sure", or equivalent, record the resulting assumption explicitly and move on.
 
-Format:
-```
-CHECKPOINT — Remaining decisions:
+Treat these as blockers that should be resolved before writing:
+- core purpose
+- users/consumers
+- hard constraints
+- success criteria
 
-1. [Decision]: [Option A] / [Option B] / [Option C]
-2. [Decision]: [Option A] / [Option B]
-```
+If the remaining unknowns are low-risk, stop asking and carry them into assumptions or open questions.
+
+### Step 3: Emit the structured handoff
+
+Before writing `.pipeline/brief.md`, output the exact requirements block from `../../docs/guides/interview-system.md` and treat it as the source of truth for the brief.
+
+If a blocking ambiguity remains after the adaptive loop, run one forced-choice checkpoint for those blockers only. Do not run a checkpoint just because the old script had one.
 
 ### Step 4: Write the brief
 
 Read `references/brief-template.md` from this skill's base directory. Write `.pipeline/brief.md` following that structure exactly.
+
+Use the `[Requirements]` block as the authoritative handoff into the brief. If the template reveals an assumption that is too weak to support the output, stop and surface it to the user immediately instead of silently filling the gap.
 
 ## Output
 

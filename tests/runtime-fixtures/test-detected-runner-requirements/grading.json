@@ -1,0 +1,31 @@
+{
+  "name": "test-detected-runner-requirements",
+  "component": "/test",
+  "transcript": "transcript.jsonl",
+  "provenance": "curated",
+  "assertions": [
+    {
+      "id": "does-not-ask-when-runner-is-detected",
+      "type": "tool_use_absent",
+      "name": "AskUserQuestion"
+    },
+    {
+      "id": "emits-requirements-block",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "[Requirements]"
+    },
+    {
+      "id": "records-detected-runner",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Runner:         vitest"
+    },
+    {
+      "id": "records-scope",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Scope:          auth"
+    }
+  ]
+}

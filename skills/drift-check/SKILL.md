@@ -18,20 +18,22 @@ You are Opus acting as a verification lead. Two independent agents extract claim
 
 ### Step 1: Identify source and target
 
-If called from `/build`, receive source and target from the build context — skip the question.
+Read:
+- `../../docs/guides/interview-system.md`
+- `references/interview-fields.md`
 
-If called standalone, prefer AskUserQuestion with:
-  question: "What are the drift check inputs?"
-  header: "Drift inputs"
-  options:
-    - label: "Default (plan vs. implementation)"
-      description: "Source: .pipeline/plan.md — Target: current working directory"
-    - label: "Custom"
-      description: "Specify a different source document and/or target path"
+If called from `/build`, receive source and target from the build context.
 
-If structured prompts are unavailable in this runtime, ask the same question in plain text and continue with the user's answer.
+If called standalone:
+- infer the default source from `.pipeline/plan.md` when it exists
+- infer the default target as the current working directory
+- ask only if source or target is still genuinely missing or if the user explicitly asks for a custom comparison
 
-If "Custom" is selected, ask the user to provide the source document path and/or target path, preferring structured prompts and falling back to one concise plain-text follow-up question if needed.
+Use a single-select prompt for default vs custom source/target resolution, with a
+free-form option for custom paths. If structured prompts are unavailable, use the
+same logic in plain text. Do not use `all of the above`.
+
+Before dispatching the verifiers, emit the shared `[Requirements]` block covering source, target, focus, and assumptions.
 
 ### Step 2: Dispatch parallel verifiers
 

@@ -84,6 +84,8 @@ Prefer AskUserQuestion with:
 
 If structured prompts are unavailable in this runtime, ask the same question in plain text and continue with the user's answer.
 
+This rollback-scope choice is a bounded micro-prompt from the shared interview system: keep it single-select, do not use "all of the above", and do not emit a `[Requirements]` block. The only free-form follow-up is the targeted group-number entry when "Select specific groups" is chosen.
+
 If "Select specific groups": ask the user for the group numbers (one focused follow-up question), preferring AskUserQuestion and falling back to a concise plain-text question if needed.
 If "Cancel": stop with "Rollback cancelled."
 

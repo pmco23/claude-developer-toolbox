@@ -1,0 +1,44 @@
+{
+  "name": "init-empty-project-prefilled",
+  "component": "/init",
+  "transcript": "transcript.jsonl",
+  "provenance": "curated",
+  "assertions": [
+    {
+      "id": "emits-requirements-block",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "[Requirements]"
+    },
+    {
+      "id": "captures-language",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Language: Python"
+    },
+    {
+      "id": "captures-license",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "License:  MIT"
+    },
+    {
+      "id": "captures-project-type",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Type:     CLI tool"
+    },
+    {
+      "id": "writes-readme",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "README.md written."
+    },
+    {
+      "id": "writes-changelog",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "CHANGELOG.md written."
+    }
+  ]
+}

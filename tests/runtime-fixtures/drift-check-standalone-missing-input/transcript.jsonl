@@ -1,0 +1,5 @@
+{"event":"user","text":"/drift-check compare against services/retries"}
+{"event":"tool_use","name":"AskUserQuestion","input":{"header":"Drift source","question":"Which source document should I compare against services/retries?","options":[{"label":".pipeline/plan.md","description":"Use the current execution plan if it exists"},{"label":"Design document","description":"Use .pipeline/design.md if it exists"},{"label":"Other / let me explain","description":"Provide a custom source document path"}]}}
+{"event":"user","text":"Other: docs/retry-spec.md"}
+{"event":"assistant","text":"[Requirements]\nGoal:           Compare the current implementation against the chosen source of truth.\nInputs:         Source:         docs/retry-spec.md\n                Target scope:   services/retries\nConstraints:    Full drift verification.\nAssumptions:    The requested target scope is already precise enough.\nOpen questions: None."}
+{"event":"assistant","text":"Dispatching drift-verifier and path-verifier for docs/retry-spec.md vs services/retries."}

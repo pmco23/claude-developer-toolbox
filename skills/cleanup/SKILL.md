@@ -21,6 +21,7 @@ You are acting as a code cleaner. Remove confirmed dead code only. Do not refact
 1. Remove dead code only — do not refactor, rename, or restructure live code.
 2. Never remove a symbol without presenting it to the user first (Step 3 confirmation gate).
 3. If tests fail after removal: report — do not attempt to fix.
+4. Follow the shared adaptive-branch rules in `../../docs/guides/interview-system.md` for confirmation loops. Keep the prompt single-select, include a free-form option where multiple cleanup actions are plausible, never use "all of the above", and do not emit a `[Requirements]` block for this skill.
 
 ## Process
 
@@ -42,20 +43,35 @@ Dead code found:
 - [file:line] — [symbol/description] — [reason: unused/unreachable/no callers]
 ```
 
-Prefer AskUserQuestion with:
-  question: "Found [N] dead code items. How should I proceed?"
+If more than one item is present, prefer AskUserQuestion with:
+  question: "Found [N] dead code items. What should I do first?"
   header: "Cleanup action"
   options:
     - label: "Remove all"
-      description: "Remove every item in the list without further prompting"
-    - label: "Review each"
-      description: "Confirm each removal individually"
+      description: "Remove every item in the current list"
+    - label: "Review highest-impact first"
+      description: "Handle one item now, then re-check the remaining list"
     - label: "Skip"
       description: "Report findings only — make no changes"
+    - label: "Other / let me explain"
+      description: "Choose a narrower or different cleanup action"
 
-If structured prompts are unavailable in this runtime, ask the same question in plain text and continue with the user's answer.
+If exactly one item is present, prefer AskUserQuestion with:
+  question: "Remove this dead code item now?"
+  header: "Cleanup action"
+  options:
+    - label: "Remove it"
+      description: "Delete the confirmed dead code item"
+    - label: "Skip it"
+      description: "Leave the code in place and report it only"
+    - label: "Other / let me explain"
+      description: "Describe a different action"
+
+If structured prompts are unavailable in this runtime, ask the equivalent question in plain text and continue with the user's answer.
 
 ### Step 4: Remove confirmed dead code
+
+If the user chose "Review highest-impact first", remove only the single highest-impact item, then re-present the remaining findings by returning to Step 3.
 
 For each confirmed item:
 - Remove the dead symbol or block

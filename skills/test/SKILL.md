@@ -23,6 +23,10 @@ Check the invocation arguments for a file pattern or test name filter (e.g., `/t
 
 ### Step 2: Detect runner
 
+Read:
+- `../../docs/guides/interview-system.md`
+- `references/interview-fields.md`
+
 Check for test configuration in this order:
 
 - `package.json` → look for `jest` or `vitest` in `devDependencies` or `scripts.test` → use `npm test` or `npx jest` / `npx vitest run`
@@ -44,13 +48,18 @@ If no runner can be detected, prefer AskUserQuestion with:
     - label: "cargo test"
       description: "Rust"
 
-If structured prompts are unavailable in this runtime, ask the same question in plain text and continue with the answer.
+    - label: "Other / custom command"
+      description: "Provide a different command explicitly"
+
+If structured prompts are unavailable in this runtime, ask the same question in plain text and continue with the answer. Do not use `all of the above`.
 
 ### Step 3: Build run command
 
 Compose the full command:
 - Apply scope filter if provided (e.g., `npx jest auth`, `go test ./auth/...`, `pytest tests/test_auth.py`, `cargo test auth`)
 - Use appropriate flags for output verbosity (e.g., `--verbose` for jest, `-v` for go test)
+
+Before execution, emit the shared `[Requirements]` block covering the runner, scope filter, and any assumptions or defaults that were accepted.
 
 ### Step 4: Execute
 
@@ -75,6 +84,8 @@ If any tests failed, prefer AskUserQuestion with:
       description: "Done — fix manually"
 
 If structured prompts are unavailable in this runtime, ask the same question in plain text and continue with the user's answer.
+
+This failure follow-up is a micro-prompt: single-select only, no `all of the above`, and no `[Requirements]` block.
 
 If "Attempt fix with /quick": follow the /quick skill process, passing the failing test names and error messages as the task description.
 

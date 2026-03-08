@@ -23,6 +23,7 @@ You are Opus acting as a review team lead. You orchestrate two critics — yours
 4. **Fact-check against codebase.** Before including a finding in the report, verify it is actually present in the design and relevant to the actual codebase.
 5. **Loop until resolved.** Do not write `design.approved` until all MUST FIX findings are resolved. SHOULD FIX findings may be accepted via Override.
 6. **Diffs before writes.** When updating the design doc, present each proposed change as old text → new text and wait for explicit user confirmation before applying it. Never rewrite a section wholesale without showing the diff first.
+7. **Use an adaptive branch, not a fixed menu.** Follow `../../docs/guides/interview-system.md` for approval loops: ask one highest-impact next-step question per round, keep it single-select, include a free-form option, and never use "all of the above". Do not emit a full `[Requirements]` block in this skill.
 
 ## Process
 
@@ -55,22 +56,43 @@ Once both agents return their results:
 
 ### Step 4: Human review
 
-Present the report. Prefer AskUserQuestion with:
-  question: "Review round [N] complete. What next?"
+Present the report, then run a single adaptive-branch prompt using the shared interview guide.
+
+If one or more MUST FIX findings remain, ask only about the highest-impact unresolved item:
+
+Prefer AskUserQuestion with:
+  question: "Highest-impact unresolved finding: [short finding title]. What should we do?"
   header: "Review action"
   options:
     - label: "Update design"
-      description: "Draft diffs for each MUST FIX finding and apply confirmed ones"
-    - label: "Override"
-      description: "Accept a finding without fixing — remove it from the must-fix list"
-    - label: "Approve"
-      description: "All MUST FIX resolved — write .pipeline/design.approved and advance"
+      description: "Draft diffs that resolve this finding"
+    - label: "Override this finding"
+      description: "Accept the risk and remove this finding from the must-fix list"
+    - label: "Other / let me explain"
+      description: "Describe a different next step or nuance"
 
 If structured prompts are unavailable in this runtime, ask the same question in plain text and continue with the user's answer.
 
-- **update design:** Based on the findings that require action, draft the specific changes to `.pipeline/design.md`. Present each proposed change as a diff (old text → new text) and ask "Apply this change? (yes / skip)" before writing each one. After all confirmed changes are applied, return to Step 2 for the next review round.
-- **override:** user explicitly accepts a finding without fixing — remove it from the must-fix list and re-present the updated report. If all MUST FIX findings are now resolved, proceed to Approve; otherwise await further action.
-- **approve:** all MUST FIX findings resolved — any remaining SHOULD FIX must have been overridden; proceed to Step 5
+If no MUST FIX findings remain, ask only for the final decision:
+
+Prefer AskUserQuestion with:
+  question: "All MUST FIX findings are resolved. What next?"
+  header: "Review action"
+  options:
+    - label: "Approve"
+      description: "Write .pipeline/design.approved and advance"
+    - label: "Hold"
+      description: "Pause here without approving yet"
+    - label: "Other / let me explain"
+      description: "Describe a different next step or nuance"
+
+If structured prompts are unavailable in this runtime, ask the same question in plain text and continue with the user's answer.
+
+- **update design:** Draft only the diffs needed for the current highest-impact finding. Present each proposed change as a diff (old text → new text) and ask "Apply this change? (yes / skip)" before writing it. After the confirmed changes are applied, return to Step 2 for the next review round.
+- **override this finding:** User explicitly accepts the current finding without fixing it — remove it from the must-fix list and re-present the updated report. If all MUST FIX findings are now resolved, use the final decision prompt above; otherwise continue with the next highest-impact unresolved finding.
+- **approve:** All MUST FIX findings resolved — any remaining SHOULD FIX must have been overridden; proceed to Step 5.
+- **hold:** Stop after presenting the current report; make no file changes.
+- **other / let me explain:** Adapt the next step to the user's instruction while preserving the same one-question-per-turn review loop.
 
 ### Step 5: Write approval marker
 

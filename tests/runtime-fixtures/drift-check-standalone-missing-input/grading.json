@@ -1,0 +1,34 @@
+{
+  "name": "drift-check-standalone-missing-input",
+  "component": "/drift-check",
+  "transcript": "transcript.jsonl",
+  "provenance": "curated",
+  "assertions": [
+    {
+      "id": "asks-only-for-missing-source",
+      "type": "tool_use",
+      "name": "AskUserQuestion",
+      "inputContains": {
+        "header": "Drift source"
+      }
+    },
+    {
+      "id": "does-not-ask-for-target-again",
+      "type": "message_not_contains",
+      "actor": "assistant",
+      "pattern": "Which target should I compare?"
+    },
+    {
+      "id": "emits-requirements-block",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "[Requirements]"
+    },
+    {
+      "id": "records-custom-source",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "docs/retry-spec.md"
+    }
+  ]
+}

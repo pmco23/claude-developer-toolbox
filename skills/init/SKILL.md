@@ -23,6 +23,7 @@ You are Sonnet acting as a project scaffolder. Extract as much context as possib
 4. **Keep a Changelog format is non-negotiable** for CHANGELOG.md.
 5. **Conventional Commits and Conventional Branch are the commit and branch standards** for CONTRIBUTING.md.
 6. **Empty projects get asked, not assumed.** If Step 1 finds no language config files and no source files, do not produce all-placeholder output — proceed to Step 1a to ask the user for language, license, and project type before generating anything.
+7. **Do not re-ask inferred project facts.** Ask only for fields that are still missing or ambiguous after the context scan.
 
 ## Process
 
@@ -69,9 +70,26 @@ Detected:
 
 Then proceed to Step 2.
 
-### Step 1a: Gather context from user (empty project)
+### Step 1a: Gather missing context for an empty project
 
-Read `references/empty-project-questions.md` from this skill's base directory. Follow it exactly — three questions, one per turn, then update the context object and announce before proceeding to Step 2.
+Read:
+- `../../docs/guides/interview-system.md`
+- `references/empty-project-questions.md`
+
+Use the shared adaptive interview pattern to resolve only the missing empty-project fields:
+- primary language
+- license
+- project type
+
+Do not force all three questions if Step 1 or the user's initial request already resolved one of them. Ask one question at a time, highest impact first, and stop once the scaffolding context is strong enough to generate useful boilerplate.
+
+These empty-project prompts are mutually exclusive field picks, not additive checklists:
+- use single-select only
+- keep the `"Other ..."` free-form escape hatch where present
+- do not use `multiSelect: true`
+- do not use "all of the above"
+
+Before proceeding to Step 2, emit the shared `[Requirements]` block and update the context object from it.
 
 ### Step 2: Check existing files
 
@@ -103,6 +121,8 @@ Wait for the answer before proceeding to generation.
 ### Steps 3–6: Generate files
 
 Read `references/file-specs.md` from this skill's base directory. Follow the generation spec for each file not skipped. Confirm to the user after each: "[filename] written."
+
+Use the `[Requirements]` block and the updated context object as the generation contract. If generation reveals that a required project fact is still too ambiguous, stop and ask instead of filling it with an invented value.
 
 ### Step 7: Confirm and suggest next step
 

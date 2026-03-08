@@ -85,8 +85,12 @@ function evaluateAssertion(transcript, assertion) {
   switch (assertion.type) {
     case "message_contains":
       return evaluateMessageContains(transcript, assertion);
+    case "message_not_contains":
+      return evaluateMessageNotContains(transcript, assertion);
     case "tool_use":
       return evaluateToolUse(transcript, assertion);
+    case "tool_use_absent":
+      return evaluateToolUseAbsent(transcript, assertion);
     case "json_field_equals":
       return evaluateJsonFieldEquals(transcript, assertion);
     case "json_array_includes_object":
@@ -101,6 +105,13 @@ function evaluateMessageContains(transcript, assertion) {
   const pattern = assertion.pattern;
   const match = transcript.some((event) => actorMatches(event, actor) && extractText(event).includes(pattern));
   return match ? { pass: true } : { pass: false, reason: `No ${actor} message contained "${pattern}"` };
+}
+
+function evaluateMessageNotContains(transcript, assertion) {
+  const actor = assertion.actor || "any";
+  const pattern = assertion.pattern;
+  const match = transcript.some((event) => actorMatches(event, actor) && extractText(event).includes(pattern));
+  return match ? { pass: false, reason: `${actor} message unexpectedly contained "${pattern}"` } : { pass: true };
 }
 
 function evaluateToolUse(transcript, assertion) {
@@ -119,6 +130,24 @@ function evaluateToolUse(transcript, assertion) {
   return match
     ? { pass: true }
     : { pass: false, reason: `No tool_use matched ${assertion.name} with the requested input` };
+}
+
+function evaluateToolUseAbsent(transcript, assertion) {
+  const match = transcript.find((event) => {
+    if (event.event !== "tool_use" || event.name !== assertion.name) {
+      return false;
+    }
+
+    if (!assertion.inputContains) {
+      return true;
+    }
+
+    return deepContains(event.input || {}, assertion.inputContains);
+  });
+
+  return match
+    ? { pass: false, reason: `Unexpected tool_use matched ${assertion.name} with the requested input` }
+    : { pass: true };
 }
 
 function evaluateJsonFieldEquals(transcript, assertion) {

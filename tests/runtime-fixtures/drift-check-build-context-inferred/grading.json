@@ -1,0 +1,39 @@
+{
+  "name": "drift-check-build-context-inferred",
+  "component": "/drift-check",
+  "transcript": "transcript.jsonl",
+  "provenance": "curated",
+  "assertions": [
+    {
+      "id": "does-not-ask-when-source-and-target-are-inferred",
+      "type": "tool_use_absent",
+      "name": "AskUserQuestion"
+    },
+    {
+      "id": "emits-requirements-block",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "[Requirements]"
+    },
+    {
+      "id": "uses-plan-as-default-source",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Source:         .pipeline/plan.md"
+    },
+    {
+      "id": "uses-working-directory-as-default-target",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Target scope:   current working directory"
+    },
+    {
+      "id": "dispatches-semantic-verifier",
+      "type": "tool_use",
+      "name": "Task",
+      "inputContains": {
+        "subagent": "drift-verifier"
+      }
+    }
+  ]
+}

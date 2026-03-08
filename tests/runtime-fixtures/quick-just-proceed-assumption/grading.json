@@ -1,0 +1,38 @@
+{
+  "name": "quick-just-proceed-assumption",
+  "component": "/quick",
+  "transcript": "transcript.jsonl",
+  "provenance": "curated",
+  "assertions": [
+    {
+      "id": "asks-one-high-impact-question",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Which problem should I fix?"
+    },
+    {
+      "id": "user-allows-assumption",
+      "type": "message_contains",
+      "actor": "user",
+      "pattern": "Just proceed."
+    },
+    {
+      "id": "emits-requirements-block",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "[Requirements]"
+    },
+    {
+      "id": "records-assumption",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Assumptions:"
+    },
+    {
+      "id": "reports-completed-change",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Done. Changed 2 file(s):"
+    }
+  ]
+}

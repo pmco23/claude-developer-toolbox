@@ -1,0 +1,34 @@
+{
+  "name": "test-ambiguous-runner-question",
+  "component": "/test",
+  "transcript": "transcript.jsonl",
+  "provenance": "curated",
+  "assertions": [
+    {
+      "id": "asks-runner-question",
+      "type": "tool_use",
+      "name": "AskUserQuestion",
+      "inputContains": {
+        "header": "Test runner"
+      }
+    },
+    {
+      "id": "accepts-custom-command",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "pnpm exec playwright test tests/import.spec.ts"
+    },
+    {
+      "id": "emits-requirements-block",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "[Requirements]"
+    },
+    {
+      "id": "does-not-use-all-of-the-above",
+      "type": "message_not_contains",
+      "actor": "assistant",
+      "pattern": "all of the above"
+    }
+  ]
+}

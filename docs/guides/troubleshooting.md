@@ -28,7 +28,8 @@ Run the command directly to enter the workflow.
 
 The current runtime does not expose structured prompts. The skills are designed
 to fail soft: answer the question inline and the workflow will continue with the
-same logic.
+same logic. If the original prompt was additive, reply with a concise
+comma-separated list instead of expecting an `all of the above` option.
 
 ## "`/pr-qa` skipped because only docs changed"
 
@@ -69,7 +70,7 @@ node ~/claude-developer-toolbox/scripts/grade-runtime-fixtures.js
 Expected:
 
 - `hooks/test-gate.sh` => `Results: 88 passed, 0 failed`
-- `grade-runtime-fixtures.js` => `Results: 47 passed, 0 failed`
+- `grade-runtime-fixtures.js` => `Results: 125 passed, 0 failed`
 
 ## Statusline symlink did not update
 

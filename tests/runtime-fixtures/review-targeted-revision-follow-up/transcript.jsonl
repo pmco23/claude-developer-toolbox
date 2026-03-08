@@ -1,0 +1,5 @@
+{"event":"user","text":"/review"}
+{"event":"assistant","text":"Review round 2 report:\n- MUST FIX: retry scheduler depends on Redis even though the design says v1 stays on Postgres.\n- SHOULD FIX: clarify replay access controls."}
+{"event":"tool_use","name":"AskUserQuestion","input":{"header":"Review action","question":"Highest-impact unresolved finding: retry scheduler depends on Redis even though v1 stays on Postgres. What should we do?","options":[{"label":"Update design","description":"Draft diffs that resolve this finding"},{"label":"Override this finding","description":"Accept the risk and remove this finding from the must-fix list"},{"label":"Other / let me explain","description":"Describe a different next step or nuance"}]}}
+{"event":"user","text":"Update design"}
+{"event":"assistant","text":"Old text → New text\n- Old: \"Queue retries through Redis-backed workers.\"\n- New: \"Persist retry jobs in Postgres and process them with an in-service worker for v1.\"\n\nApply this change? (yes / skip)"}
