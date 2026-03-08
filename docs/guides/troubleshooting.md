@@ -45,15 +45,20 @@ rm -rf .pipeline/
 # Partial reset — see docs/guides/workflows.md#resetting-to-a-prior-phase
 ```
 
-## Verifying gate logic
+## Verifying gate logic and runtime fixtures
 
-Run `hooks/test-gate.sh` to confirm the gate and hook JSON outputs are working correctly:
+Run both verification layers to confirm the hook bundle and curated runtime
+fixtures are healthy:
 
 ```bash
 bash ~/claude-developer-toolbox/hooks/test-gate.sh
+node ~/claude-developer-toolbox/scripts/grade-runtime-fixtures.js
 ```
 
-Expected: `Results: 62 passed, 0 failed`
+Expected:
+
+- `hooks/test-gate.sh` => `Results: 86 passed, 0 failed`
+- `grade-runtime-fixtures.js` => `Results: 26 passed, 0 failed`
 
 ## Statusline symlink did not update
 

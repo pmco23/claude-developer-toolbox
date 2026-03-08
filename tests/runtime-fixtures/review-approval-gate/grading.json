@@ -1,0 +1,41 @@
+{
+  "name": "review-approval-gate",
+  "component": "/review",
+  "transcript": "transcript.jsonl",
+  "assertions": [
+    {
+      "id": "dispatches-strategic-critic",
+      "type": "tool_use",
+      "name": "Task",
+      "inputContains": {
+        "subagent": "strategic-critic"
+      }
+    },
+    {
+      "id": "dispatches-code-critic",
+      "type": "tool_use",
+      "name": "Task",
+      "inputContains": {
+        "subagent": "code-critic"
+      }
+    },
+    {
+      "id": "blocks-approval-on-must-fix",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "not approved yet"
+    },
+    {
+      "id": "accepts-targeted-follow-up",
+      "type": "message_contains",
+      "actor": "user",
+      "pattern": "Apply only the rollback path validation fix"
+    },
+    {
+      "id": "writes-approval-artifact-after-fix",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": ".pipeline/design.approved"
+    }
+  ]
+}

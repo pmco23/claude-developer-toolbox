@@ -126,12 +126,14 @@ This plugin keeps a lightweight local memory file per project:
 - writer: `SessionEnd` via `scripts/session-summary.js`
 - reader: `SessionStart` via `scripts/session-context.js`
 - startup injection: last 3 entries only
+- optional enrichment: current Repomix snapshot availability from `.pipeline/repomix-pack.json`
 
 The memory layer is intentionally simple:
 - no network calls
 - no database or vector store
 - no background process
 - no raw transcript storage
+- no Repomix rerun inside the memory hooks
 
 If `.gitignore` exists but does not include `.claude/session-log.md`, the hook
 prints a one-time reminder. It does not edit `.gitignore` for you.
@@ -143,3 +145,16 @@ prints a one-time reminder. It does not edit `.gitignore` for you.
 /plugin install claude-developer-toolbox@pmco23-tools
 # Restart Claude Code
 ```
+
+## Verification
+
+Run both verification layers from the repository root after changing hooks,
+workflow contracts, or agent outputs:
+
+```bash
+bash hooks/test-gate.sh
+node scripts/grade-runtime-fixtures.js
+```
+
+- `hooks/test-gate.sh` validates the hook bundle, session memory, and shared Repomix packer
+- `scripts/grade-runtime-fixtures.js` grades curated runtime fixtures for `/build`, `/qa`, `/review`, `/rollback`, and `task-builder`

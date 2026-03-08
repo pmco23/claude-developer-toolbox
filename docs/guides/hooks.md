@@ -18,6 +18,8 @@ Claude Code fires lifecycle events.
 2. `scripts/session-context.js` looks for `.claude/session-log.md` in the
    current project. If present, it prints the last 3 session summaries with a
    short header so Claude can inject them as system context.
+   If `.pipeline/repomix-pack.json` exists, it also emits one short line with
+   the current Repomix snapshot variants and `packedAt` age.
 
 The startup hook also keeps `~/.claude/statusline.js` aligned with this
 plugin's `hooks/statusline.js`, but only when no statusline exists yet or the
@@ -37,6 +39,8 @@ a custom statusline or another plugin's statusline.
 **Session history behavior:**
 - History lives at `.claude/session-log.md` inside each project
 - Only the last 3 entries are injected at startup to bound token cost
+- If `.pipeline/repomix-pack.json` exists, the startup context includes a
+  short read-only snapshot status line; the hook does not rerun Repomix
 - If `.gitignore` exists but does not ignore `.claude/session-log.md`, the
   script prints a one-time reminder to stderr and records that the notice was shown
 
@@ -141,14 +145,16 @@ If no `.pipeline/` directory exists, or the directory is empty, the hook exits s
 **What it does:** Runs two end-of-session tasks:
 
 1. `session-end-pack.sh` generates three targeted Repomix snapshots (code,
-   docs, full) into the `.pipeline/` directory. Each `repomix` call is guarded
-   by a 60-second timeout (fail-open if the `timeout` command is absent). If at
-   least one snapshot succeeds, it writes a `repomix-pack.json` manifest with
-   the available variants, timestamps, and file sizes.
+   docs, full) into the `.pipeline/` directory by delegating to the shared
+   `skills/pack/scripts/repomix-pack.js` script. The shared script applies a
+   60-second timeout per Repomix run and writes `repomix-pack.json` with the
+   available variants, timestamps, and file sizes.
 2. `scripts/session-summary.js` appends a compact summary of the session to
    `.claude/session-log.md`. It uses local heuristics only: first user message
    for the goal, file-edit tool calls for key changes, assistant phrasing for
-   decisions, and the last assistant message for open threads.
+   decisions, and the last assistant message for open threads. If
+   `.pipeline/repomix-pack.json` exists, the summary also records the current
+   snapshot variants and freshness.
 
 **Skip conditions:** exits silently when:
 - `repomix` is not installed
@@ -160,6 +166,7 @@ If no `.pipeline/` directory exists, or the directory is empty, the hook exits s
 **Session summary behavior:**
 - summaries are markdown digests, not raw transcript dumps
 - each entry is appended to `.claude/session-log.md`
+- Repomix state is read-only metadata enrichment; the hook never reruns Repomix
 - the log is trimmed from the top when it exceeds 50KB
 - the script exits 0 on empty input, malformed input, or missing transcript data
 

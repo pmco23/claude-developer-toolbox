@@ -36,8 +36,15 @@ async function main() {
       process.exit(0);
       return;
     }
+    const snapshotState = readRepomixState(projectDir);
+    const snapshotLine = formatSnapshotState(snapshotState);
 
-    process.stdout.write(`${HEADER}\n${entries.join("\n\n").trim()}\n`);
+    const output = [HEADER.trimEnd()];
+    if (snapshotLine) {
+      output.push(`Current Repomix snapshot state: ${snapshotLine}`);
+    }
+    output.push("", entries.join("\n\n").trim());
+    process.stdout.write(`${output.join("\n")}\n`);
   } catch (error) {
     safeStderr(`[session-context] ${error.message}`);
   }
@@ -53,6 +60,56 @@ function parseEntries(content) {
   return parts
     .map((entry) => `## Session: ${entry}`.trim())
     .filter(Boolean);
+}
+
+function readRepomixState(projectDir) {
+  const packPath = path.join(projectDir, ".pipeline", "repomix-pack.json");
+  if (!fs.existsSync(packPath)) {
+    return null;
+  }
+
+  let packData;
+  try {
+    packData = JSON.parse(fs.readFileSync(packPath, "utf8"));
+  } catch {
+    return null;
+  }
+
+  const snapshots =
+    packData && typeof packData.snapshots === "object" && packData.snapshots
+      ? packData.snapshots
+      : {};
+
+  const availableVariants = ["code", "docs", "full"].filter((variant) => {
+    const snapshot = snapshots[variant];
+    return snapshot && typeof snapshot.filePath === "string" && snapshot.filePath;
+  });
+
+  const packedAt = stringOrEmpty(packData.packedAt);
+  return {
+    availableVariants,
+    packedAt,
+    ageLabel: formatAgeLabel(packedAt),
+  };
+}
+
+function formatSnapshotState(snapshotState) {
+  if (!snapshotState) {
+    return "";
+  }
+
+  const parts = [];
+  if (snapshotState.availableVariants.length > 0) {
+    parts.push(`available: ${snapshotState.availableVariants.join("/")}`);
+  }
+  if (snapshotState.packedAt) {
+    parts.push(`packedAt: ${snapshotState.packedAt}`);
+  }
+  if (snapshotState.ageLabel) {
+    parts.push(`age: ${snapshotState.ageLabel}`);
+  }
+
+  return parts.join("; ");
 }
 
 function maybePrintGitignoreNotice(projectDir, claudeDir) {
@@ -132,6 +189,33 @@ function expandHome(targetPath) {
     return path.join(process.env.HOME || "", targetPath.slice(2));
   }
   return targetPath;
+}
+
+function formatAgeLabel(timestamp) {
+  const packedAtMs = Date.parse(timestamp || "");
+  if (!Number.isFinite(packedAtMs)) {
+    return "";
+  }
+
+  const ageMs = Date.now() - packedAtMs;
+  if (!Number.isFinite(ageMs) || ageMs < 0) {
+    return "";
+  }
+
+  const totalMinutes = Math.round(ageMs / 60000);
+  if (totalMinutes < 1) {
+    return "under 1m";
+  }
+  if (totalMinutes < 60) {
+    return `${totalMinutes}m`;
+  }
+
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (minutes === 0) {
+    return `${hours}h`;
+  }
+  return `${hours}h ${minutes}m`;
 }
 
 function safeStderr(message) {

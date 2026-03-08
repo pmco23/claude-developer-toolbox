@@ -1,0 +1,37 @@
+{
+  "name": "rollback-safe-restore",
+  "component": "/rollback",
+  "transcript": "transcript.jsonl",
+  "assertions": [
+    {
+      "id": "previews-scope-first",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Previewing rollback scope"
+    },
+    {
+      "id": "creates-safety-backup",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": ".pipeline/rollback-backups/"
+    },
+    {
+      "id": "rejects-path-escape",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "escapes the repository root"
+    },
+    {
+      "id": "uses-git-restore",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "git restore --source=HEAD --staged --worktree"
+    },
+    {
+      "id": "resets-build-complete",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": ".pipeline/build.complete"
+    }
+  ]
+}

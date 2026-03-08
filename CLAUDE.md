@@ -1,7 +1,7 @@
 # Project Conventions
 
 Language: Bash (hooks), JavaScript (hook scripts/statusline), Markdown (skills/references/docs), JSON (config)
-Test command: `bash hooks/test-gate.sh`
+Test command: `bash hooks/test-gate.sh && node scripts/grade-runtime-fixtures.js`
 Lint command: none
 Build command: none
 
@@ -14,7 +14,10 @@ Style config: hooks follow POSIX-compatible bash (`set -euo pipefail`). Skills f
 - `hooks/` — UserPromptSubmit/PreToolUse/PostToolUse/PreCompact/SessionStart/SessionEnd bash hooks
 - `hooks/lib/` — sourceable shared libraries (no shebang, not executable)
 - `scripts/` — Node.js hook helpers for project-local session memory (`session-context.js`, `session-summary.js`)
+- `skills/pack/scripts/repomix-pack.js` — shared deterministic Repomix packer used by `/pack` and the SessionEnd pack hook
 - `hooks/test-gate.sh` — gate test suite (run before every commit)
+- `tests/runtime-fixtures/` — curated transcript fixtures for `/build`, `/qa`, `/review`, `/rollback`, and `task-builder`
+- `scripts/grade-runtime-fixtures.js` — fixture grader for the runtime transcripts
 - `.claude-plugin/plugin.json` — plugin manifest (version source of truth)
 - `.claude-plugin/marketplace.json` — local dev marketplace manifest
 - `docs/guides/` — user-facing documentation
@@ -25,6 +28,7 @@ Style config: hooks follow POSIX-compatible bash (`set -euo pipefail`). Skills f
 - Never put skills, hooks, or other components inside `.claude-plugin/` — that directory contains only manifests.
 - All hooks must be executable (`chmod +x`) and use `#!/usr/bin/env bash`.
 - Run `bash hooks/test-gate.sh` after any change to hooks or gate logic. All tests must pass.
+- Run `node scripts/grade-runtime-fixtures.js` after changing workflow contracts, agent outputs, or transcript fixtures.
 - Session memory stays project-local in `.claude/session-log.md`; do not commit raw logs or add external dependencies to the memory flow.
 - Session memory hooks must fail open: exit 0 on empty input, malformed input, or missing transcript files.
 - Version is tracked in both `plugin.json` and `marketplace.json` — always bump both.

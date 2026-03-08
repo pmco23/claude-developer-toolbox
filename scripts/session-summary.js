@@ -46,6 +46,10 @@ async function buildSummary(payload, projectDir, stdinText) {
   if (!hasMeaningfulSignal(transcriptData)) {
     return null;
   }
+  const snapshotState = readRepomixState(
+    projectDir,
+    transcriptData.lastTimestamp || new Date().toISOString()
+  );
 
   const isoDate = toIsoString(
     transcriptData.lastTimestamp || new Date().toISOString()
@@ -63,8 +67,9 @@ async function buildSummary(payload, projectDir, stdinText) {
     "No explicit decisions captured."
   );
   const openThreads = formatOpenThreads(transcriptData.openThreads, outcome);
+  const snapshotLine = formatSnapshotState(snapshotState);
 
-  return [
+  const lines = [
     `## Session: ${isoDate} | ${duration}`,
     "",
     `**Goal:** ${goal}`,
@@ -75,10 +80,14 @@ async function buildSummary(payload, projectDir, stdinText) {
     ...decisions,
     "**Open threads:**",
     ...openThreads,
-    "",
-    "---",
-    "",
-  ].join("\n");
+  ];
+
+  if (snapshotLine) {
+    lines.push(`**Snapshot state:** ${snapshotLine}`);
+  }
+
+  lines.push("", "---", "");
+  return lines.join("\n");
 }
 
 function hasMeaningfulSignal(transcriptData) {
@@ -393,6 +402,25 @@ function formatOpenThreads(items, outcome) {
   return ["- No open threads recorded."];
 }
 
+function formatSnapshotState(snapshotState) {
+  if (!snapshotState) {
+    return "";
+  }
+
+  const parts = [];
+  if (snapshotState.availableVariants.length > 0) {
+    parts.push(`available: ${snapshotState.availableVariants.join("/")}`);
+  }
+  if (snapshotState.packedAt) {
+    parts.push(`packedAt: ${snapshotState.packedAt}`);
+  }
+  if (snapshotState.ageLabel) {
+    parts.push(`age: ${snapshotState.ageLabel}`);
+  }
+
+  return parts.join("; ");
+}
+
 function appendEntry(logPath, entry) {
   fs.mkdirSync(path.dirname(logPath), { recursive: true });
   const existingEntries = fs.existsSync(logPath)
@@ -439,6 +467,37 @@ function parseEntries(content) {
   return parts
     .map((entry) => `## Session: ${entry}`.trim())
     .filter(Boolean);
+}
+
+function readRepomixState(projectDir, referenceTimestamp) {
+  const packPath = path.join(projectDir, ".pipeline", "repomix-pack.json");
+  if (!fs.existsSync(packPath)) {
+    return null;
+  }
+
+  let packData;
+  try {
+    packData = JSON.parse(fs.readFileSync(packPath, "utf8"));
+  } catch {
+    return null;
+  }
+
+  const snapshots =
+    packData && typeof packData.snapshots === "object" && packData.snapshots
+      ? packData.snapshots
+      : {};
+
+  const availableVariants = ["code", "docs", "full"].filter((variant) => {
+    const snapshot = snapshots[variant];
+    return snapshot && typeof snapshot.filePath === "string" && snapshot.filePath;
+  });
+
+  const packedAt = stringOrEmpty(packData.packedAt);
+  return {
+    availableVariants,
+    packedAt,
+    ageLabel: formatAgeLabel(packedAt, referenceTimestamp),
+  };
 }
 
 function maybePrintGitignoreNotice(projectDir, claudeDir) {
@@ -621,6 +680,36 @@ function computeDurationMs(firstTimestamp, lastTimestamp) {
     return 0;
   }
   return last - first;
+}
+
+function formatAgeLabel(timestamp, referenceTimestamp) {
+  const packedAtMs = Date.parse(timestamp || "");
+  if (!Number.isFinite(packedAtMs)) {
+    return "";
+  }
+
+  const referenceMs = referenceTimestamp
+    ? Date.parse(referenceTimestamp)
+    : Date.now();
+  const ageMs = referenceMs - packedAtMs;
+  if (!Number.isFinite(ageMs) || ageMs < 0) {
+    return "";
+  }
+
+  const totalMinutes = Math.round(ageMs / 60000);
+  if (totalMinutes < 1) {
+    return "under 1m";
+  }
+  if (totalMinutes < 60) {
+    return `${totalMinutes}m`;
+  }
+
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (minutes === 0) {
+    return `${hours}h`;
+  }
+  return `${hours}h ${minutes}m`;
 }
 
 function formatDuration(durationMs) {

@@ -130,7 +130,9 @@ rm .pipeline/build.complete
 > next session start and the pipeline picks up exactly where you left off. The
 > SessionStart memory hook also injects the last 3 entries from
 > `.claude/session-log.md`, so recent decisions and open threads carry forward
-> without replaying raw transcript history.
+> without replaying raw transcript history. If Repomix snapshots already exist,
+> the same startup context also includes a short snapshot-state line from
+> `.pipeline/repomix-pack.json`.
 
 ---
 
@@ -237,7 +239,19 @@ Five named agents exist in the `agents/` directory: `strategic-critic`, `drift-v
 
 - `/review` dispatches `strategic-critic` (Opus) and `code-critic` (Sonnet) in parallel
 - `/drift-check` dispatches `drift-verifier` (Sonnet) and `path-verifier` (Sonnet) in parallel
-- `/build` dispatches `task-builder` (Sonnet) per task group, then `drift-verifier` (Sonnet) post-build
+- `/build` dispatches `task-builder` (Sonnet) per task group, validates the agent's fenced `json` handoff report, then runs `drift-verifier` (Sonnet) post-build
+
+When `task-builder` finishes a task group, it returns a machine-readable fenced `json` report that records:
+
+- `status`
+- `taskGroup`
+- `files`
+- `tests`
+- `acceptanceCriteria`
+- `blockers`
+- `summary`
+
+`/build` treats that JSON report as the authoritative handoff contract. If the JSON block is missing, malformed, or contradicts the actual test and acceptance-criteria results, `/build` re-invokes `task-builder` once for a corrected report before deciding whether the task group is complete or blocked.
 
 The agents enforce model routing (`model: opus` / `model: sonnet`) at the runtime level rather than by prompt instruction alone. This is an implementation detail — for workflow purposes, just run the skill.
 

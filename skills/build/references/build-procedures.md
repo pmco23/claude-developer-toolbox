@@ -38,6 +38,34 @@ If this is a fresh build and TaskCreate is available: call TaskCreate for each g
 
 If TaskCreate is unavailable, keep the same per-group state in a compact inline checklist with statuses `pending`, `in_progress`, `completed`, and `blocked`.
 
+## Task-Builder Report Validation (Step 2)
+
+Every `task-builder` run must return a fenced `json` block. Treat that block as
+the authoritative contract; any prose after it is optional context only.
+
+Expected top-level fields:
+- `status`
+- `taskGroup.number`
+- `taskGroup.name`
+- `files[]`
+- `tests[]`
+- `acceptanceCriteria[]`
+- `blockers[]`
+- `summary`
+
+Validation rules:
+- If the JSON block is missing, malformed, or missing any required field: re-invoke
+  `task-builder` once with a narrow instruction: "Re-send only the final JSON report
+  in the required schema."
+- `status: complete` is valid only if every acceptance criterion reports `pass`,
+  every required test is `pass`, and `blockers` is empty.
+- `status: blocked` means the lead must inspect `blockers`, failing tests, and
+  failed acceptance criteria before deciding whether to retry or escalate.
+- `files[]` is the authoritative list of touched files for progress notes and
+  for any later remediation or rollback context.
+- If the agent reports `status: complete` but any criterion/test is failing,
+  treat the run as blocked and re-invoke with correction guidance.
+
 ## Post-Build Drift Verification (Steps 3–4)
 
 After all task groups complete, run drift detection:

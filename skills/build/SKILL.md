@@ -41,6 +41,7 @@ If structured prompts are unavailable in this runtime, ask a single plain-text q
 3. **Separate contexts.** Each builder gets only the context for their task group. Do not cross-contaminate.
 4. **3-failure escalation.** After 3 consecutive agent failures on the same task group, stop retrying. Escalate to the user: present the failing criteria, the agent's last output, and ask how to proceed before any further attempts.
 5. **Progress tracking degrades gracefully.** If TaskList / TaskCreate / TaskUpdate helpers are available, use them. If they are not available in this runtime, keep the same state in a concise inline checklist and continue the build instead of blocking on missing task helpers.
+6. **Consume `task-builder` JSON, not prose.** Treat the fenced `json` report from `task-builder` as the authoritative result. If the agent omits it, returns malformed JSON, or leaves out required fields, re-invoke once asking for the report only before evaluating success or failure.
 
 ## Process
 
@@ -65,7 +66,7 @@ Invocation for each group:
 Implement Task Group [N] — [Name]
 ```
 
-Monitor subagent outputs. When blocked: investigate, provide textual guidance (never code), and record the blocker in TaskUpdate or the inline checklist. After success + acceptance criteria verified: mark the task `completed`.
+Monitor subagent outputs using the "Task-Builder Report Validation" section in `references/build-procedures.md`. When blocked: investigate, provide textual guidance (never code), and record the blocker in TaskUpdate or the inline checklist. After success + acceptance criteria verified from the JSON report: mark the task `completed`.
 
 Apply 3-failure escalation (Hard Rule #4) if needed. After all parallel groups complete, dispatch dependent groups the same way.
 
@@ -75,7 +76,7 @@ For each task group in dependency order:
 
 1. Mark the task `in_progress` via TaskUpdate or the inline checklist
 2. Invoke `task-builder` via the Task tool: "Implement Task Group [N] — [Name]"
-3. Review output against acceptance criteria
+3. Validate and review the returned JSON report against acceptance criteria
 4. Pass → mark `completed`, next group
 5. Fail → record blocker, provide correction guidance, re-invoke
 

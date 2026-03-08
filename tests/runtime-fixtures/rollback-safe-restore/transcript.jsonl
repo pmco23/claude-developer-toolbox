@@ -1,0 +1,6 @@
+{"event":"user","text":"/rollback"}
+{"event":"assistant","text":"Previewing rollback scope for Task Group 3 before any destructive action."}
+{"event":"assistant","text":"Created safety backup at .pipeline/rollback-backups/2026-03-08T12-00-00Z/."}
+{"event":"assistant","text":"Rejected ../notes.txt because it escapes the repository root."}
+{"event":"assistant","text":"Restored src/routes/import.ts with git restore --source=HEAD --staged --worktree and deleted src/routes/temp-import.ts."}
+{"event":"assistant","text":"Rollback complete. Reset .pipeline/build.complete."}

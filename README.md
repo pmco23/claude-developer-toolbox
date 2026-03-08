@@ -51,6 +51,7 @@ The plugin keeps a lightweight, project-local session memory file at
 
 - `SessionStart` loads the last 3 entries into Claude as recent project history
 - `SessionEnd` appends a concise heuristic summary of the session
+- when `.pipeline/repomix-pack.json` exists, both hooks also surface current snapshot availability and freshness
 - summaries are local-only: no network calls, databases, background service, or raw transcript dumps
 - if `.gitignore` exists but does not ignore `.claude/session-log.md`, the hook prints a one-time reminder instead of editing the file for you
 
@@ -120,6 +121,18 @@ Claude to auto-load it from a natural-language request. See the [full installati
 | [Troubleshooting](docs/guides/troubleshooting.md) | Common issues and fixes |
 | [Changelog](CHANGELOG.md) | Release history and version notes |
 
+## Verification
+
+Run both verification layers before publishing hook or workflow changes:
+
+```bash
+bash hooks/test-gate.sh
+node scripts/grade-runtime-fixtures.js
+```
+
+- `hooks/test-gate.sh` covers hook contracts, session memory, and the deterministic Repomix packer
+- `scripts/grade-runtime-fixtures.js` grades curated runtime fixtures for `/build`, `/qa`, `/review`, `/rollback`, and `task-builder`
+
 ### Skills
 
 | Skill | Description |
@@ -165,3 +178,6 @@ Lightweight git operations — no pipeline artifacts, no multi-step process.
 |------|--------|
 | `tdd: disabled` | Switches `/plan` to implementation-first task ordering (skip Red-Green-Refactor) |
 | `session-end-pack: disabled` | Skips automatic Repomix packing on session end |
+
+`/pack` and the SessionEnd Repomix hook now share the same deterministic packer
+script, so snapshot variants and `repomix-pack.json` stay on one implementation path.

@@ -7,8 +7,10 @@ GATE="$SCRIPT_DIR/pipeline-gate.sh"
 GUARD="$SCRIPT_DIR/convention-guard.sh"
 MONITOR="$SCRIPT_DIR/context-monitor.sh"
 COMPACT="$SCRIPT_DIR/compact-prep.sh"
+SESSION_END_PACK="$SCRIPT_DIR/session-end-pack.sh"
 SESSION_SUMMARY="$SCRIPT_DIR/../scripts/session-summary.js"
 SESSION_CONTEXT="$SCRIPT_DIR/../scripts/session-context.js"
+REPOMIX_PACKER="$SCRIPT_DIR/../skills/pack/scripts/repomix-pack.js"
 PASS=0
 FAIL=0
 
@@ -113,6 +115,13 @@ run_session_context() {
   local payload_file="$1"
   local project_dir="$2"
   CLAUDE_PROJECT_DIR="$project_dir" node "$SESSION_CONTEXT" < "$payload_file"
+}
+
+run_repomix_packer() {
+  local source_dir="$1"
+  local pipeline_dir="$2"
+  shift 2
+  node "$REPOMIX_PACKER" --source "$source_dir" --pipeline-dir "$pipeline_dir" "$@"
 }
 
 run_guard() {
@@ -238,6 +247,17 @@ rm -rf "$compact_dir"
 session_dir=$(mktemp -d)
 mkdir -p "$session_dir/project"
 printf '.claude/session-log.md\n' > "$session_dir/project/.gitignore"
+mkdir -p "$session_dir/project/.pipeline"
+cat > "$session_dir/project/.pipeline/repomix-pack.json" <<'EOF'
+{
+  "packedAt": "2026-03-07T09:55:00.000Z",
+  "snapshots": {
+    "code": { "filePath": ".pipeline/repomix-code.xml", "fileSize": 1024 },
+    "docs": { "filePath": ".pipeline/repomix-docs.xml", "fileSize": 512 },
+    "full": { "filePath": ".pipeline/repomix-full.xml", "fileSize": 2048 }
+  }
+}
+EOF
 cat > "$session_dir/transcript.jsonl" <<'EOF'
 {"type":"user","message":{"role":"user","content":"Implement session log memory for this plugin"},"timestamp":"2026-03-07T10:00:00.000Z"}
 {"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"I'll go with a SessionEnd summary hook and keep it local-only."},{"type":"tool_use","name":"Write","input":{"file_path":"scripts/session-summary.js"}},{"type":"tool_use","name":"Edit","input":{"file_path":"README.md"}}]},"timestamp":"2026-03-07T10:03:00.000Z"}
@@ -255,6 +275,8 @@ session_log="$session_dir/project/.claude/session-log.md"
 expect_file_contains "$session_log" 'Implement session log memory for this plugin' "session-summary writes extracted goal"
 expect_file_contains "$session_log" 'scripts/session-summary.js: written' "session-summary records key changes"
 expect_file_contains "$session_log" 'Next step: verify the hook output and update documentation' "session-summary records open thread"
+expect_file_contains "$session_log" 'Snapshot state:' "session-summary records Repomix snapshot state"
+expect_file_contains "$session_log" 'available: code/docs/full' "session-summary reports available snapshot variants"
 
 run_session_summary "$session_dir/session-end.json" "$session_dir/project" >/dev/null 2>/dev/null
 entry_count=$(grep -c '^## Session:' "$session_log")
@@ -321,6 +343,8 @@ cat > "$session_log" <<'EOF'
 EOF
 context_output=$(run_session_context "$session_dir/session-start.json" "$session_dir/project" 2>/dev/null)
 check_output_contains "$context_output" 'Recent Session History' "session-context emits header"
+check_output_contains "$context_output" 'Current Repomix snapshot state:' "session-context emits current Repomix snapshot state"
+check_output_contains "$context_output" 'available: code/docs/full' "session-context reports available snapshot variants"
 check_output_contains "$context_output" 'older.txt: edited' "session-context includes the third-most-recent entry"
 check_output_contains "$context_output" 'newest.txt: edited' "session-context includes the newest entry"
 if echo "$context_output" | grep -q 'Goal:** oldest'; then
@@ -379,9 +403,67 @@ else
 fi
 expect_file_contains "$trim_dir/project/.claude/session-log.md" 'Finalize the memory hook' "session-summary preserves the newest entry after trimming"
 
+# deterministic repomix packer
+repomix_dir=$(mktemp -d)
+mkdir -p "$repomix_dir/project"
+cat > "$repomix_dir/fake-repomix" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [ "${1:-}" = "--version" ]; then
+  echo "fake-repomix 1.0.0"
+  exit 0
+fi
+
+output=""
+args=("$@")
+for ((i=0; i<${#args[@]}; i++)); do
+  if [ "${args[$i]}" = "--output" ] && [ $((i+1)) -lt ${#args[@]} ]; then
+    output="${args[$((i+1))]}"
+    break
+  fi
+done
+
+[ -n "$output" ] || exit 11
+
+case "$output" in
+  *repomix-docs.xml)
+    [ "${FAKE_REPOMIX_FAIL_DOCS:-0}" = "1" ] && exit 9
+    ;;
+esac
+
+mkdir -p "$(dirname "$output")"
+printf '<snapshot>%s</snapshot>\n' "$output" > "$output"
+EOF
+chmod +x "$repomix_dir/fake-repomix"
+
+packer_output=$(REPOMIX_BIN="$repomix_dir/fake-repomix" run_repomix_packer "$repomix_dir/project" "$repomix_dir/project/.pipeline" --json 2>/dev/null)
+check_output_contains "$packer_output" '"status": "ok"' "repomix packer returns success JSON"
+check_output_contains "$packer_output" 'repomix-code.xml' "repomix packer reports code snapshot"
+expect_file_contains "$repomix_dir/project/.pipeline/repomix-pack.json" '"code"' "repomix packer writes manifest"
+expect_file_contains "$repomix_dir/project/.pipeline/repomix-pack.json" '"full"' "repomix packer writes full snapshot entry"
+
+partial_dir=$(mktemp -d)
+mkdir -p "$partial_dir/project"
+partial_output=$(FAKE_REPOMIX_FAIL_DOCS=1 REPOMIX_BIN="$repomix_dir/fake-repomix" run_repomix_packer "$partial_dir/project" "$partial_dir/project/.pipeline" --json 2>/dev/null)
+check_output_contains "$partial_output" '"failures"' "repomix packer reports partial failures"
+expect_file_contains "$partial_dir/project/.pipeline/repomix-pack.json" '"code"' "repomix packer preserves successful variants on partial failure"
+if [ -f "$partial_dir/project/.pipeline/repomix-docs.xml" ]; then
+  echo "FAIL: repomix packer partial failure should not create docs snapshot on failure"
+  FAIL=$((FAIL+1))
+else
+  echo "PASS: repomix packer partial failure skips failed docs snapshot"
+  PASS=$((PASS+1))
+fi
+
+hook_pack_dir=$(mktemp -d)
+mkdir -p "$hook_pack_dir/.pipeline"
+(cd "$hook_pack_dir" && REPOMIX_BIN="$repomix_dir/fake-repomix" bash "$SESSION_END_PACK")
+expect_file_contains "$hook_pack_dir/.pipeline/repomix-pack.json" '"snapshots"' "session-end-pack hook delegates to shared repomix packer"
+
 # Cleanup
 rm -rf "$NO_PIPELINE" "$HAS_BRIEF" "$HAS_DESIGN" "$HAS_APPROVED" "$HAS_PLAN" "$HAS_BUILD"
-rm -rf "$session_dir" "$empty_dir" "$malformed_dir" "$trim_dir"
+rm -rf "$session_dir" "$empty_dir" "$malformed_dir" "$trim_dir" "$repomix_dir" "$partial_dir" "$hook_pack_dir"
 
 echo ""
 echo "Results: $PASS passed, $FAIL failed"
