@@ -57,8 +57,8 @@ node ~/claude-developer-toolbox/scripts/grade-runtime-fixtures.js
 
 Expected:
 
-- `hooks/test-gate.sh` => `Results: 86 passed, 0 failed`
-- `grade-runtime-fixtures.js` => `Results: 26 passed, 0 failed`
+- `hooks/test-gate.sh` => `Results: 88 passed, 0 failed`
+- `grade-runtime-fixtures.js` => `Results: 31 passed, 0 failed`
 
 ## Statusline symlink did not update
 

@@ -8,6 +8,11 @@ Curated transcript fixtures for the highest-risk workflow components:
 - `/rollback`
 - `task-builder`
 
+The `task-builder` fixtures include both:
+
+- a successful contract handoff
+- a blocked contract handoff with failing tests and non-empty blockers
+
 Run the grader from the repository root:
 
 ```bash

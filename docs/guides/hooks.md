@@ -80,15 +80,15 @@ from any subdirectory of a project.
 
 ## PreToolUse — `convention-guard.sh`
 
-**When it fires:** Before every `Write` or `Edit` tool call.
+**When it fires:** Before every `Write`, `Edit`, or `MultiEdit` tool call.
 
 **What it does:** Enforces project conventions by inspecting the target file path:
 
 | Rule | Trigger | Action | Message |
 |------|---------|--------|---------|
-| `.claude-plugin/` guard | Write/Edit to `.claude-plugin/*` (non-manifest) | `permissionDecision: "deny"` | Only manifests belong in `.claude-plugin/` |
-| Hook chmod reminder | Write/Edit to `hooks/*.sh` | `systemMessage` reminder | Remember: `chmod +x`, correct shebang, run `test-gate.sh` |
-| Version sync reminder | Write/Edit to `.claude-plugin/plugin.json` or `marketplace.json` | `systemMessage` reminder | Also bump the paired manifest version |
+| `.claude-plugin/` guard | Write/Edit/MultiEdit to `.claude-plugin/*` (non-manifest) | `permissionDecision: "deny"` | Only manifests belong in `.claude-plugin/` |
+| Hook chmod reminder | Write/Edit/MultiEdit to `hooks/*.sh` | `systemMessage` reminder | Remember: `chmod +x`, correct shebang, run `test-gate.sh` |
+| Version sync reminder | Write/Edit/MultiEdit to `.claude-plugin/plugin.json` or `marketplace.json` | `systemMessage` reminder | Also bump the paired manifest version |
 
 Returns supported JSON:
 - `permissionDecision: "deny"` for blocked writes into `.claude-plugin/`

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # convention-guard.sh
-# PreToolUse hook on Write|Edit: enforces project conventions.
+# PreToolUse hook on Write|Edit|MultiEdit: enforces project conventions.
 #
 # Rules:
 #   1. Block writes to .claude-plugin/ that are not manifests

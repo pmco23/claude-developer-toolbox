@@ -34,7 +34,7 @@
       "path": "tests",
       "contains": {
         "command": "pnpm test src/dashboard/page.test.tsx",
-        "status": "passed"
+        "status": "pass"
       }
     },
     {
@@ -44,7 +44,7 @@
       "path": "acceptanceCriteria",
       "contains": {
         "criterion": "Dashboard lists pending imports",
-        "status": "passed"
+        "status": "pass"
       }
     },
     {

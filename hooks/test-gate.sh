@@ -126,7 +126,8 @@ run_repomix_packer() {
 
 run_guard() {
   local file_path="$1"
-  printf '{"tool_input":{"file_path":"%s"}}\n' "$file_path" | bash "$GUARD"
+  local tool_name="${2:-Edit}"
+  printf '{"tool_name":"%s","tool_input":{"file_path":"%s"}}\n' "$tool_name" "$file_path" | bash "$GUARD"
 }
 
 # Setup temp dirs
@@ -213,6 +214,12 @@ expect_empty_output "$empty_output" "non-slash prompt is ignored"
 guard_output=$(run_guard "/tmp/x/.claude-plugin/foo.txt")
 check_output_contains "$guard_output" '"permissionDecision":"deny"' "convention-guard denies non-manifest writes"
 check_output_contains "$guard_output" 'Only manifests' "convention-guard deny reason included"
+
+matcher_output=$(jq -r '.hooks.PreToolUse[0].matcher' "$SCRIPT_DIR/hooks.json")
+check_output_contains "$matcher_output" 'MultiEdit' "hooks.json PreToolUse matcher includes MultiEdit"
+
+guard_output=$(run_guard "/tmp/x/.claude-plugin/foo.txt" "MultiEdit")
+check_output_contains "$guard_output" '"permissionDecision":"deny"' "convention-guard denies non-manifest MultiEdit writes"
 
 guard_output=$(run_guard "/tmp/x/.claude-plugin/plugin.json")
 check_output_contains "$guard_output" 'systemMessage' "convention-guard emits version sync reminder"

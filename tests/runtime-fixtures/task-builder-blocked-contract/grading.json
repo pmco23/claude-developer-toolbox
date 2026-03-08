@@ -1,0 +1,48 @@
+{
+  "name": "task-builder-blocked-contract",
+  "component": "task-builder",
+  "transcript": "transcript.jsonl",
+  "assertions": [
+    {
+      "id": "status-is-blocked",
+      "type": "json_field_equals",
+      "actor": "assistant",
+      "path": "status",
+      "equals": "blocked"
+    },
+    {
+      "id": "task-group-number",
+      "type": "json_field_equals",
+      "actor": "assistant",
+      "path": "taskGroup.number",
+      "equals": 4
+    },
+    {
+      "id": "test-status-is-fail",
+      "type": "json_array_includes_object",
+      "actor": "assistant",
+      "path": "tests",
+      "contains": {
+        "name": "retries 429 responses with capped backoff",
+        "status": "fail"
+      }
+    },
+    {
+      "id": "criterion-status-is-fail",
+      "type": "json_array_includes_object",
+      "actor": "assistant",
+      "path": "acceptanceCriteria",
+      "contains": {
+        "criterion": "Billing webhook retries stop after the configured cap",
+        "status": "fail"
+      }
+    },
+    {
+      "id": "blocker-recorded",
+      "type": "json_array_includes_object",
+      "actor": "assistant",
+      "path": "blockers",
+      "contains": "Retry timing still exceeds the configured cap for repeated 429 responses."
+    }
+  ]
+}

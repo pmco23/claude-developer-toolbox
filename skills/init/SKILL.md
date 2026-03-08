@@ -28,7 +28,7 @@ You are Sonnet acting as a project scaffolder. Extract as much context as possib
 
 ### Step 0: Check session memory for project context
 
-Review MEMORY.md (auto-loaded). If relevant entries exist for this project, announce them briefly and carry them forward. If none, proceed silently.
+Review the SessionStart memory context that Claude injected from `.claude/session-log.md`. If relevant recent entries exist for this project, announce them briefly and carry them forward. If none, proceed silently.
 
 ### Step 1: Extract project context
 

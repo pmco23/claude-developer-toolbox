@@ -27,7 +27,7 @@ You are Opus acting as a requirements analyst. Your job is to extract maximum si
 
 ### Step 0: Check session memory for prior context
 
-Review MEMORY.md (auto-loaded). If relevant entries exist for this feature/topic, announce them briefly and carry them forward. If none, proceed silently.
+Review the SessionStart memory context that Claude injected from `.claude/session-log.md`. If relevant recent entries exist for this feature/topic, announce them briefly and carry them forward. If none, proceed silently.
 
 ### Step 1: Detect project context
 
