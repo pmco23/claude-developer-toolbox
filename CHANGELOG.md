@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.1.0] - 2026-03-08
+
 ### Added
 
 - Supported slash-command metadata for the workflow skills: `argument-hint` on `/build`, `/qa`, `/quick`, `/pack`, and `/test`, plus `disable-model-invocation: true` on the stateful slash-only workflows (`/brief`, `/design`, `/review`, `/plan`, `/build`, `/qa`, `/init`, `/git-workflow`, `/reset`, `/rollback`, `/status`)
