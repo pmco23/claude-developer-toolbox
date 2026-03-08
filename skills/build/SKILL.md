@@ -3,6 +3,9 @@ name: build
 description: Use after /plan to execute the build. Opus leads and coordinates; Sonnets implement. Supports --parallel (independent Task-tool subagent per task group, own context) or --sequential (one task group at a time in current session). Invokes drift-verifier post-build. Writes .pipeline/build.complete on pass.
 argument-hint: [--parallel | --sequential]
 disable-model-invocation: true
+compatibility:
+  requires: ["Claude Code Task tool"]
+  optional: ["Structured prompts"]
 ---
 
 # BUILD

@@ -30,7 +30,7 @@ apt install jq
 
 `python3` — fallback if `jq` is absent. Almost universally available; no install step needed.
 
-> The plugin's SessionStart hook will warn at startup about any missing tools it detects. Missing tools degrade specific features — they do not break the pipeline.
+> The plugin's SessionStart hook will warn at startup about any missing tools it detects. Missing tools degrade specific features — they do not break the pipeline. The same startup event also loads recent project session summaries from `.claude/session-log.md` when present.
 
 ---
 
@@ -117,6 +117,24 @@ claude-sonnet-4-6 │ Implementing auth │ plan ready │ my-project ███�
 ```
 
 The context bar turns yellow above 63%, orange above 81%, and red-blinking with 💀 above 95%. A PostToolUse hook also injects context warnings directly into Claude's context when thresholds are exceeded.
+
+## Session Memory
+
+This plugin keeps a lightweight local memory file per project:
+
+- file: `.claude/session-log.md`
+- writer: `SessionEnd` via `scripts/session-summary.js`
+- reader: `SessionStart` via `scripts/session-context.js`
+- startup injection: last 3 entries only
+
+The memory layer is intentionally simple:
+- no network calls
+- no database or vector store
+- no background process
+- no raw transcript storage
+
+If `.gitignore` exists but does not include `.claude/session-log.md`, the hook
+prints a one-time reminder. It does not edit `.gitignore` for you.
 
 ## Reinstalling after changes
 

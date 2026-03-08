@@ -1,6 +1,9 @@
 ---
 name: doc-audit
 description: Use after build is complete to audit CHANGELOG.md for format compliance, completeness, and feature coverage, and README.md for obvious stale placeholders or removed-feature drift. Requires .pipeline/build.complete.
+compatibility:
+  requires: []
+  optional: ["Repomix CLI"]
 ---
 
 # QD — Documentation Freshness

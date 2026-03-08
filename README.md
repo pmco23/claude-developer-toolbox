@@ -44,6 +44,16 @@ Interactive skills prefer structured prompts when the runtime supports them, but
 all current workflows fall back to plain-text questions if picker-style prompts
 are unavailable.
 
+## Session Memory
+
+The plugin keeps a lightweight, project-local session memory file at
+`.claude/session-log.md`.
+
+- `SessionStart` loads the last 3 entries into Claude as recent project history
+- `SessionEnd` appends a concise heuristic summary of the session
+- summaries are local-only: no network calls, databases, background service, or raw transcript dumps
+- if `.gitignore` exists but does not ignore `.claude/session-log.md`, the hook prints a one-time reminder instead of editing the file for you
+
 ## Platform Support
 
 | Platform | Status |
@@ -105,7 +115,7 @@ Claude to auto-load it from a natural-language request. See the [full installati
 |-------|--|
 | [Workflows](docs/guides/workflows.md) | Decision guide, explicit slash-command behavior, mode flags, language support, end-to-end example |
 | [Installation](docs/guides/installation.md) | Full install steps, statusline setup, slash-only behavior, verification |
-| [Hooks](docs/guides/hooks.md) | Hook lifecycle, JSON outputs, statusline maintenance, and Repomix session-end packing |
+| [Hooks](docs/guides/hooks.md) | Hook lifecycle, JSON outputs, statusline maintenance, session memory, and Repomix session-end packing |
 | [Repomix Guide](docs/guides/mcp-setup.md) | Snapshot architecture, manual CLI usage, installation, troubleshooting |
 | [Troubleshooting](docs/guides/troubleshooting.md) | Common issues and fixes |
 | [Changelog](CHANGELOG.md) | Release history and version notes |

@@ -1,6 +1,9 @@
 ---
 name: tdd
 description: Apply when asked to enforce TDD, practice test-driven development, write test first, or follow Red-Green-Refactor. Enforces the Iron Law — no production code without a failing test first. Covers the full Red-Green-Refactor cycle, when TDD applies, and valid exceptions.
+compatibility:
+  requires: []
+  optional: []
 ---
 
 # TDD — Test-Driven Development

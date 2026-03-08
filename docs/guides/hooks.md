@@ -1,21 +1,28 @@
 # Hooks Reference
 
-This plugin registers six command hooks. Each one is passive infrastructure — none require user
-action. They run automatically as Claude Code fires lifecycle events.
+This plugin registers six hook events backed by eight command hooks. They are
+passive infrastructure — none require user action. They run automatically as
+Claude Code fires lifecycle events.
 
 ---
 
-## SessionStart — `session-start-check.sh`
+## SessionStart — `session-start-check.sh`, `scripts/session-context.js`
 
 **When it fires:** Once, at the start of every Claude Code session.
 
-**What it does:** Checks that the three external tools the plugin depends on are installed.
-If any are missing it prints a warning to stderr and lists which tools are absent. The session
-starts regardless — hooks fail open.
+**What it does:** Runs two lightweight startup checks:
 
-It also keeps `~/.claude/statusline.js` aligned with this plugin's `hooks/statusline.js`,
-but only when no statusline exists yet or the current file is already a symlink managed by this
-plugin. It will not overwrite a custom statusline or another plugin's statusline.
+1. `session-start-check.sh` checks that the external tools the plugin depends on
+   are installed. If any are missing it prints a warning to stderr and lists
+   which tools are absent. The session starts regardless — hooks fail open.
+2. `scripts/session-context.js` looks for `.claude/session-log.md` in the
+   current project. If present, it prints the last 3 session summaries with a
+   short header so Claude can inject them as system context.
+
+The startup hook also keeps `~/.claude/statusline.js` aligned with this
+plugin's `hooks/statusline.js`, but only when no statusline exists yet or the
+current file is already a symlink managed by this plugin. It will not overwrite
+a custom statusline or another plugin's statusline.
 
 **Tools checked:**
 
@@ -26,6 +33,12 @@ plugin. It will not overwrite a custom statusline or another plugin's statusline
 | `repomix` | `/pack` and `/qa` codebase snapshots |
 
 **Fail-open:** Missing tools degrade specific features but never block the session.
+
+**Session history behavior:**
+- History lives at `.claude/session-log.md` inside each project
+- Only the last 3 entries are injected at startup to bound token cost
+- If `.gitignore` exists but does not ignore `.claude/session-log.md`, the
+  script prints a one-time reminder to stderr and records that the notice was shown
 
 ---
 
@@ -121,14 +134,21 @@ If no `.pipeline/` directory exists, or the directory is empty, the hook exits s
 
 ---
 
-## SessionEnd — `session-end-pack.sh`
+## SessionEnd — `session-end-pack.sh`, `scripts/session-summary.js`
 
 **When it fires:** When a Claude Code session ends.
 
-**What it does:** Generates three targeted Repomix snapshots (code, docs, full) into the
-`.pipeline/` directory. Each `repomix` call is guarded by a 60-second timeout (fail-open if
-the `timeout` command is absent). If at least one snapshot succeeds, it writes a
-`repomix-pack.json` manifest with the available variants, timestamps, and file sizes.
+**What it does:** Runs two end-of-session tasks:
+
+1. `session-end-pack.sh` generates three targeted Repomix snapshots (code,
+   docs, full) into the `.pipeline/` directory. Each `repomix` call is guarded
+   by a 60-second timeout (fail-open if the `timeout` command is absent). If at
+   least one snapshot succeeds, it writes a `repomix-pack.json` manifest with
+   the available variants, timestamps, and file sizes.
+2. `scripts/session-summary.js` appends a compact summary of the session to
+   `.claude/session-log.md`. It uses local heuristics only: first user message
+   for the goal, file-edit tool calls for key changes, assistant phrasing for
+   decisions, and the last assistant message for open threads.
 
 **Skip conditions:** exits silently when:
 - `repomix` is not installed
@@ -136,6 +156,12 @@ the `timeout` command is absent). If at least one snapshot succeeds, it writes a
 - `CLAUDE.md` contains `session-end-pack: disabled`
 
 **Opt-out:** Add `session-end-pack: disabled` to your project's CLAUDE.md.
+
+**Session summary behavior:**
+- summaries are markdown digests, not raw transcript dumps
+- each entry is appended to `.claude/session-log.md`
+- the log is trimmed from the top when it exceeds 50KB
+- the script exits 0 on empty input, malformed input, or missing transcript data
 
 ---
 
@@ -176,8 +202,10 @@ Prefers `jq`, falls back to `python3`. Supports nested fields via dot notation.
 | Hook | Event | Type | Scope |
 |------|-------|------|-------|
 | `session-start-check.sh` | `SessionStart` | command | Warns on missing tools and maintains a plugin-managed statusline symlink |
+| `scripts/session-context.js` | `SessionStart` | command | Injects the last 3 session summaries from `.claude/session-log.md` |
 | `pipeline-gate.sh` | `UserPromptSubmit` | command | Enforces pipeline phase order for slash commands |
 | `convention-guard.sh` | `PreToolUse` (Write\|Edit) | command | Enforces project conventions |
 | `context-monitor.sh` | `PostToolUse` | command | Warns on high context usage |
 | `compact-prep.sh` | `PreCompact` | command | Preserves pipeline state across compaction |
 | `session-end-pack.sh` | `SessionEnd` | command | Generates Repomix snapshots |
+| `scripts/session-summary.js` | `SessionEnd` | command | Appends a heuristic session summary to `.claude/session-log.md` |

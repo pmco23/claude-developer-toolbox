@@ -1,6 +1,9 @@
 ---
 name: cleanup
 description: Use after build is complete to strip dead code, unused imports, unreachable branches, and commented-out code. Requires .pipeline/build.complete. Safe to run standalone or as part of /qa pipeline.
+compatibility:
+  requires: []
+  optional: ["Repomix CLI", "VS Code IDE integration", "TypeScript LSP", "gopls LSP", "Python LSP", "C# LSP", "Structured prompts"]
 ---
 
 # DENOISE — Dead Code Removal

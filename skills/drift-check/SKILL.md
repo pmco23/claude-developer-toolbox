@@ -1,6 +1,9 @@
 ---
 name: drift-check
 description: Use to detect drift between a source-of-truth document and a target document or implementation. Dispatches drift-verifier (Sonnet) and path-verifier (Sonnet) in parallel — semantic claim analysis and structural path/symbol verification. Requires .pipeline/plan.md. Used internally by /build and available standalone.
+compatibility:
+  requires: ["Claude Code Task tool"]
+  optional: ["Structured prompts"]
 ---
 
 # PMATCH — Drift Detection

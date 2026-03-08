@@ -2,6 +2,9 @@
 name: pack
 description: Pack the local codebase using Repomix CLI into three targeted snapshots (code, docs, full) stored in .pipeline/ for sharing across /qa audit agents. Run before /qa for maximum token efficiency. Usage: /pack [path] (defaults to cwd).
 argument-hint: [path]
+compatibility:
+  requires: ["Repomix CLI"]
+  optional: []
 ---
 
 # PACK — Codebase Snapshot

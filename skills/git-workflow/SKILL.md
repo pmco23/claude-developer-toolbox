@@ -2,6 +2,9 @@
 name: git-workflow
 description: Use before any destructive git operation (force-push, reset --hard, branch -D, rebase on published commits). Verifies the target, explains the consequences, and requires explicit confirmation. Not needed for routine commits, branch creation, or PRs — those are governed by CLAUDE.md git conventions.
 disable-model-invocation: true
+compatibility:
+  requires: ["Git CLI"]
+  optional: ["Structured prompts"]
 ---
 
 # GIT-WORKFLOW — Destructive Operation Safety Gate

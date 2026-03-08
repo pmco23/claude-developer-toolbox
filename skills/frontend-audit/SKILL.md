@@ -1,6 +1,9 @@
 ---
 name: frontend-audit
 description: Use after build is complete to audit frontend code against the project style guide. Checks TypeScript/JavaScript/CSS/HTML conventions, naming, component patterns, and accessibility basics. Requires .pipeline/build.complete.
+compatibility:
+  requires: []
+  optional: ["Repomix CLI", "VS Code IDE integration", "TypeScript LSP"]
 ---
 
 # QF — Frontend Style Audit

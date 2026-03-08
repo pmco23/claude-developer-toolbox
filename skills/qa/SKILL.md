@@ -3,6 +3,9 @@ name: qa
 description: Use after /build to run the full post-build QA pipeline. Supports --parallel (all audits simultaneously) or --sequential (denoise → qf → qb → qd → security-review in order). Requires .pipeline/build.complete.
 argument-hint: [--parallel | --sequential]
 disable-model-invocation: true
+compatibility:
+  requires: ["Claude Code Task tool"]
+  optional: ["Repomix CLI", "Structured prompts"]
 ---
 
 # QA — Post-Build QA Pipeline

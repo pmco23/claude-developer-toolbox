@@ -1,6 +1,9 @@
 ---
 name: security-review
 description: Use after build is complete to scan for OWASP Top 10 vulnerabilities. Checks injection, authentication, authorization, data exposure, and misconfiguration risks. Requires .pipeline/build.complete.
+compatibility:
+  requires: []
+  optional: ["Repomix CLI"]
 ---
 
 # SECURITY-REVIEW — OWASP Vulnerability Scan

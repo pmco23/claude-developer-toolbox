@@ -2,6 +2,9 @@
 name: reset
 description: Use to reset the pipeline to a specific phase. Removes downstream artifacts while preserving upstream ones. Detects current phase, offers reset targets, confirms before deleting. No gate — always available when a pipeline is active.
 disable-model-invocation: true
+compatibility:
+  requires: []
+  optional: ["Structured prompts"]
 ---
 
 # RESET — Pipeline State Reset

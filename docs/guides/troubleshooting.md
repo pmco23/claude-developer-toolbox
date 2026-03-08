@@ -67,6 +67,30 @@ If you want this plugin's statusline, replace it manually:
 ln -sf /path/to/claude-developer-toolbox/hooks/statusline.js ~/.claude/statusline.js
 ```
 
+## "Recent session history did not appear at startup"
+
+Check these conditions:
+
+1. `.claude/session-log.md` exists in the current project root
+2. the file contains at least one `## Session:` entry
+3. Claude Code was restarted after installing or updating the plugin
+4. `hooks/hooks.json` still includes the `SessionStart` command for `scripts/session-context.js`
+
+The context hook is bounded on purpose: it only injects the last 3 entries, not
+the whole log.
+
+## ".claude/session-log.md keeps showing up in git status"
+
+The memory file is project-local. If you do not want it tracked, add this to
+your project's `.gitignore`:
+
+```gitignore
+.claude/session-log.md
+```
+
+The plugin only prints a one-time reminder; it does not edit `.gitignore`
+automatically.
+
 ## "Rollback blocked" safety checks
 
 `/rollback` now stops rather than guessing when the worktree is unsafe.

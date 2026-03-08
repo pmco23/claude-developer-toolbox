@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Supported slash-command metadata for the workflow skills: `argument-hint` on `/build`, `/qa`, `/quick`, `/pack`, and `/test`, plus `disable-model-invocation: true` on the stateful slash-only workflows (`/brief`, `/design`, `/review`, `/plan`, `/build`, `/qa`, `/init`, `/git-workflow`, `/reset`, `/rollback`, `/status`)
 - `hooks/lib/json-helpers.sh` emit helpers for supported hook JSON responses (`_emit_block_decision`, `_emit_system_message`, `_emit_additional_context`, `_emit_pretool_permission`)
 - Rollback path hardening: `/rollback` now requires plan-derived paths to stay inside the repository root before any delete or restore action
+- Project-local session memory hooks: `scripts/session-context.js` injects the last 3 summaries at `SessionStart`, and `scripts/session-summary.js` appends heuristic digests to `.claude/session-log.md` at `SessionEnd`
 
 ### Changed
 
@@ -21,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Build and QA orchestration language standardized around the Task tool, with graceful fallback when task helpers or parallel task dispatch are unavailable
 - `task-builder` now returns a stable report structure (`STATUS`, `FILES`, `TESTS`, `BLOCKERS`) for callers
 - `/doc-audit` now documents and reports both CHANGELOG compliance and README freshness; `/security-review` now consistently reports findings without mixing in inline remediation instructions
-- README and guides updated to match the current behavior: explicit slash-only workflow entrypoints, prompt fallback behavior, statusline symlink safeguards, hook lifecycle details, and rollback safety checks
+- README and guides updated to match the current behavior: explicit slash-only workflow entrypoints, prompt fallback behavior, statusline symlink safeguards, hook lifecycle details, session memory behavior, and rollback safety checks
 
 ### Fixed
 

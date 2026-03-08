@@ -2,6 +2,9 @@
 name: test
 description: Use to run the project test suite. Supports /test [file-or-pattern] to scope to specific files or test names. Detects jest, vitest, go test, pytest, dotnet test, and cargo test automatically. No pipeline artifacts required — can run at any time.
 argument-hint: [file-or-pattern]
+compatibility:
+  requires: []
+  optional: ["Structured prompts", "Project test runner"]
 ---
 
 # TEST — Run Test Suite

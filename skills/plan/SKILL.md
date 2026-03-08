@@ -2,6 +2,9 @@
 name: plan
 description: Use after /review to transform the approved design into an atomic execution plan. Writes task groups with exact file paths, complete code examples, and named test cases with assertions. Build agents must never need to ask clarifying questions. Writes .pipeline/plan.md.
 disable-model-invocation: true
+compatibility:
+  requires: []
+  optional: []
 ---
 
 # PLAN — Atomic Execution Planning

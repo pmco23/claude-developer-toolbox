@@ -2,6 +2,9 @@
 name: rollback
 description: Use to undo a completed build. Reads .pipeline/plan.md to identify which files were created or modified by each task group, presents a checklist for confirmation, removes or restores confirmed files, and resets .pipeline/build.complete. Requires .pipeline/build.complete.
 disable-model-invocation: true
+compatibility:
+  requires: ["Git CLI"]
+  optional: ["Structured prompts"]
 ---
 
 # ROLLBACK — Undo a Completed Build

@@ -2,6 +2,9 @@
 name: review
 description: Use after /design to adversarially review the design document. Dispatches strategic-critic (Opus) and code-critic (Sonnet) in parallel — Opus for strategic critique grounded in Context7, Sonnet for code-grounded critique against the existing codebase. Lead deduplicates, runs cost/benefit analysis, loops until all MUST FIX findings resolve. Writes .pipeline/design.approved on loop exit.
 disable-model-invocation: true
+compatibility:
+  requires: ["Context7", "Claude Code Task tool"]
+  optional: ["Structured prompts"]
 ---
 
 # AR — Adversarial Review

@@ -1,6 +1,9 @@
 ---
 name: backend-audit
 description: Use after build is complete to audit backend code against the project style guide. Supports Go, Python, TypeScript, and C# backends. Checks naming, error handling patterns, package structure, and API conventions. Requires .pipeline/build.complete.
+compatibility:
+  requires: []
+  optional: ["Repomix CLI", "VS Code IDE integration", "gopls LSP", "Python LSP", "TypeScript LSP", "C# LSP"]
 ---
 
 # QB — Backend Style Audit
@@ -44,4 +47,3 @@ Group by severity: Errors, Warnings, Style.
 ## Output
 
 Report to user. No file written to `.pipeline/`.
-

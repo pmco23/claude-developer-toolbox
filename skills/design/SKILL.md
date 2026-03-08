@@ -2,6 +2,9 @@
 name: design
 description: Use after /brief to transform a brief into a formal design document. Performs first-principles analysis, classifies constraints, grounds all recommendations in live library docs via Context7 and web search, then iterates until alignment. Writes .pipeline/design.md.
 disable-model-invocation: true
+compatibility:
+  requires: ["Context7"]
+  optional: ["Web search", "Structured prompts"]
 ---
 
 # DESIGN — First-Principles Design

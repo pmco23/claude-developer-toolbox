@@ -7,6 +7,8 @@ GATE="$SCRIPT_DIR/pipeline-gate.sh"
 GUARD="$SCRIPT_DIR/convention-guard.sh"
 MONITOR="$SCRIPT_DIR/context-monitor.sh"
 COMPACT="$SCRIPT_DIR/compact-prep.sh"
+SESSION_SUMMARY="$SCRIPT_DIR/../scripts/session-summary.js"
+SESSION_CONTEXT="$SCRIPT_DIR/../scripts/session-context.js"
 PASS=0
 FAIL=0
 
@@ -70,6 +72,47 @@ expect_empty_output() {
     echo "FAIL: $desc — expected empty output, got: '$output'"
     FAIL=$((FAIL+1))
   fi
+}
+
+expect_file_contains() {
+  local file_path="$1"
+  local expected_fragment="$2"
+  local desc="$3"
+  if [ -f "$file_path" ] && grep -q "$expected_fragment" "$file_path"; then
+    echo "PASS: $desc"
+    PASS=$((PASS+1))
+  else
+    local content="<missing>"
+    if [ -f "$file_path" ]; then
+      content=$(cat "$file_path")
+    fi
+    echo "FAIL: $desc — expected '$expected_fragment' in '$file_path', got: '$content'"
+    FAIL=$((FAIL+1))
+  fi
+}
+
+expect_file_missing() {
+  local file_path="$1"
+  local desc="$2"
+  if [ ! -e "$file_path" ]; then
+    echo "PASS: $desc"
+    PASS=$((PASS+1))
+  else
+    echo "FAIL: $desc — expected file to be absent: '$file_path'"
+    FAIL=$((FAIL+1))
+  fi
+}
+
+run_session_summary() {
+  local payload_file="$1"
+  local project_dir="$2"
+  CLAUDE_PROJECT_DIR="$project_dir" node "$SESSION_SUMMARY" < "$payload_file"
+}
+
+run_session_context() {
+  local payload_file="$1"
+  local project_dir="$2"
+  CLAUDE_PROJECT_DIR="$project_dir" node "$SESSION_CONTEXT" < "$payload_file"
 }
 
 run_guard() {
@@ -191,8 +234,154 @@ check_output_contains "$compact_output" 'Artifacts present:' "compact-prep emits
 check_output_contains "$compact_output" 'build-ready' "compact-prep emits stage summary"
 rm -rf "$compact_dir"
 
+# session-summary / session-context smoke tests
+session_dir=$(mktemp -d)
+mkdir -p "$session_dir/project"
+printf '.claude/session-log.md\n' > "$session_dir/project/.gitignore"
+cat > "$session_dir/transcript.jsonl" <<'EOF'
+{"type":"user","message":{"role":"user","content":"Implement session log memory for this plugin"},"timestamp":"2026-03-07T10:00:00.000Z"}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"I'll go with a SessionEnd summary hook and keep it local-only."},{"type":"tool_use","name":"Write","input":{"file_path":"scripts/session-summary.js"}},{"type":"tool_use","name":"Edit","input":{"file_path":"README.md"}}]},"timestamp":"2026-03-07T10:03:00.000Z"}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"Next step: verify the hook output and update documentation. Still need to add tests."}]},"timestamp":"2026-03-07T10:05:00.000Z"}
+EOF
+cat > "$session_dir/session-end.json" <<EOF
+{"cwd":"$session_dir/project","hook_event_name":"SessionEnd","transcript_path":"$session_dir/transcript.jsonl","session_id":"session-memory-test"}
+EOF
+cat > "$session_dir/session-start.json" <<EOF
+{"cwd":"$session_dir/project","hook_event_name":"SessionStart","session_id":"session-memory-test"}
+EOF
+
+run_session_summary "$session_dir/session-end.json" "$session_dir/project" >/dev/null 2>/dev/null
+session_log="$session_dir/project/.claude/session-log.md"
+expect_file_contains "$session_log" 'Implement session log memory for this plugin' "session-summary writes extracted goal"
+expect_file_contains "$session_log" 'scripts/session-summary.js: written' "session-summary records key changes"
+expect_file_contains "$session_log" 'Next step: verify the hook output and update documentation' "session-summary records open thread"
+
+run_session_summary "$session_dir/session-end.json" "$session_dir/project" >/dev/null 2>/dev/null
+entry_count=$(grep -c '^## Session:' "$session_log")
+if [ "$entry_count" -eq 1 ]; then
+  echo "PASS: session-summary skips duplicate SessionEnd append"
+  PASS=$((PASS+1))
+else
+  echo "FAIL: session-summary skips duplicate SessionEnd append — expected 1 entry, got $entry_count"
+  FAIL=$((FAIL+1))
+fi
+
+cat > "$session_log" <<'EOF'
+## Session: 2026-03-07T09:00:00.000Z | 2m
+
+**Goal:** oldest
+**Outcome:** completed
+**Key changes:**
+- old.txt: edited
+**Decisions made:**
+- none
+**Open threads:**
+- none
+
+---
+
+## Session: 2026-03-07T09:10:00.000Z | 2m
+
+**Goal:** older
+**Outcome:** completed
+**Key changes:**
+- older.txt: edited
+**Decisions made:**
+- none
+**Open threads:**
+- none
+
+---
+
+## Session: 2026-03-07T09:20:00.000Z | 2m
+
+**Goal:** newer
+**Outcome:** completed
+**Key changes:**
+- newer.txt: edited
+**Decisions made:**
+- none
+**Open threads:**
+- none
+
+---
+
+## Session: 2026-03-07T09:30:00.000Z | 2m
+
+**Goal:** newest
+**Outcome:** completed
+**Key changes:**
+- newest.txt: edited
+**Decisions made:**
+- none
+**Open threads:**
+- none
+
+---
+EOF
+context_output=$(run_session_context "$session_dir/session-start.json" "$session_dir/project" 2>/dev/null)
+check_output_contains "$context_output" 'Recent Session History' "session-context emits header"
+check_output_contains "$context_output" 'older.txt: edited' "session-context includes the third-most-recent entry"
+check_output_contains "$context_output" 'newest.txt: edited' "session-context includes the newest entry"
+if echo "$context_output" | grep -q 'Goal:** oldest'; then
+  echo "FAIL: session-context limits output to the last three entries — oldest entry was included"
+  FAIL=$((FAIL+1))
+else
+  echo "PASS: session-context limits output to the last three entries"
+  PASS=$((PASS+1))
+fi
+
+empty_dir=$(mktemp -d)
+mkdir -p "$empty_dir/project"
+printf '' | CLAUDE_PROJECT_DIR="$empty_dir/project" node "$SESSION_SUMMARY" >/dev/null 2>/dev/null
+expect_file_missing "$empty_dir/project/.claude/session-log.md" "session-summary ignores empty stdin without creating a log"
+
+malformed_dir=$(mktemp -d)
+mkdir -p "$malformed_dir/project"
+printf 'not-json' | CLAUDE_PROJECT_DIR="$malformed_dir/project" node "$SESSION_SUMMARY" >/dev/null 2>/dev/null
+expect_file_missing "$malformed_dir/project/.claude/session-log.md" "session-summary ignores malformed stdin without creating a log"
+
+trim_dir=$(mktemp -d)
+mkdir -p "$trim_dir/project/.claude"
+printf '.claude/session-log.md\n' > "$trim_dir/project/.gitignore"
+node - "$trim_dir/project/.claude/session-log.md" <<'EOF'
+const fs = require("fs");
+const filePath = process.argv[2];
+let out = "";
+for (let i = 0; i < 220; i += 1) {
+  out += `## Session: 2026-03-07T09:${String(i % 60).padStart(2, "0")}:00.000Z | 2m\n\n`;
+  out += `**Goal:** filler entry ${i} with enough repeated text to exercise trimming behavior across the 50KB log limit.\n`;
+  out += "**Outcome:** completed\n";
+  out += "**Key changes:**\n";
+  out += `- filler-${i}.txt: edited\n`;
+  out += "**Decisions made:**\n";
+  out += "- none\n";
+  out += "**Open threads:**\n";
+  out += "- none\n\n---\n\n";
+}
+fs.writeFileSync(filePath, out, "utf8");
+EOF
+cat > "$trim_dir/transcript.jsonl" <<'EOF'
+{"type":"user","message":{"role":"user","content":"Finalize the memory hook"},"timestamp":"2026-03-07T11:00:00.000Z"}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"tool_use","name":"Edit","input":{"file_path":"scripts/session-summary.js"}},{"type":"text","text":"We should keep only the newest entries if the log grows too large."}]},"timestamp":"2026-03-07T11:02:00.000Z"}
+EOF
+cat > "$trim_dir/session-end.json" <<EOF
+{"cwd":"$trim_dir/project","hook_event_name":"SessionEnd","transcript_path":"$trim_dir/transcript.jsonl","session_id":"trim-test"}
+EOF
+run_session_summary "$trim_dir/session-end.json" "$trim_dir/project" >/dev/null 2>/dev/null
+trim_size=$(wc -c < "$trim_dir/project/.claude/session-log.md" | tr -d ' ')
+if [ "$trim_size" -le 51200 ]; then
+  echo "PASS: session-summary trims logs to 50KB or less"
+  PASS=$((PASS+1))
+else
+  echo "FAIL: session-summary trims logs to 50KB or less — got $trim_size bytes"
+  FAIL=$((FAIL+1))
+fi
+expect_file_contains "$trim_dir/project/.claude/session-log.md" 'Finalize the memory hook' "session-summary preserves the newest entry after trimming"
+
 # Cleanup
 rm -rf "$NO_PIPELINE" "$HAS_BRIEF" "$HAS_DESIGN" "$HAS_APPROVED" "$HAS_PLAN" "$HAS_BUILD"
+rm -rf "$session_dir" "$empty_dir" "$malformed_dir" "$trim_dir"
 
 echo ""
 echo "Results: $PASS passed, $FAIL failed"

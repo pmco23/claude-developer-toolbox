@@ -2,6 +2,9 @@
 name: brief
 description: Use when starting a new feature, project, or task - extracts requirements, constraints, non-goals, style preferences, and key concepts from fuzzy input through conversational Q&A. Output is a structured brief saved to .pipeline/brief.md. Always run this before /design.
 disable-model-invocation: true
+compatibility:
+  requires: []
+  optional: ["Structured prompts"]
 ---
 
 # ARM — Requirements Crystallization

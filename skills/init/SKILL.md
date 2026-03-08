@@ -2,6 +2,9 @@
 name: init
 description: Use when starting a new project or adding missing boilerplate to an existing one. Generates CLAUDE.md, README.md, CHANGELOG.md, CONTRIBUTING.md, and .github/pull_request_template.md adapted to the project's language, stack, and context. Asks before overwriting any existing file.
 disable-model-invocation: true
+compatibility:
+  requires: []
+  optional: ["Structured prompts"]
 ---
 
 # INIT — Project Boilerplate

@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
+const crypto = require("crypto");
 const fs = require("fs");
+const os = require("os");
 const path = require("path");
 const readline = require("readline");
 
 const LOG_DIR = ".claude";
 const LOG_FILE = "session-log.md";
-const NOTICE_FILE = ".session-log-gitignore-notice";
 const MAX_ENTRIES = 3;
 const HEADER =
   "## Recent Session History (auto-generated)\n" +
@@ -56,7 +57,7 @@ function parseEntries(content) {
 
 function maybePrintGitignoreNotice(projectDir, claudeDir) {
   const gitignorePath = path.join(projectDir, ".gitignore");
-  const noticePath = path.join(claudeDir, NOTICE_FILE);
+  const noticePath = getNoticePath(projectDir, claudeDir);
 
   if (!fs.existsSync(gitignorePath) || fs.existsSync(noticePath)) {
     return;
@@ -70,7 +71,22 @@ function maybePrintGitignoreNotice(projectDir, claudeDir) {
   safeStderr(
     "Note: add .claude/session-log.md to .gitignore if you want project-local session memory kept out of git."
   );
+  fs.mkdirSync(path.dirname(noticePath), { recursive: true });
   fs.writeFileSync(noticePath, new Date().toISOString(), "utf8");
+}
+
+function getNoticePath(projectDir, fallbackDir) {
+  try {
+    const home = os.homedir();
+    if (home) {
+      const key = crypto.createHash("sha1").update(projectDir).digest("hex");
+      return path.join(home, ".claude", "session-log-notices", `${key}.notice`);
+    }
+  } catch {
+    // fall through
+  }
+
+  return path.join(fallbackDir, ".session-log-gitignore-notice");
 }
 
 function resolveProjectDir(payload) {

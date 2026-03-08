@@ -2,6 +2,9 @@
 name: quick
 description: Use when implementing small features, bug fixes, typo corrections, config tweaks, or any well-understood change that does not require the full pipeline. Completely independent of the brief/design/review/plan/build/qa flow. Use --deep to escalate to Opus for trickier problems.
 argument-hint: [--deep] [task]
+compatibility:
+  requires: []
+  optional: ["Structured prompts"]
 ---
 
 # QUICK — Fast Implementation

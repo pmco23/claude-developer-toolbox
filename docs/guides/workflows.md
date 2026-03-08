@@ -127,7 +127,10 @@ rm .pipeline/build.complete
 >
 > For large codebases or long sessions, starting a **fresh Claude Code session** per phase is
 > equally valid. Because `.pipeline/` artifacts persist on disk, the gate hook reads them on the
-> next session start and the pipeline picks up exactly where you left off.
+> next session start and the pipeline picks up exactly where you left off. The
+> SessionStart memory hook also injects the last 3 entries from
+> `.claude/session-log.md`, so recent decisions and open threads carry forward
+> without replaying raw transcript history.
 
 ---
 
