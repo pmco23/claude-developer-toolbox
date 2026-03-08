@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.1.1] - 2026-03-08
+
+### Changed
+
+- `PreToolUse` convention-guard coverage now includes `MultiEdit`, and `hooks/test-gate.sh` validates the expanded matcher path
+- Runtime fixture coverage now includes a blocked `task-builder` handoff contract and uses the shipped `pass` / `fail` enum values consistently
+
+### Fixed
+
+- `/brief` and `/init` no longer reference stale `MEMORY.md` auto-loading; both now describe the actual SessionStart context injected from `.claude/session-log.md`
+- Troubleshooting and hook docs now match the current hook-suite and runtime-fixture counts after the follow-up coverage additions
+
 ## [4.1.0] - 2026-03-08
 
 ### Added
