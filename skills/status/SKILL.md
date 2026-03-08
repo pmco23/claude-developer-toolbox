@@ -1,6 +1,10 @@
 ---
 name: status
 description: Use at any time to check pipeline state and get next-step guidance. When no pipeline is active, shows available workflow options and paths. No gate — always available.
+disable-model-invocation: true
+compatibility:
+  requires: []
+  optional: ["Structured prompts"]
 ---
 
 # STATUS — Pipeline State Check

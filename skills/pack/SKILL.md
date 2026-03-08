@@ -1,6 +1,10 @@
 ---
 name: pack
 description: Pack the local codebase using Repomix CLI into three targeted snapshots (code, docs, full) stored in .pipeline/ for sharing across /qa audit agents. Run before /qa for maximum token efficiency. Usage: /pack [path] (defaults to cwd).
+argument-hint: [path]
+compatibility:
+  requires: ["Repomix CLI"]
+  optional: []
 ---
 
 # PACK — Codebase Snapshot
@@ -23,6 +27,7 @@ Metadata stored at `.pipeline/repomix-pack.json`. All `/qa` audit agents read fr
 
 1. **Repomix must be installed.** If `repomix` is not found on PATH, stop: "PACK BLOCKED — repomix is not installed. Run `npm install -g repomix` first."
 2. **Never modify source files.** This skill only reads the codebase and writes to `.pipeline/`.
+3. **Use the bundled script.** Do not reconstruct the Repomix commands manually. Run `scripts/repomix-pack.js` so `/pack` and the SessionEnd hook share one deterministic implementation.
 
 ## Process
 
@@ -30,62 +35,24 @@ Metadata stored at `.pipeline/repomix-pack.json`. All `/qa` audit agents read fr
 
 If an argument is provided, use it as the target directory. Otherwise use the current working directory.
 
-### Step 2: Check repomix is available
+### Step 2: Run the bundled packer
 
-Run: `command -v repomix`
-
-If not found, stop with the message from Hard Rule #1.
-
-### Step 3: Generate three snapshots
-
-Run all three sequentially:
+Run the bundled script from this skill directory:
 
 ```bash
-mkdir -p .pipeline
-
-# Code snapshot — source code only, excludes docs/config/assets
-repomix --compress --remove-empty-lines --no-file-summary --include-diffs \
-  --ignore "**/*.md,**/*.mdx,**/*.rst,**/*.txt,docs/**,doc/**,*.config.*,*.json,*.yaml,*.yml,*.toml,*.lock,*.svg,*.png,*.jpg,*.gif,*.ico" \
-  --output .pipeline/repomix-code.xml <resolved-path>
-
-# Docs snapshot — documentation files only
-repomix --remove-empty-lines --no-file-summary --no-directory-structure \
-  --include "**/*.md,**/*.mdx,**/*.rst,**/*.txt,docs/**,doc/**,README*,CHANGELOG*,CONTRIBUTING*,LICENSE*" \
-  --output .pipeline/repomix-docs.xml <resolved-path>
-
-# Full snapshot — entire codebase
-repomix --compress --remove-empty-lines \
-  --output .pipeline/repomix-full.xml <resolved-path>
+node scripts/repomix-pack.js --source <resolved-path> --pipeline-dir <resolved-path>/.pipeline --json
 ```
 
-### Step 4: Write state file
+The script:
+- verifies `repomix` is installed
+- generates the three snapshots deterministically
+- writes `.pipeline/repomix-pack.json`
+- returns a stable JSON report with `source`, `manifestPath`, `snapshots`, and any partial failures
 
-Write `.pipeline/repomix-pack.json`:
+If the script exits non-zero with the `PACK BLOCKED` message, stop with the message from Hard Rule #1.
+If it returns a partial-success JSON payload, report the failures explicitly but still treat `/pack` as successful.
 
-```json
-{
-  "packedAt": "<current ISO timestamp>",
-  "source": "<absolute path to packed directory>",
-  "snapshots": {
-    "code": {
-      "filePath": "<absolute path to .pipeline/repomix-code.xml>",
-      "fileSize": <bytes>
-    },
-    "docs": {
-      "filePath": "<absolute path to .pipeline/repomix-docs.xml>",
-      "fileSize": <bytes>
-    },
-    "full": {
-      "filePath": "<absolute path to .pipeline/repomix-full.xml>",
-      "fileSize": <bytes>
-    }
-  }
-}
-```
-
-Get file sizes via Bash (`wc -c < file` or `stat`).
-
-### Step 5: Report
+### Step 3: Report
 
 Report to user:
 

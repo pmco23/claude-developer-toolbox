@@ -1,0 +1,58 @@
+{
+  "name": "task-builder-json-contract",
+  "component": "task-builder",
+  "transcript": "transcript.jsonl",
+  "assertions": [
+    {
+      "id": "status-is-complete",
+      "type": "json_field_equals",
+      "actor": "assistant",
+      "path": "status",
+      "equals": "complete"
+    },
+    {
+      "id": "task-group-number",
+      "type": "json_field_equals",
+      "actor": "assistant",
+      "path": "taskGroup.number",
+      "equals": 2
+    },
+    {
+      "id": "files-include-dashboard-page",
+      "type": "json_array_includes_object",
+      "actor": "assistant",
+      "path": "files",
+      "contains": {
+        "path": "src/dashboard/page.tsx",
+        "action": "modified"
+      }
+    },
+    {
+      "id": "tests-include-command",
+      "type": "json_array_includes_object",
+      "actor": "assistant",
+      "path": "tests",
+      "contains": {
+        "command": "pnpm test src/dashboard/page.test.tsx",
+        "status": "passed"
+      }
+    },
+    {
+      "id": "acceptance-criteria-pass",
+      "type": "json_array_includes_object",
+      "actor": "assistant",
+      "path": "acceptanceCriteria",
+      "contains": {
+        "criterion": "Dashboard lists pending imports",
+        "status": "passed"
+      }
+    },
+    {
+      "id": "blockers-empty",
+      "type": "json_field_equals",
+      "actor": "assistant",
+      "path": "blockers",
+      "equals": []
+    }
+  ]
+}

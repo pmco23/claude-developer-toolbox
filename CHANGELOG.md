@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Supported slash-command metadata for the workflow skills: `argument-hint` on `/build`, `/qa`, `/quick`, `/pack`, and `/test`, plus `disable-model-invocation: true` on the stateful slash-only workflows (`/brief`, `/design`, `/review`, `/plan`, `/build`, `/qa`, `/init`, `/git-workflow`, `/reset`, `/rollback`, `/status`)
+- `hooks/lib/json-helpers.sh` emit helpers for supported hook JSON responses (`_emit_block_decision`, `_emit_system_message`, `_emit_additional_context`, `_emit_pretool_permission`)
+- Rollback path hardening: `/rollback` now requires plan-derived paths to stay inside the repository root before any delete or restore action
+- Project-local session memory hooks: `scripts/session-context.js` injects the last 3 summaries at `SessionStart`, and `scripts/session-summary.js` appends heuristic digests to `.claude/session-log.md` at `SessionEnd`
+- Session memory now enriches those summaries with read-only Repomix snapshot state from `.pipeline/repomix-pack.json` when available
+- `/pack` now offloads snapshot generation to a shared deterministic script (`skills/pack/scripts/repomix-pack.js`), and `session-end-pack.sh` delegates to the same implementation
+- Runtime-fixture coverage for `/build`, `/qa`, `/review`, `/rollback`, and `task-builder` under `tests/runtime-fixtures/`, plus `scripts/grade-runtime-fixtures.js` to grade them
+
+### Changed
+
+- Hook bundle aligned to the current Claude Code hook contract: pipeline gating now runs on `UserPromptSubmit`, `SessionEnd` uses a supported command hook, and hook responses use supported JSON output shapes
+- `hooks/test-gate.sh` updated to validate the current hook payloads, response schemas, session-memory behavior, and deterministic packer integration; suite now covers 86 scenarios
+- `/build`, `/qa`, `/quick`, `/test`, and the remaining interactive skills now prefer structured prompts but fall back to plain-text questions when picker-style prompts are unavailable in the runtime
+- Build and QA orchestration language standardized around the Task tool, with graceful fallback when task helpers or parallel task dispatch are unavailable
+- `task-builder` now returns a stable fenced `json` handoff report for callers, and `/build` validates that contract before treating a task group as complete
+- `/doc-audit` now documents and reports both CHANGELOG compliance and README freshness; `/security-review` now consistently reports findings without mixing in inline remediation instructions
+- README and guides updated to match the current behavior: explicit slash-only workflow entrypoints, prompt fallback behavior, statusline symlink safeguards, hook lifecycle details, session memory behavior, and rollback safety checks
+- Project verification now uses two layers: `hooks/test-gate.sh` for hook/runtime helpers and `scripts/grade-runtime-fixtures.js` for curated workflow transcripts
+
+### Fixed
+
+- `pipeline-gate.sh`, `convention-guard.sh`, `context-monitor.sh`, and `compact-prep.sh` now emit supported Claude Code hook JSON instead of stale response shapes
+- `/rollback` no longer relies on `git checkout --`; it now creates safety backups, blocks on unrelated dirty worktree changes, and restores modified files with `git restore --source=HEAD --staged --worktree`
+- `/quick` no longer points users to `/git-workflow` for routine branch creation, first push, or PR flow
+- `session-start-check.sh` documentation now matches the actual safeguard: the plugin only refreshes `~/.claude/statusline.js` when it is missing or already managed by this plugin
+
 ## [4.0.0] - 2026-03-06
 
 ### Breaking Changes

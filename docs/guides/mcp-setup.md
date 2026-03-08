@@ -20,7 +20,10 @@ The plugin checks for `repomix` on PATH at session start and warns if missing. `
 
 ## How Snapshots Work
 
-`/pack` generates three targeted snapshots, each optimized for a different audience:
+`/pack` generates three targeted snapshots, each optimized for a different audience.
+The actual snapshot generation is handled by the shared script
+`skills/pack/scripts/repomix-pack.js`, which is also used by the SessionEnd
+packing hook:
 
 | Variant | File | Used by | What's included |
 |---------|------|---------|-----------------|
@@ -72,7 +75,14 @@ When an audit skill runs standalone (outside `/qa`), it checks for snapshots in 
 
 ### Automatic refresh
 
-The `session-end-pack.sh` hook regenerates all three snapshots at the end of every session (unless `session-end-pack: disabled` is set in CLAUDE.md). This ensures the next session starts with fresh snapshots.
+The `session-end-pack.sh` hook regenerates all three snapshots at the end of
+every session (unless `session-end-pack: disabled` is set in CLAUDE.md). It
+delegates to the same deterministic packer script as `/pack`, so both paths
+produce the same variant flags and manifest shape.
+
+The session-memory hooks also read `.pipeline/repomix-pack.json` when present.
+They do not rerun Repomix; they only surface snapshot availability and freshness
+as compact context alongside recent session history.
 
 ---
 

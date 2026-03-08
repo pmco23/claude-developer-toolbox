@@ -1,0 +1,37 @@
+{
+  "name": "qa-sequential-fallback",
+  "component": "/qa",
+  "transcript": "transcript.jsonl",
+  "assertions": [
+    {
+      "id": "parallel-requested",
+      "type": "message_contains",
+      "actor": "user",
+      "pattern": "/qa --parallel"
+    },
+    {
+      "id": "falls-back-to-sequential",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Falling back to sequential mode"
+    },
+    {
+      "id": "reuses-repomix-pack",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": ".pipeline/repomix-pack.json"
+    },
+    {
+      "id": "runs-all-five-audits",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "/cleanup, /frontend-audit, /backend-audit, /doc-audit, and /security-review"
+    },
+    {
+      "id": "reports-pass",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Overall QA: PASS"
+    }
+  ]
+}

@@ -1,17 +1,30 @@
 # Hooks Reference
 
-This plugin registers six event hooks. Each one is passive infrastructure — none require user
-action. They run automatically as Claude Code fires lifecycle events.
+This plugin registers six hook events backed by eight command hooks. They are
+passive infrastructure — none require user action. They run automatically as
+Claude Code fires lifecycle events.
 
 ---
 
-## SessionStart — `session-start-check.sh`
+## SessionStart — `session-start-check.sh`, `scripts/session-context.js`
 
 **When it fires:** Once, at the start of every Claude Code session.
 
-**What it does:** Checks that the three external tools the plugin depends on are installed.
-If any are missing it prints a warning to stderr and lists which tools are absent. The session
-starts regardless — hooks fail open.
+**What it does:** Runs two lightweight startup checks:
+
+1. `session-start-check.sh` checks that the external tools the plugin depends on
+   are installed. If any are missing it prints a warning to stderr and lists
+   which tools are absent. The session starts regardless — hooks fail open.
+2. `scripts/session-context.js` looks for `.claude/session-log.md` in the
+   current project. If present, it prints the last 3 session summaries with a
+   short header so Claude can inject them as system context.
+   If `.pipeline/repomix-pack.json` exists, it also emits one short line with
+   the current Repomix snapshot variants and `packedAt` age.
+
+The startup hook also keeps `~/.claude/statusline.js` aligned with this
+plugin's `hooks/statusline.js`, but only when no statusline exists yet or the
+current file is already a symlink managed by this plugin. It will not overwrite
+a custom statusline or another plugin's statusline.
 
 **Tools checked:**
 
@@ -23,16 +36,26 @@ starts regardless — hooks fail open.
 
 **Fail-open:** Missing tools degrade specific features but never block the session.
 
+**Session history behavior:**
+- History lives at `.claude/session-log.md` inside each project
+- Only the last 3 entries are injected at startup to bound token cost
+- If `.pipeline/repomix-pack.json` exists, the startup context includes a
+  short read-only snapshot status line; the hook does not rerun Repomix
+- If `.gitignore` exists but does not ignore `.claude/session-log.md`, the
+  script prints a one-time reminder to stderr and records that the notice was shown
+
 ---
 
-## PreToolUse — `pipeline-gate.sh`
+## UserPromptSubmit — `pipeline-gate.sh`
 
-**When it fires:** Before every `Skill` tool call.
+**When it fires:** Before Claude processes a submitted prompt.
 
-**What it does:** Enforces the phase ordering of the development pipeline. It reads the skill
-name from the tool-call payload, walks up the directory tree to find the nearest `.pipeline/`
-directory, and checks whether the required artifact for that skill exists. If the artifact is
-missing, it exits with code `2` (block) and tells Claude what to run first.
+**What it does:** Enforces the phase ordering of the development pipeline for slash-command
+skills. It reads the submitted prompt, extracts the first slash command, walks up the directory
+tree to find the nearest `.pipeline/` directory, and checks whether the required artifact for
+that skill exists. If the artifact is missing, it returns a JSON block decision with the exact
+next step. If the command is `/quick` or a gating artifact looks stale, it injects
+`additionalContext` so Claude can surface the warning in its reply.
 
 **Gate table:**
 
@@ -45,7 +68,10 @@ missing, it exits with code `2` (block) and tells Claude what to run first.
 | `/cleanup`, `/frontend-audit`, `/backend-audit`, `/doc-audit`, `/security-review`, `/qa` | `.pipeline/build.complete` | Run `/build` then `/drift-check` first |
 | `/quick` | — | Never blocked; warns if a pipeline is active |
 
-Skills not in this table (e.g. `/status`, `/pack`, `/init`, `/git-workflow`) are always allowed. Commands (`/commit`, `/push`, `/commit-push-pr`, `/sync`, `/clean-branches`, `/release`) bypass the gate entirely — they are not skills and do not trigger `PreToolUse` on `Skill`.
+Slash commands not in this table (e.g. `/status`, `/pack`, `/init`, `/git-workflow`) are always
+allowed. Non-slash prompts are ignored. Commands (`/commit`, `/push`, `/commit-push-pr`,
+`/sync`, `/clean-branches`, `/release`) also bypass the gate because `pipeline-gate.sh`
+explicitly ignores them.
 
 **Walk-up search:** The gate searches from the current directory upward, so it works correctly
 from any subdirectory of a project.
@@ -60,11 +86,13 @@ from any subdirectory of a project.
 
 | Rule | Trigger | Action | Message |
 |------|---------|--------|---------|
-| `.claude-plugin/` guard | Write/Edit to `.claude-plugin/*` (non-manifest) | **deny** (exit 2) | Only manifests belong in .claude-plugin/ |
-| Hook chmod reminder | Write/Edit to `hooks/*.sh` | **allow** + context | Remember: chmod +x, correct shebang, run test-gate.sh |
-| Version sync reminder | Write/Edit to `.claude-plugin/plugin.json` | **allow** + context | Also bump version in marketplace.json |
+| `.claude-plugin/` guard | Write/Edit to `.claude-plugin/*` (non-manifest) | `permissionDecision: "deny"` | Only manifests belong in `.claude-plugin/` |
+| Hook chmod reminder | Write/Edit to `hooks/*.sh` | `systemMessage` reminder | Remember: `chmod +x`, correct shebang, run `test-gate.sh` |
+| Version sync reminder | Write/Edit to `.claude-plugin/plugin.json` or `marketplace.json` | `systemMessage` reminder | Also bump the paired manifest version |
 
-Outputs `hookSpecificOutput` JSON for Claude Code to display.
+Returns supported JSON:
+- `permissionDecision: "deny"` for blocked writes into `.claude-plugin/`
+- `systemMessage` reminders for hook script edits and manifest version sync
 
 ---
 
@@ -73,9 +101,9 @@ Outputs `hookSpecificOutput` JSON for Claude Code to display.
 **When it fires:** After every tool call.
 
 **What it does:** Reads a bridge file written by `statusline.js` at
-`/tmp/claude-ctx-<session_id>.json` and injects a context warning into Claude's output if the
-context window is running low. The bridge file is ignored if it is more than 60 seconds old
-(stale statusline data is silently skipped).
+`/tmp/claude-ctx-<session_id>.json` and injects a context warning via JSON `additionalContext`
+if the context window is running low. The bridge file is ignored if it is more than 60 seconds
+old (stale statusline data is silently skipped).
 
 **Warning thresholds:**
 
@@ -93,9 +121,9 @@ Below 63% the hook exits silently.
 
 **When it fires:** Before Claude Code compacts the conversation.
 
-**What it does:** Prints the current pipeline state to Claude's context so the compacted
-summary preserves it. Without this, compaction could discard awareness of which pipeline
-phase is active and which artifacts exist.
+**What it does:** Injects the current pipeline state as JSON `additionalContext` so the
+compacted summary preserves it. Without this, compaction could discard awareness of which
+pipeline phase is active and which artifacts exist.
 
 **Output (example):**
 
@@ -110,39 +138,37 @@ If no `.pipeline/` directory exists, or the directory is empty, the hook exits s
 
 ---
 
-## SessionEnd — `session-end-pack.sh`
+## SessionEnd — `session-end-pack.sh`, `scripts/session-summary.js`
 
 **When it fires:** When a Claude Code session ends.
 
-**What it does:** Generates three targeted Repomix snapshots (code, docs, full) into the
-`.pipeline/` directory. Each `repomix` call is guarded by a 60-second timeout (fail-open if
-the `timeout` command is absent). Writes a `repomix-pack.json` manifest with timestamps and
-file sizes.
+**What it does:** Runs two end-of-session tasks:
+
+1. `session-end-pack.sh` generates three targeted Repomix snapshots (code,
+   docs, full) into the `.pipeline/` directory by delegating to the shared
+   `skills/pack/scripts/repomix-pack.js` script. The shared script applies a
+   60-second timeout per Repomix run and writes `repomix-pack.json` with the
+   available variants, timestamps, and file sizes.
+2. `scripts/session-summary.js` appends a compact summary of the session to
+   `.claude/session-log.md`. It uses local heuristics only: first user message
+   for the goal, file-edit tool calls for key changes, assistant phrasing for
+   decisions, and the last assistant message for open threads. If
+   `.pipeline/repomix-pack.json` exists, the summary also records the current
+   snapshot variants and freshness.
+
+**Skip conditions:** exits silently when:
+- `repomix` is not installed
+- no active `.pipeline/` project is found
+- `CLAUDE.md` contains `session-end-pack: disabled`
 
 **Opt-out:** Add `session-end-pack: disabled` to your project's CLAUDE.md.
 
----
-
-## SessionEnd — prompt hook
-
-**When it fires:** When the main Claude agent considers stopping (end of a turn or session).
-
-**What it does:** Injects a conditional prompt that asks Claude to update the
-`## Current Focus` section of `MEMORY.md`. Claude self-evaluates whether the session was
-substantive. If it was, it overwrites the section with 2–3 sentences covering what is in
-flight, the next concrete step, and any key pending decision. If the session was trivial
-(read-only exploration, Q&A only, no changes made), the hook is effectively silent.
-
-**MEMORY.md handling:**
-
-| State | Action |
-|-------|--------|
-| `MEMORY.md` does not exist | Create it |
-| File exists, `## Current Focus` section absent | Add section at the bottom |
-| File exists, section present | Overwrite the section |
-
-This is a `type: "prompt"` hook — no shell script is involved. Claude performs the write
-directly using its file-editing tools.
+**Session summary behavior:**
+- summaries are markdown digests, not raw transcript dumps
+- each entry is appended to `.claude/session-log.md`
+- Repomix state is read-only metadata enrichment; the hook never reruns Repomix
+- the log is trimmed from the top when it exceeds 50KB
+- the script exits 0 on empty input, malformed input, or missing transcript data
 
 ---
 
@@ -168,6 +194,11 @@ All functions respect `PIPELINE_TEST_DIR` for test compatibility.
 |----------|-------|---------|
 | `_json_stdin_field <dotted.path>` | stdin | Extract field from JSON on stdin |
 | `_json_file_field <file> <field> [default]` | file | Extract field from JSON file |
+| `_json_quote <value>` | string | Emit a safely quoted JSON string |
+| `_emit_block_decision <reason>` | string | Emit a `UserPromptSubmit` block decision |
+| `_emit_system_message <message>` | string | Emit a hook `systemMessage` |
+| `_emit_additional_context <event> <context>` | strings | Emit hook `additionalContext` |
+| `_emit_pretool_permission <decision> <reason>` | strings | Emit `PreToolUse` permission control |
 
 Prefers `jq`, falls back to `python3`. Supports nested fields via dot notation.
 
@@ -177,10 +208,11 @@ Prefers `jq`, falls back to `python3`. Supports nested fields via dot notation.
 
 | Hook | Event | Type | Scope |
 |------|-------|------|-------|
-| `session-start-check.sh` | `SessionStart` | command | Warns on missing tools |
-| `pipeline-gate.sh` | `PreToolUse` (Skill) | command | Enforces pipeline phase order |
+| `session-start-check.sh` | `SessionStart` | command | Warns on missing tools and maintains a plugin-managed statusline symlink |
+| `scripts/session-context.js` | `SessionStart` | command | Injects the last 3 session summaries from `.claude/session-log.md` |
+| `pipeline-gate.sh` | `UserPromptSubmit` | command | Enforces pipeline phase order for slash commands |
 | `convention-guard.sh` | `PreToolUse` (Write\|Edit) | command | Enforces project conventions |
 | `context-monitor.sh` | `PostToolUse` | command | Warns on high context usage |
 | `compact-prep.sh` | `PreCompact` | command | Preserves pipeline state across compaction |
 | `session-end-pack.sh` | `SessionEnd` | command | Generates Repomix snapshots |
-| *(prompt)* | `SessionEnd` | prompt | Updates MEMORY.md Current Focus |
+| `scripts/session-summary.js` | `SessionEnd` | command | Appends a heuristic session summary to `.claude/session-log.md` |

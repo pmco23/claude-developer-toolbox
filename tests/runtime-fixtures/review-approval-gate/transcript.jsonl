@@ -1,0 +1,7 @@
+{"event":"user","text":"/review"}
+{"event":"assistant","text":"Dispatching strategic-critic and code-critic in parallel."}
+{"event":"tool_use","name":"Task","input":{"subagent":"strategic-critic","prompt":"Review the approved design for strategic risks."}}
+{"event":"tool_use","name":"Task","input":{"subagent":"code-critic","prompt":"Review the approved design against the repository."}}
+{"event":"assistant","text":"Review result: not approved yet. Must-fix findings remain around rollback path validation."}
+{"event":"user","text":"Apply only the rollback path validation fix and re-run the critics."}
+{"event":"assistant","text":"Re-ran strategic-critic and code-critic after the targeted fix. Approved. Wrote .pipeline/design.approved."}

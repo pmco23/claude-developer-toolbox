@@ -30,6 +30,31 @@ idea
 
 Each arrow is a quality gate. You cannot run `/design` without a brief. You cannot run `/plan` without an approved design. The hook enforces this mechanically.
 
+## Invocation Model
+
+Core workflow and safety skills are explicit slash-command entrypoints:
+`/brief`, `/design`, `/review`, `/plan`, `/build`, `/qa`, `/init`,
+`/git-workflow`, `/reset`, `/rollback`, and `/status`.
+
+These skills set `disable-model-invocation: true` so Claude does not auto-enter
+a stateful workflow from a natural-language prompt. Run the slash command when
+you want that workflow to start.
+
+Interactive skills prefer structured prompts when the runtime supports them, but
+all current workflows fall back to plain-text questions if picker-style prompts
+are unavailable.
+
+## Session Memory
+
+The plugin keeps a lightweight, project-local session memory file at
+`.claude/session-log.md`.
+
+- `SessionStart` loads the last 3 entries into Claude as recent project history
+- `SessionEnd` appends a concise heuristic summary of the session
+- when `.pipeline/repomix-pack.json` exists, both hooks also surface current snapshot availability and freshness
+- summaries are local-only: no network calls, databases, background service, or raw transcript dumps
+- if `.gitignore` exists but does not ignore `.claude/session-log.md`, the hook prints a one-time reminder instead of editing the file for you
+
 ## Platform Support
 
 | Platform | Status |
@@ -79,7 +104,9 @@ npm install -g repomix
 /plugin install claude-developer-toolbox@pmco23-tools
 ```
 
-Restart Claude Code. Run `/brief` to verify. See the [full installation guide](docs/guides/installation.md) for statusline setup, optional LSP tools, and verification steps.
+Restart Claude Code. Run `/brief` to verify. Core workflow skills are
+intentionally slash-only, so use the command explicitly rather than expecting
+Claude to auto-load it from a natural-language request. See the [full installation guide](docs/guides/installation.md) for statusline setup, optional LSP tools, and verification steps.
 
 ## Documentation
 
@@ -87,12 +114,24 @@ Restart Claude Code. Run `/brief` to verify. See the [full installation guide](d
 
 | Guide | |
 |-------|--|
-| [Workflows](docs/guides/workflows.md) | Decision guide, pipeline reference, mode flags, language support, end-to-end example |
-| [Installation](docs/guides/installation.md) | Full install steps, statusline setup, verification |
-| [Hooks](docs/guides/hooks.md) | What each hook does, when it fires, and how it behaves |
+| [Workflows](docs/guides/workflows.md) | Decision guide, explicit slash-command behavior, mode flags, language support, end-to-end example |
+| [Installation](docs/guides/installation.md) | Full install steps, statusline setup, slash-only behavior, verification |
+| [Hooks](docs/guides/hooks.md) | Hook lifecycle, JSON outputs, statusline maintenance, session memory, and Repomix session-end packing |
 | [Repomix Guide](docs/guides/mcp-setup.md) | Snapshot architecture, manual CLI usage, installation, troubleshooting |
 | [Troubleshooting](docs/guides/troubleshooting.md) | Common issues and fixes |
 | [Changelog](CHANGELOG.md) | Release history and version notes |
+
+## Verification
+
+Run both verification layers before publishing hook or workflow changes:
+
+```bash
+bash hooks/test-gate.sh
+node scripts/grade-runtime-fixtures.js
+```
+
+- `hooks/test-gate.sh` covers hook contracts, session memory, and the deterministic Repomix packer
+- `scripts/grade-runtime-fixtures.js` grades curated runtime fixtures for `/build`, `/qa`, `/review`, `/rollback`, and `task-builder`
 
 ### Skills
 
@@ -108,16 +147,16 @@ Restart Claude Code. Run `/brief` to verify. See the [full installation guide](d
 | `/cleanup` | Dead code removal |
 | `/frontend-audit` | Frontend style audit |
 | `/backend-audit` | Backend style audit |
-| `/doc-audit` | Documentation freshness audit |
+| `/doc-audit` | Documentation freshness audit (CHANGELOG + README drift) |
 | `/security-review` | OWASP vulnerability scan |
 | `/quick` | Fast-track implementation |
 | `/init` | Project boilerplate scaffolding (CLAUDE.md, README, CHANGELOG, CONTRIBUTING, PR template, .gitignore) |
-| `/git-workflow` | Destructive git operation safety gate (force-push, reset --hard, branch -D) |
+| `/git-workflow` | Destructive git operation safety gate (force-push, reset --hard, branch -D, rebase on published commits) |
 | `/status` | Pipeline state check |
 | `/pack` | Repomix codebase snapshot |
 | `/test` | Run the project test suite |
 | `/tdd` | Test-driven development — Iron Law, Red-Green-Refactor cycle, valid exceptions |
-| `/rollback` | Undo a completed build |
+| `/rollback` | Undo a completed build with safety backups and git restore |
 | `/reset` | Reset pipeline to a specific phase |
 
 ### Commands
@@ -139,3 +178,6 @@ Lightweight git operations — no pipeline artifacts, no multi-step process.
 |------|--------|
 | `tdd: disabled` | Switches `/plan` to implementation-first task ordering (skip Red-Green-Refactor) |
 | `session-end-pack: disabled` | Skips automatic Repomix packing on session end |
+
+`/pack` and the SessionEnd Repomix hook now share the same deterministic packer
+script, so snapshot variants and `repomix-pack.json` stay on one implementation path.

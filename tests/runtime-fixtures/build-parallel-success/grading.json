@@ -1,0 +1,39 @@
+{
+  "name": "build-parallel-success",
+  "component": "/build",
+  "transcript": "transcript.jsonl",
+  "assertions": [
+    {
+      "id": "explicit-parallel-mode",
+      "type": "message_contains",
+      "actor": "user",
+      "pattern": "/build --parallel"
+    },
+    {
+      "id": "dispatches-task-builder",
+      "type": "tool_use",
+      "name": "Task",
+      "inputContains": {
+        "subagent": "task-builder"
+      }
+    },
+    {
+      "id": "validates-json-report",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Validated the task-builder JSON report"
+    },
+    {
+      "id": "runs-drift-verifier",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "drift-verifier"
+    },
+    {
+      "id": "marks-build-complete",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": ".pipeline/build.complete"
+    }
+  ]
+}

@@ -1,6 +1,9 @@
 ---
 name: cleanup
 description: Use after build is complete to strip dead code, unused imports, unreachable branches, and commented-out code. Requires .pipeline/build.complete. Safe to run standalone or as part of /qa pipeline.
+compatibility:
+  requires: []
+  optional: ["Repomix CLI", "VS Code IDE integration", "TypeScript LSP", "gopls LSP", "Python LSP", "C# LSP", "Structured prompts"]
 ---
 
 # DENOISE — Dead Code Removal
@@ -39,7 +42,7 @@ Dead code found:
 - [file:line] — [symbol/description] — [reason: unused/unreachable/no callers]
 ```
 
-Use AskUserQuestion with:
+Prefer AskUserQuestion with:
   question: "Found [N] dead code items. How should I proceed?"
   header: "Cleanup action"
   options:
@@ -49,6 +52,8 @@ Use AskUserQuestion with:
       description: "Confirm each removal individually"
     - label: "Skip"
       description: "Report findings only — make no changes"
+
+If structured prompts are unavailable in this runtime, ask the same question in plain text and continue with the user's answer.
 
 ### Step 4: Remove confirmed dead code
 
@@ -63,7 +68,7 @@ Check for test files (`test/`, `tests/`, `*_test.go`, `*.test.ts`, `spec/`, etc.
 
 If no test files found: skip this step silently.
 
-If test files found, use AskUserQuestion with:
+If test files found, prefer AskUserQuestion with:
   question: "Run test suite to confirm no regressions from dead code removal?"
   header: "Regression check"
   options:
@@ -71,6 +76,8 @@ If test files found, use AskUserQuestion with:
       description: "Execute the project test suite via /test"
     - label: "Skip"
       description: "Skip — run tests manually before committing"
+
+If structured prompts are unavailable in this runtime, ask the same question in plain text and continue with the user's answer.
 
 If "Run now": follow the `/test` skill process to detect the runner, execute the suite,
 and report results. Do not attempt to fix failures — report them.
