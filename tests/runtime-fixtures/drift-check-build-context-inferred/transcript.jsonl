@@ -1,0 +1,6 @@
+{"event":"user","text":"/drift-check"}
+{"event":"assistant","text":"Build context is active, so I can infer the source and target without asking follow-up questions."}
+{"event":"assistant","text":"[Requirements]\nGoal:           Verify the implemented build still matches the approved source of truth.\nInputs:         Source:         .pipeline/plan.md\n                Target scope:   current working directory\nConstraints:    Full drift verification.\nAssumptions:    Build-complete context means the plan is the right source document.\nOpen questions: None."}
+{"event":"tool_use","name":"Task","input":{"subagent":"drift-verifier","prompt":"Compare .pipeline/plan.md against the current working directory for semantic drift."}}
+{"event":"tool_use","name":"Task","input":{"subagent":"path-verifier","prompt":"Verify that all paths and symbols referenced by .pipeline/plan.md exist under the current working directory."}}
+{"event":"assistant","text":"Drift check complete. No contradictions found."}

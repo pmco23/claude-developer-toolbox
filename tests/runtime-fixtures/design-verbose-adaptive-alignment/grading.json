@@ -1,0 +1,40 @@
+{
+  "name": "design-verbose-adaptive-alignment",
+  "component": "/design",
+  "transcript": "transcript.jsonl",
+  "provenance": "curated",
+  "assertions": [
+    {
+      "id": "narrows-to-one-design-blocker",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "I only need one design blocker resolved"
+    },
+    {
+      "id": "asks-single-select-direction-question",
+      "type": "tool_use",
+      "name": "AskUserQuestion",
+      "inputContains": {
+        "header": "Architecture direction"
+      }
+    },
+    {
+      "id": "carries-forward-known-constraints",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Must keep the existing webhook contract"
+    },
+    {
+      "id": "emits-requirements-block",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "[Requirements]"
+    },
+    {
+      "id": "does-not-reask-known-auth-constraint",
+      "type": "message_not_contains",
+      "actor": "assistant",
+      "pattern": "Should this reuse the current auth middleware?"
+    }
+  ]
+}

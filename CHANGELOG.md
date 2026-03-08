@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.3.0] - 2026-03-08
+
+### Added
+
+- Shared adaptive interview guide at `docs/guides/interview-system.md`, covering context scan, adaptive questioning, structured requirements handoff, integration guidance, and annotated transcripts
+- Skill-specific interview field banks for `/design`, `/drift-check`, `/test`, and `/pr-qa`
+
+### Changed
+
+- `/brief`, `/init`, and `/quick` now use the shared interview pattern instead of fixed question scripts, and each emits a `[Requirements]` handoff before execution
+- Empty-project scaffolding now uses an adaptive field bank for language, license, and project type instead of forcing the same scripted question order every time
+- The shared interview system now defines a full-interview / adaptive-branch / micro-prompt taxonomy, makes multi-select the default for additive questions, requires a free-form escape hatch on requirement-gathering and adaptive-branch prompts, and bans `all of the above` as a default shortcut
+- `/design`, `/drift-check`, `/test`, and `/pr-qa` now emit an explicit `[Requirements]` handoff before execution when they gather requirements interactively
+- `/review` and `/cleanup` now use targeted adaptive-branch follow-ups instead of generic fixed menus, while `/build`, `/qa`, `/reset`, `/rollback`, `/git-workflow`, and `/status` now document their bounded micro-prompt behavior explicitly
+- Runtime-fixture coverage now includes interview-policy and rollout flows for `/brief`, `/design`, `/drift-check`, `/init`, `/pr-qa`, `/quick`, `/review`, `/cleanup`, and `/test`; `scripts/grade-runtime-fixtures.js` now supports negative assertions used by those fixtures
+
 ## [4.2.0] - 2026-03-08
 
 ### Added

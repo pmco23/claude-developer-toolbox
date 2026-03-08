@@ -1,0 +1,42 @@
+{
+  "name": "pr-qa-requirements-handoff",
+  "component": "/pr-qa",
+  "transcript": "transcript.jsonl",
+  "provenance": "curated",
+  "assertions": [
+    {
+      "id": "uses-bundled-diff-collector",
+      "type": "tool_use",
+      "name": "Bash",
+      "inputContains": {
+        "command": "node skills/pr-qa/scripts/collect-diff-context.js --base origin/main --json"
+      }
+    },
+    {
+      "id": "emits-requirements-block",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "[Requirements]"
+    },
+    {
+      "id": "records-base-ref",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Base ref:       origin/main"
+    },
+    {
+      "id": "records-diff-scope",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Diff scope:     4 changed files"
+    },
+    {
+      "id": "dispatches-general-review",
+      "type": "tool_use",
+      "name": "Task",
+      "inputContains": {
+        "prompt": "PR QA track: general code review."
+      }
+    }
+  ]
+}

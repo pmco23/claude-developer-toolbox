@@ -1,0 +1,5 @@
+{"event":"assistant","text":"Dead code found:\n- src/jobs/legacy-replay.ts: unused replay worker\n- src/api/old-export.ts: unreachable endpoint branch\n- src/lib/debug-import.ts: commented-out helper block"}
+{"event":"tool_use","name":"AskUserQuestion","input":{"header":"Cleanup action","question":"Found 3 dead code items. What should I do first?","options":[{"label":"Remove all","description":"Remove every item in the current list"},{"label":"Review highest-impact first","description":"Handle one item now, then re-check the remaining list"},{"label":"Skip","description":"Report findings only — make no changes"},{"label":"Other / let me explain","description":"Choose a narrower or different cleanup action"}]}}
+{"event":"assistant","text":"Available actions: Remove all, Review highest-impact first, Skip, or Other / let me explain."}
+{"event":"user","text":"Review highest-impact first"}
+{"event":"assistant","text":"Removed 1 dead code item.\n- src/api/old-export.ts: removed unreachable endpoint branch\n\n2 findings remain for the next cleanup round."}

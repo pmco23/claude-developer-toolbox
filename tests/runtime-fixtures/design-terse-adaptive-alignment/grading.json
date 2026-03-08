@@ -1,0 +1,40 @@
+{
+  "name": "design-terse-adaptive-alignment",
+  "component": "/design",
+  "transcript": "transcript.jsonl",
+  "provenance": "curated",
+  "assertions": [
+    {
+      "id": "asks-alignment-verdict",
+      "type": "tool_use",
+      "name": "AskUserQuestion",
+      "inputContains": {
+        "header": "Alignment check"
+      }
+    },
+    {
+      "id": "asks-single-follow-up-for-partial",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "What is the single highest-impact adjustment?"
+    },
+    {
+      "id": "emits-requirements-block",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "[Requirements]"
+    },
+    {
+      "id": "does-not-use-all-of-the-above",
+      "type": "message_not_contains",
+      "actor": "assistant",
+      "pattern": "all of the above"
+    },
+    {
+      "id": "writes-design-artifact",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": ".pipeline/design.md"
+    }
+  ]
+}

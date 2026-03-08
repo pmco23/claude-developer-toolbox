@@ -1,0 +1,44 @@
+{
+  "name": "brief-verbose-context-scan",
+  "component": "/brief",
+  "transcript": "transcript.jsonl",
+  "provenance": "curated",
+  "assertions": [
+    {
+      "id": "narrows-to-one-blocker",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "I only need one blocker resolved"
+    },
+    {
+      "id": "asks-success-criteria-instead-of-repeating-stated-facts",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "what does done look like for the first release?"
+    },
+    {
+      "id": "emits-requirements-block",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "[Requirements]"
+    },
+    {
+      "id": "carries-forward-user-constraint",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Must reuse existing auth middleware"
+    },
+    {
+      "id": "records-no-open-questions",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Open questions: None."
+    },
+    {
+      "id": "writes-brief-artifact",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": ".pipeline/brief.md"
+    }
+  ]
+}

@@ -64,6 +64,8 @@ After presenting the pipeline report, prefer AskUserQuestion with:
 
 If structured prompts are unavailable in this runtime, ask the same question in plain text and continue with the user's answer.
 
+This next-step choice is a micro-prompt from the shared interview system: keep it bounded and single-select, do not add a free-form option, do not use "all of the above", and do not emit a `[Requirements]` block.
+
 Replace `[next-step-skill]` and `[/skill-name]` with the next step from the Phase → Next step lookup table in Step 3. If yes: invoke the skill by following its process.
 
 ## Manual Pipeline Reset

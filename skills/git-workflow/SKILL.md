@@ -18,7 +18,7 @@ You are enforcing safety before a destructive git operation. Verify the target, 
 ## Hard Rules
 
 1. **Never execute a destructive operation without explicit confirmation in the current turn.** A previous approval in a different context does not carry over.
-2. **Prefer structured prompts, but fail soft.** Use AskUserQuestion when available. If structured prompts are unavailable in this runtime, ask the same confirmation question in plain text.
+2. **Prefer structured prompts, but fail soft.** Use AskUserQuestion when available. This is a bounded micro-prompt from the shared interview system: keep it single-select, do not add a free-form option, do not use "all of the above", and do not emit a `[Requirements]` block. If structured prompts are unavailable in this runtime, ask the same confirmation question in plain text.
 3. **Force-push to main/master is always escalated.** Even if the user confirms, warn again that this affects all collaborators.
 
 ## Process

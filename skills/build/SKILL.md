@@ -34,6 +34,8 @@ Prefer AskUserQuestion with:
 
 If structured prompts are unavailable in this runtime, ask a single plain-text question instead: "Which build mode: parallel or sequential?"
 
+This mode selection is a micro-prompt from the shared interview system: keep it bounded and single-select, do not add a free-form option unless a real custom mode exists, do not use "all of the above", and do not emit a `[Requirements]` block.
+
 ## Hard Rules
 
 1. **Never write implementation code.** If you find yourself about to write code, stop. Describe what the agent needs to do textually instead.

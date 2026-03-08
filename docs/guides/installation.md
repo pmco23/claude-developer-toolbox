@@ -69,7 +69,9 @@ Quit and reopen. The skills will appear in the skill list and the gate hook will
 /brief
 ```
 
-You should see the brief skill start a Q&A session. If the gate hook is active, trying `/design` before running `/brief` will show a block message.
+You should see the brief skill start an adaptive Q&A session that only asks for
+missing or ambiguous requirements. If the gate hook is active, trying `/design`
+before running `/brief` will show a block message.
 
 Core workflow and safety skills are explicit slash-command entrypoints. If you
 describe work in natural language and Claude does not auto-enter `/brief`,
@@ -157,4 +159,4 @@ node scripts/grade-runtime-fixtures.js
 ```
 
 - `hooks/test-gate.sh` validates the hook bundle, session memory, and shared Repomix packer
-- `scripts/grade-runtime-fixtures.js` grades curated runtime fixtures for `/build`, `/pr-qa`, `/qa`, `/review`, `/rollback`, and `task-builder`
+- `scripts/grade-runtime-fixtures.js` grades curated runtime fixtures for `/brief`, `/build`, `/cleanup`, `/design`, `/drift-check`, `/init`, `/pr-qa`, `/qa`, `/quick`, `/review`, `/rollback`, `/test`, and `task-builder`

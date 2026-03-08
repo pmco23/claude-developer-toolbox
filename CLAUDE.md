@@ -17,15 +17,17 @@ Style config: hooks follow POSIX-compatible bash (`set -euo pipefail`). Skills f
 - `skills/pack/scripts/repomix-pack.js` — shared deterministic Repomix packer used by `/pack` and the SessionEnd pack hook
 - `skills/pr-qa/scripts/collect-diff-context.js` — diff collector used by `/pr-qa` to scope pre-PR review to changed files
 - `hooks/test-gate.sh` — gate test suite (run before every commit)
-- `tests/runtime-fixtures/` — curated transcript fixtures for `/build`, `/pr-qa`, `/qa`, `/review`, `/rollback`, and `task-builder`
+- `tests/runtime-fixtures/` — curated transcript fixtures for `/brief`, `/build`, `/cleanup`, `/design`, `/drift-check`, `/init`, `/pr-qa`, `/qa`, `/quick`, `/review`, `/rollback`, `/test`, and `task-builder`
 - `scripts/grade-runtime-fixtures.js` — fixture grader for the runtime transcripts
 - `.claude-plugin/plugin.json` — plugin manifest (version source of truth)
 - `.claude-plugin/marketplace.json` — local dev marketplace manifest
 - `docs/guides/` — user-facing documentation
+- `docs/guides/interview-system.md` — shared adaptive interview pattern for requirement-gathering skills
 
 ## Editing rules
 
 - Keep SKILL.md files concise. Extract inline templates, checklists, and procedures to `references/` for progressive disclosure.
+- Requirement-gathering skills should use the shared adaptive interview pattern from `docs/guides/interview-system.md` instead of hard-coded question scripts.
 - Never put skills, hooks, or other components inside `.claude-plugin/` — that directory contains only manifests.
 - All hooks must be executable (`chmod +x`) and use `#!/usr/bin/env bash`.
 - Run `bash hooks/test-gate.sh` after any change to hooks or gate logic. All tests must pass.

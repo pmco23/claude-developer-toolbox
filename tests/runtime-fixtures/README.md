@@ -2,11 +2,18 @@
 
 Curated transcript fixtures for the highest-risk workflow components:
 
+- `/brief`
 - `/build`
+- `/cleanup`
+- `/design`
+- `/drift-check`
+- `/init`
 - `/pr-qa`
 - `/qa`
+- `/quick`
 - `/review`
 - `/rollback`
+- `/test`
 - `task-builder`
 
 The `task-builder` fixtures include both:
@@ -20,6 +27,22 @@ The `/pr-qa` fixtures include:
 - a docs-only skip path
 - a missing-base-ref recovery path
 - a non-git blocked path
+
+The interview-system fixtures include:
+
+- a `/brief` flow that proves additive requirement questions use multi-select semantics
+- a verbose `/brief` request that only asks for the single missing blocker
+- a terse `/brief` request that branches based on the user's first answer
+- an `/init` flow that proves no field is re-asked when language, license, and project type are already present
+- an `/init` empty-project setup where the user's first prompt already supplies the key scaffolding facts
+- a `/quick` flow that accepts a free-form override instead of forcing a canned choice
+- a `/quick` flow where "Just proceed" becomes an explicit assumption in the requirements handoff
+- `/design` verbose and terse alignment flows that emit a requirements handoff before writing `.pipeline/design.md`
+- `/drift-check` inferred and missing-input paths that prove source/target prompts are only used when needed
+- `/test` detected-runner and ambiguous-runner paths that prove the runner question only appears when detection stays ambiguous
+- a `/pr-qa` requirements-handoff path that proves diff collection is turned into an explicit execution contract
+- a `/review` targeted follow-up path that focuses on the highest-impact unresolved finding
+- a `/cleanup` targeted action-selection path that removes one item first instead of forcing a fixed sequence
 
 Run the grader from the repository root:
 

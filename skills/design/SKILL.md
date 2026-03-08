@@ -21,7 +21,7 @@ You are Opus acting as a software architect. Your output is a formal design docu
 2. **Classify every constraint.** Hard constraints are non-negotiable. Soft constraints get flagged explicitly.
 3. **Reconstruct from validated truths only.** Do not carry forward assumptions from the brief without validating them.
 4. **Iterate until aligned.** Do not write the design doc until the user confirms alignment. Each iteration is one question — do not bundle multiple questions in a single response.
-5. **Prefer structured prompts, but fail soft.** Provide 2-4 options covering the plausible answers; include `"Other / let me explain"` as the last option. If structured prompts are unavailable in this runtime, ask the same question in plain text with the options listed inline.
+5. **Use the shared interview contract.** Full design interviews and alignment loops follow `../../docs/guides/interview-system.md`. Use `multiSelect: true` for additive constraints, keep a free-form option on full-interview and adaptive-branch prompts, and never rely on "all of the above".
 
 ## Process
 
@@ -67,33 +67,53 @@ If the project language LSP is available in this session:
 - Identify existing interfaces the design must be compatible with
 - Flag any naming conflicts with existing symbols
 
-### Step 5: Reconstruct the optimal approach
+### Step 5: Reconstruct the candidate approach
 
 Starting from validated truths only, reconstruct:
 - What is the minimal implementation that satisfies all hard constraints?
 - What is the recommended approach given the soft constraints?
 - What are the key trade-offs between approaches?
 
-### Step 6: Iterate with user
+### Step 6: Run the adaptive design interview
 
-Present the design approach. Then prefer AskUserQuestion with:
-  question: "Does this direction align with your intent?"
-  header: "Design alignment"
-  options:
-    - label: "Yes, aligned"
-      description: "Proceed to write the design document"
-    - label: "Partially — one thing to adjust"
-      description: "Name what needs to change; I'll adjust and re-present"
-    - label: "No — fundamental issue"
-      description: "Describe what's wrong; I'll rethink the approach"
+Read:
+- `../../docs/guides/interview-system.md`
+- `references/interview-fields.md`
 
-If structured prompts are unavailable in this runtime, ask the same alignment question in plain text.
+Build a design requirements state from:
+- `.pipeline/brief.md`
+- Step 1 codebase grounding
+- Step 2 constraint classification
+- Step 3 live docs grounding
+- Step 4 LSP findings
 
-If "Partially" or "No": ask one follow-up question to identify the specific issue, preferring AskUserQuestion and falling back to a single plain-text question if needed. Then adjust and return to the top of this step.
+Ask only about unresolved design blockers. Do not replay the brief. Typical
+blockers are:
+- compatibility commitments not fully settled by the brief
+- a library or pattern choice that depends on user intent
+- operational constraints that change the architecture
+- rollout boundaries that affect the design shape
+
+Selection rules:
+- use single-select for mutually exclusive design directions
+- use `multiSelect: true` for additive compatibility or operational constraints
+- always include `"Other / let me explain"` as the free-form option
+- if structured prompts are unavailable, accept comma-separated answers for additive fields
+
+After presenting the candidate approach, run the alignment check as an adaptive branch:
+- ask whether the current direction is aligned
+- if the user says "Partially" or "No", ask one follow-up question that targets the single highest-impact mismatch
+- then revise and repeat this step
+
+Before writing the design document, emit the shared `[Requirements]` block and treat it as the design handoff.
 
 ### Step 7: Write the design document
 
 Read `references/design-template.md` from this skill's base directory. Write `.pipeline/design.md` following that structure exactly.
+
+Use the `[Requirements]` block as the source of truth for the final document. If
+the template reveals an unresolved design blocker, stop and surface it instead
+of silently choosing a direction.
 
 ## Output
 

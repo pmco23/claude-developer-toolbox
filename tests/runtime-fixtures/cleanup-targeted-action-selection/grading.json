@@ -1,0 +1,40 @@
+{
+  "name": "cleanup-targeted-action-selection",
+  "component": "/cleanup",
+  "transcript": "transcript.jsonl",
+  "provenance": "curated",
+  "assertions": [
+    {
+      "id": "asks-targeted-cleanup-question",
+      "type": "tool_use",
+      "name": "AskUserQuestion",
+      "inputContains": {
+        "header": "Cleanup action"
+      }
+    },
+    {
+      "id": "allows-highest-impact-first-mode",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Review highest-impact first"
+    },
+    {
+      "id": "removes-one-item-first",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Removed 1 dead code item."
+    },
+    {
+      "id": "re-presents-remaining-work",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "2 findings remain for the next cleanup round."
+    },
+    {
+      "id": "does-not-emit-requirements-block",
+      "type": "message_not_contains",
+      "actor": "assistant",
+      "pattern": "[Requirements]"
+    }
+  ]
+}

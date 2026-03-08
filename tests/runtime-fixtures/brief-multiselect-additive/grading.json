@@ -1,0 +1,41 @@
+{
+  "name": "brief-multiselect-additive",
+  "component": "/brief",
+  "transcript": "transcript.jsonl",
+  "provenance": "curated",
+  "assertions": [
+    {
+      "id": "uses-multiselect-for-additive-constraints",
+      "type": "tool_use",
+      "name": "AskUserQuestion",
+      "inputContains": {
+        "header": "Release constraints",
+        "multiSelect": true
+      }
+    },
+    {
+      "id": "records-freeform-constraint",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "CSV only for the first release"
+    },
+    {
+      "id": "emits-requirements-block",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "[Requirements]"
+    },
+    {
+      "id": "does-not-use-all-of-the-above",
+      "type": "message_not_contains",
+      "actor": "assistant",
+      "pattern": "all of the above"
+    },
+    {
+      "id": "writes-brief-artifact",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": ".pipeline/brief.md"
+    }
+  ]
+}

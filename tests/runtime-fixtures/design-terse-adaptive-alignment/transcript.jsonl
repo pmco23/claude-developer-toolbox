@@ -1,0 +1,7 @@
+{"event":"user","text":"/design Build a billing retry system from the approved brief."}
+{"event":"assistant","text":"I grounded the brief, current billing code, and retry library docs. The likely direction is a queue-backed retry worker with idempotent retry records and a small admin replay UI."}
+{"event":"tool_use","name":"AskUserQuestion","input":{"header":"Alignment check","question":"How aligned is this direction?","options":[{"label":"Yes","description":"Proceed with this direction"},{"label":"Partially","description":"One important change is still needed"},{"label":"No","description":"The direction is wrong and needs a different path"},{"label":"Other / let me explain","description":"Describe the nuance in your own words"}]}}
+{"event":"user","text":"Partially."}
+{"event":"assistant","text":"What is the single highest-impact adjustment? The biggest open lever looks like whether retries should stay in Postgres or move to Redis-backed queues first."}
+{"event":"user","text":"Keep it in Postgres for v1. No Redis dependency yet."}
+{"event":"assistant","text":"[Requirements]\nGoal:           Design a billing retry system from the approved brief.\nInputs:         .pipeline/brief.md, current billing code, and grounded library docs.\nConstraints:    Keep retries in Postgres for v1; avoid introducing Redis.\nAssumptions:    Preserve the existing billing event contract and add a narrow admin replay surface.\nOpen questions: None.\n\nDesign written to `.pipeline/design.md`. Run `/review` next."}

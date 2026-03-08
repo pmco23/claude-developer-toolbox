@@ -31,9 +31,20 @@ Strip `--deep` from the task description if present. If the hook surfaced a pipe
 Proceeding with /quick anyway.
 ```
 
+Before asking anything, run a lightweight context scan:
+- extract the goal, likely files, constraints, and output expectations from the task description
+- read only the minimum repo context needed to disambiguate the likely target area
+- note any assumptions you may need if the task remains underspecified
+
 ### Step 2: Clarify if needed (max one question)
 
-If the task description is ambiguous about what to change or where, prefer AskUserQuestion with options you derive from the task description — 2-4 options covering the plausible interpretations, plus `"Other / let me describe it"` as the last option. If structured prompts are unavailable in this runtime, ask one concise plain-text clarifying question instead. If it is clear enough to start, skip this step entirely. Do not ask multiple questions.
+Read `../../docs/guides/interview-system.md` from the repository root and apply its Stage 1-3 pattern in a lightweight way.
+
+If the task description is ambiguous about what to change, where to change it, or what outcome counts as done, ask one highest-impact question only. Prefer AskUserQuestion with options you derive from the task description — 2-4 options covering the plausible interpretations, plus `"Other / let me describe it"` as the last option. This is a single-select clarifying prompt with a free-form escape hatch, not a multi-select checklist, and it should never use "all of the above". If structured prompts are unavailable in this runtime, ask one concise plain-text clarifying question instead.
+
+If the user says "just proceed" or the answer is still partially ambiguous, make the narrowest reasonable assumption and state it in the requirements handoff instead of asking a second question.
+
+Before moving to Step 3, emit the shared `[Requirements]` block in compact form and treat it as the execution contract for the change.
 
 ### Step 3: Read relevant context only
 
@@ -44,7 +55,9 @@ Do not read the whole codebase. Read only:
 
 ### Step 4: Implement
 
-Make the change. Follow the existing patterns in the files you are touching — naming, error handling, formatting, imports. Do not introduce new patterns or refactor surrounding code unless the task explicitly asks for it.
+Make the change using the `[Requirements]` block as the source of truth. Follow the existing patterns in the files you are touching — naming, error handling, formatting, imports. Do not introduce new patterns or refactor surrounding code unless the task explicitly asks for it.
+
+If execution reveals that one of your stated assumptions is wrong, stop and surface it immediately instead of silently widening scope.
 
 ### Step 5: Self-review
 

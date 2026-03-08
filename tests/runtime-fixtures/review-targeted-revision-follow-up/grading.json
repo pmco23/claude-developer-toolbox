@@ -1,0 +1,34 @@
+{
+  "name": "review-targeted-revision-follow-up",
+  "component": "/review",
+  "transcript": "transcript.jsonl",
+  "provenance": "curated",
+  "assertions": [
+    {
+      "id": "asks-highest-impact-follow-up",
+      "type": "tool_use",
+      "name": "AskUserQuestion",
+      "inputContains": {
+        "header": "Review action"
+      }
+    },
+    {
+      "id": "references-highest-impact-finding",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "retry scheduler depends on Redis"
+    },
+    {
+      "id": "drafts-targeted-diff",
+      "type": "message_contains",
+      "actor": "assistant",
+      "pattern": "Old text → New text"
+    },
+    {
+      "id": "does-not-use-generic-what-next-prompt",
+      "type": "message_not_contains",
+      "actor": "assistant",
+      "pattern": "Review round [N] complete. What next?"
+    }
+  ]
+}

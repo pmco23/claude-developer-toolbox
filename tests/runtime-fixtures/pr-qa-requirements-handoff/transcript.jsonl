@@ -1,0 +1,7 @@
+{"event":"user","text":"/pr-qa --base origin/main"}
+{"event":"tool_use","name":"Bash","input":{"command":"node skills/pr-qa/scripts/collect-diff-context.js --base origin/main --json"}}
+{"event":"assistant","text":"[Requirements]\nGoal:           Review the changed files before commit or PR.\nInputs:         Base ref:       origin/main\n                Base commit:    4c8d9ab\n                Diff scope:     4 changed files\nConstraints:    Diff-only review, no repo-wide release audit.\nAssumptions:    Current branch diff is the intended review target.\nOpen questions: None.\n\nProceeding with the three PR QA review tracks."}
+{"event":"tool_use","name":"Task","input":{"prompt":"PR QA track: general code review."}}
+{"event":"tool_use","name":"Task","input":{"prompt":"PR QA track: test quality review."}}
+{"event":"tool_use","name":"Task","input":{"prompt":"PR QA track: silent failure review."}}
+{"event":"assistant","text":"```json\n{\"overallVerdict\":\"PASS WITH WARNINGS\",\"tracks\":[{\"reviewer\":\"pr-code-reviewer\",\"verdict\":\"pass\"},{\"reviewer\":\"pr-test-analyzer\",\"verdict\":\"warn\"},{\"reviewer\":\"silent-failure-hunter\",\"verdict\":\"pass\"}],\"findings\":[{\"track\":\"pr-test-analyzer\",\"severity\":\"MEDIUM\",\"summary\":\"Changed retry handler has no regression test for 429 backoff.\"}]}\n```"}
